@@ -1,16 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Given data, automatically guess-generates DDL to create SQL tables.
 
+Badly untested, and probably still full of errors!  Still interesting,
+though.
+"""
 from collections import OrderedDict
 import datetime
 from decimal import Decimal, InvalidOperation
 import doctest
+import json
+import math
+import os.path
 import re
 import sqlalchemy as sa
+from sqlalchemy.schema import CreateTable
 import dateutil.parser
-metadata = sa.MetaData()
+import yaml
 
-import math
+metadata = sa.MetaData()
 
 def precision_and_scale(x):
     """
@@ -24,6 +33,10 @@ def precision_and_scale(x):
     Thanks to Mark Ransom, 
     http://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
     """
+    if isinstance(x, Decimal):
+        precision = len(x.as_tuple().digits)
+        scale = -1 * x.as_tuple().exponent
+        return (precision, scale)
     max_digits = 14
     int_part = int(abs(x))
     magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1
@@ -37,8 +50,7 @@ def precision_and_scale(x):
     scale = int(math.log10(frac_digits))
     return (magnitude + scale, scale)
 
-
-complex_enough_to_be_date = re.compile(r"[\\\-\. /]")
+complex_enough_to_be_date = re.compile(r"[\-\. /]")
 def coerce_to_specific(datum):
     """
     Coerces datum to the most specific data type possible
@@ -52,7 +64,7 @@ def coerce_to_specific(datum):
     'something else'
     """
     try:
-        if complex_enough_to_be_date.search(datum):
+        if len(complex_enough_to_be_date.findall(datum)) > 1:
             return dateutil.parser.parse(datum)
     except TypeError:
         pass
@@ -98,8 +110,8 @@ def best_coercable(data):
         elif pref == worst_pref:
             if isinstance(coerced, Decimal):
                 (prec, scale) = precision_and_scale(coerced)
-                worst = Decimal("%s.%s" * ('9' * worst_prec, '9' * worst_scale))
                 (worst_prec, worst_scale) = (max(prec, worst_prec), max(scale, worst_scale))
+                worst = Decimal("%s.%s" % ('9' * (worst_prec - worst_scale), '9' * worst_scale))
             elif isinstance(coerced, float):
                 worst = max(coerced, worst)
             else:  # int, str
@@ -129,63 +141,133 @@ def sqla_datatype_for(datum):
         return sa.DECIMAL(prec, scale)
     except TypeError:
         return sa.String(len(datum))
-        
-''' 
-def least_picky_of(dtype1, dtype2):
-    """
-    >>> least_picky_of(sa.String(24), sa.String(12))
-    String(length=24)
-    >>> least_picky_of(sa.Decimal
-    """
-    import pdb; pdb.set_trace()
-    if isinstance(dtype1, sa.String) or isinstance(dtype2, String):
-        return sa.String(length=max(len(str(dtyp
-    if isinstance(dtype1, sa.String):
-        if isinstance(dtype2, sa.String):
-            return sa.String(length=max(dtype1.length, dtype2.length))
-        
-        return sa.String(length=max(dtype1.length, len(str(dtype2))))
-    elif isinstance(dtype2, sa.String):
-        return sa.String(length=max(dtype2.length, len(str(dtype1))))
-    import pdb; pdb.set_trace()
-    elif isinstance(dtype1, sa.DECIMAL):
-        if isinstance(dtype2, sa.DECIMAL):
-            return sa.DECIMAL
-                        
-    print(dtype1)
-''' 
-    
+           
+def _dump(sql, *multiparams, **params):
+    pass
+   
+mock_engines = {}
+for engine_name in ('postgresql', 'sqlite', 'mysql', 'oracle', 'mssql'):
+    mock_engines[engine_name] = sa.create_engine('%s://' % engine_name, 
+                                                 strategy='mock', executor=_dump)
+
 class DDL(object):
     """
-    >>> data = [{"name": "Lancelot", "kg": 83, "dob": "9 jan 461"}]
-    >>> data.append({"name": "Gawain", "kg": 69.4})
-    >>> table_def = DDL(data, "knights")
-    
+    >>> data = '''
+    ... - 
+    ...   name: Lancelot
+    ...   kg: 83
+    ...   dob: 9 jan 461
+    ... -
+    ...   name: Gawain
+    ...   kg: 69.4  '''
+    >>> print(DDL(data, "knights").ddl('postgresql'))
+    <BLANKLINE>
+    CREATE TABLE knights (
+    	dob TIMESTAMP WITHOUT TIME ZONE, 
+    	name VARCHAR(8) NOT NULL, 
+    	kg DECIMAL(3, 1) NOT NULL, 
+    	UNIQUE (dob), 
+    	UNIQUE (name), 
+    	UNIQUE (kg)
+    )
+    <BLANKLINE>
+    <BLANKLINE>
+
     """
-    
-    def __init__(self, data, table_name=None):
-        if not hasattr(data, 'append'): # not a list
-            self.data = [data,]
+
+    eval_funcs_by_ext = {'py': [eval, ],
+                         'json': [json.loads, ],
+                         'yaml': [yaml.load, ], }
+                         
+    def _load_data(self, data):
+        """
+        Populates ``self.data`` from ``data``, whether ``data`` is a 
+        string of JSON or YAML, a filename containing the same, 
+        or simply Python data. 
+        TODO: accept XML, pickles; open files
+        """
+        file_extension = None
+        if hasattr(data, 'lower'):  # duck-type string test
+            if os.path.isfile(data):
+                file_extension = filename.split('.')[-1]
+                with open(data) as infile:
+                    data = infile.read()
+            funcs = self.eval_funcs_by_ext.get(file_extension, [yaml.load, json.loads, eval])
+            for func in funcs:
+                try:
+                    self.data = func(data)
+                    return 
+                except:  # our deserializers may throw a variety of errors
+                    pass
+            raise SyntaxError("Failed to interpret data provided")
         else:
             self.data = data
+                  
+    def __init__(self, data, table_name=None, default_dialect=None):
+        self._load_data(data)
+        if not hasattr(self.data, 'append'): # not a list
+            self.data = [self.data,]
+        self.default_dialect = default_dialect
         self.table_name = table_name or 'generated_table'
+        self._determine_types()
+        self.table = sa.Table(table_name, metadata, 
+                              *[sa.Column(c, t, 
+                                          unique=self.is_unique[c],
+                                          nullable=self.is_nullable[c]) 
+                                for (c, t) in self.satypes.items()])
         
-    def _generate(self):
-        column_types = OrderedDict() 
+    def ddl(self, dialect=None):
+        if not dialect and not self.default_dialect:
+            raise KeyError("No SQL dialect specified")
+        dialect = dialect or self.default_dialect
+        if dialect not in mock_engines:
+            raise NotImplementedError("SQL dialect '%s' unknown" % dialect)
+        return CreateTable(self.table).compile(mock_engines[dialect])
+        # TODO: Accept NamedTuple data source
+        # preserve ordering from .json, .yml, .csv?
+        # my_ordered_dict = json.loads(json_str, object_pairs_hook=collections.OrderedDict)
+        
+    def __str__(self):
+        if self.default_dialect:
+            return self.ddl()
+        else:
+            return self.__repr__()
+        
+    types2sa = {datetime.datetime: sa.DateTime, int: sa.Integer, 
+                float: sa.Numeric, }
+    
+    def _determine_types(self):
+        self.columns = {}
+        self.satypes = OrderedDict() 
+        self.pytypes = {}
+        self.is_unique = {}
+        self.is_nullable = {}
+        rowcount = 0
         for row in self.data:
-            for (k, v) in row.items():
+            rowcount += 1
+            keys = row.keys()
+            if not isinstance(row, OrderedDict):
+                keys = sorted(keys)
+            for k in keys:
+                v = row[k]
                 k = k.lower()   # case-sensitive column names are evil
-                if k not in column_types:
-                    column_types[k] = str
-                column_types[k] = least_picky_of(column_types[k], sqla_datatype_for(v))
-                
-        self.sqla_def = sa.Table(self.table_name, metadata) 
+                if k not in self.columns:
+                    self.columns[k] = []
+                self.columns[k].append(v)
+            # TODO: mark primary key, nullable
+        for col in self.columns:
+            sample_datum = best_coercable(self.columns[col])
+            self.pytypes[col] = type(sample_datum)
+            if isinstance(sample_datum, Decimal):
+                self.satypes[col] = sa.DECIMAL(*precision_and_scale(sample_datum))
+            elif isinstance(sample_datum, str):
+                self.satypes[col] = sa.String(len(sample_datum))
+            else:
+                self.satypes[col] = self.types2sa[type(sample_datum)]
+            self.is_unique[col] = (len(set(self.columns[col])) == len(self.columns[col]))
+            self.is_nullable[col] = (len(self.columns[col]) < rowcount 
+                                      or None in self.columns[col])
         
-        
-    def _emit(self, dialect):
-        self.sqla_def = sa.Table(self.table_name, metadata) 
-        
-       
     
 if __name__ == '__main__':
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)    
