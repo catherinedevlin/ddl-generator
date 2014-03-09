@@ -11,6 +11,7 @@ import datetime
 from decimal import Decimal, InvalidOperation
 import doctest
 import json
+import logging
 import math
 import os.path
 import re
@@ -19,6 +20,7 @@ from sqlalchemy.schema import CreateTable
 import dateutil.parser
 import yaml
 
+logging.basicConfig(filename='ddlgenerator.log', filemode='w', level=logging.WARN)
 metadata = sa.MetaData()
 
 def precision_and_scale(x):
@@ -123,6 +125,8 @@ def best_coercable(data):
 complex_enough_to_be_date = re.compile(r"[\\\-\. /]")
 def sqla_datatype_for(datum):
     """
+    Given a scalar Python value, picks an appropriate SQLAlchemy data type.
+    
     >>> sqla_datatype_for(7.2)
     DECIMAL(precision=2, scale=1)
     >>> sqla_datatype_for("Jan 17 2012")
@@ -150,7 +154,7 @@ for engine_name in ('postgresql', 'sqlite', 'mysql', 'oracle', 'mssql'):
     mock_engines[engine_name] = sa.create_engine('%s://' % engine_name, 
                                                  strategy='mock', executor=_dump)
 
-class DDL(object):
+class Table(object):
     """
     >>> data = '''
     ... - 
@@ -160,7 +164,7 @@ class DDL(object):
     ... -
     ...   name: Gawain
     ...   kg: 69.4  '''
-    >>> print(DDL(data, "knights").ddl('postgresql'))
+    >>> print(Table(data, "knights").ddl('postgresql'))
     <BLANKLINE>
     CREATE TABLE knights (
     	dob TIMESTAMP WITHOUT TIME ZONE, 
@@ -189,7 +193,8 @@ class DDL(object):
         file_extension = None
         if hasattr(data, 'lower'):  # duck-type string test
             if os.path.isfile(data):
-                file_extension = filename.split('.')[-1]
+                file_extension = data.split('.')[-1]
+                self.table_name = data.split('.')[0]
                 with open(data) as infile:
                     data = infile.read()
             funcs = self.eval_funcs_by_ext.get(file_extension, [yaml.load, json.loads, eval])
@@ -203,14 +208,16 @@ class DDL(object):
         else:
             self.data = data
                   
-    def __init__(self, data, table_name=None, default_dialect=None):
+    def __init__(self, data, table_name=None, default_dialect=None, loglevel=logging.ERROR):
+        self.table_name = 'generated_table'
         self._load_data(data)
+        self.table_name = table_name or self.table_name
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
         self.default_dialect = default_dialect
         self.table_name = table_name or 'generated_table'
         self._determine_types()
-        self.table = sa.Table(table_name, metadata, 
+        self.table = sa.Table(self.table_name, metadata, 
                               *[sa.Column(c, t, 
                                           unique=self.is_unique[c],
                                           nullable=self.is_nullable[c]) 
