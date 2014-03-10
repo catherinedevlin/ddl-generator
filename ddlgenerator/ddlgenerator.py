@@ -110,7 +110,7 @@ def coerce_to_specific(datum):
     >>> coerce_to_specific("Jan 17 2012")
     datetime.datetime(2012, 1, 17, 0, 0)
     >>> coerce_to_specific("something else")
-    'something else'
+    u'something else'
     """
     try:
         if len(complex_enough_to_be_date.findall(datum)) > 1:
@@ -118,18 +118,18 @@ def coerce_to_specific(datum):
     except (ValueError, TypeError) as e:
         pass
     try:
-        return int(str(datum))
+        return int(unicode(datum))
     except ValueError:
         pass
     try: 
-        return Decimal(str(datum))
+        return Decimal(unicode(datum))
     except InvalidOperation:
         pass
     try:
-        return float(str(datum))
+        return float(unicode(datum))
     except ValueError:
         pass
-    return str(datum)
+    return unicode(datum)
 
 def _places_b4_and_after_decimal(d):
     """
@@ -164,9 +164,9 @@ def best_coercable(data):
     >>> best_coercable(('2014 jun 7', '2011 may 2'))
     datetime.datetime(2014, 6, 7, 0, 0)
     >>> best_coercable((7, 21.4, 'ruining everything'))
-    'ruining everything'
+    u'ruining everything'
     """
-    preference = (datetime.datetime, int, Decimal, float, str)
+    preference = (datetime.datetime, int, Decimal, float, unicode)
     worst_pref = 0 
     worst = ''
     for datum in data:
@@ -182,7 +182,7 @@ def best_coercable(data):
             elif isinstance(coerced, float):
                 worst = max(coerced, worst)
             else:  # int, str
-                if len(str(coerced)) > len(str(worst)):
+                if len(unicode(coerced)) > len(unicode(worst)):
                     worst = coerced
     return worst
             
@@ -350,7 +350,7 @@ class Table(object):
         """
         dialect = self._dialect(dialect)
         creator = CreateTable(self.table).compile(mock_engines[dialect]) 
-        creator = "\n".join(l for l in str(creator).splitlines() if l.strip()) # remove empty lines 
+        creator = "\n".join(l for l in unicode(creator).splitlines() if l.strip()) # remove empty lines 
         comments = "\n\n".join(self._comment_wrapper.fill("in %s: %s" % 
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
@@ -364,7 +364,7 @@ class Table(object):
         if pytype == datetime.datetime:
             datum = dateutil.parser.parse(datum)
         else:
-            datum = pytype(str(datum))
+            datum = pytype(unicode(datum))
         if isinstance(datum, datetime.datetime):
             if dialect in self._datetime_format:
                 return datum.strftime(self._datetime_format[dialect])
@@ -380,7 +380,7 @@ class Table(object):
         dialect = self._dialect(dialect)
         for row in self.data:
             cols = ", ".join(c for c in row)
-            vals = ", ".join(str(self._prep_datum(val, dialect, key)) for (key, val) in row.items())
+            vals = ", ".join(unicode(self._prep_datum(val, dialect, key)) for (key, val) in row.items())
             yield self._insert_template.format(table_name=self.table_name, cols=cols, vals=vals)
         #TODO: distinguish between inserting blank strings and inserting NULLs
             
@@ -432,7 +432,7 @@ class Table(object):
             for k in keys:
                 v = row[k]
                 if not is_scalar(v):
-                    v = str(v)
+                    v = unicode(v)
                     self.comments[k] = 'nested values! example:\n%s' % pprint.pprint(v)
                     logging.warn('in %s: %s' % (k, self.comments[k]))
                 k = self._clean_column_name(k)
@@ -444,7 +444,7 @@ class Table(object):
             self.pytypes[col] = type(sample_datum)
             if isinstance(sample_datum, Decimal):
                 self.satypes[col] = sa.DECIMAL(*precision_and_scale(sample_datum))
-            elif isinstance(sample_datum, str):
+            elif isinstance(sample_datum, basestring):
                 if varying_length_text:
                     self.satypes[col] = sa.Text()
                 else:
