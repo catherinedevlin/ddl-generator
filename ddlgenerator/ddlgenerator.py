@@ -28,10 +28,7 @@ You will need to hand-edit the resulting SQL to add:
  
 """
 from collections import OrderedDict
-try:
-    from io import StringIO 
-except ImportError:
-    from cStringIO import StringIO
+from io import StringIO 
 import csv
 import datetime
 from decimal import Decimal, InvalidOperation
@@ -245,8 +242,7 @@ class Table(object):
     	name VARCHAR(8) NOT NULL, 
     	kg DECIMAL(3, 1) NOT NULL, 
     	dob TIMESTAMP WITHOUT TIME ZONE 
-    )
-    ;
+    );
     """
     
         
