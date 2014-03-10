@@ -1,9 +1,9 @@
 import argparse
 import sys
-if sys.version_info.major == 2:
-    from ddlgenerator import Table
-else:
+try:
     from ddlgenerator.ddlgenerator import Table
+except ImportError:
+    from ddlgenerator import Table
 # If anyone can explain these import differences to me, I will buy you a cookie.
 
 parser = argparse.ArgumentParser(description='Generate DDL based on data')

@@ -8,10 +8,10 @@ Tests for `ddlgenerator` module.
 import glob
 import sys
 import unittest
-if sys.version_info.major == 2:
-    from ddlgenerator import Table
-else:
+try:
     from ddlgenerator.ddlgenerator import Table
+except ImportError:
+    from ddlgenerator import Table
 
 class TestFiles(unittest.TestCase):
     
@@ -24,7 +24,7 @@ class TestFiles(unittest.TestCase):
                 (fname, ext) = source_fname.split('.')
                 if ext != 'sql':
                     tbl = Table(source_fname)
-                    generated = tbl.ddl('postgresql')
+                    generated = tbl.sql('postgresql', inserts=True)
                     self.assertEqual(generated.strip(), expected.strip())
             
 if __name__ == '__main__':

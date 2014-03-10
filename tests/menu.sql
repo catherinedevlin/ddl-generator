@@ -10,3 +10,6 @@ CREATE TABLE menu (
 
 
 ;
+INSERT INTO menu (name, cost) VALUES ('soup', 4.99);
+INSERT INTO menu (name, cost) VALUES ('sweet potatoes', 4.99);
+INSERT INTO menu (name, warning, cost) VALUES ('nuts', 'contains nuts', 2.95);

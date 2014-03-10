@@ -28,6 +28,11 @@ You will need to hand-edit the resulting SQL to add:
  
 """
 from collections import OrderedDict
+try:
+    from io import StringIO 
+except ImportError:
+    from cStringIO import StringIO
+import csv
 import datetime
 from decimal import Decimal, InvalidOperation
 import doctest
@@ -196,14 +201,21 @@ def sqla_datatype_for(datum):
         if complex_enough_to_be_date.search(datum):
             result = dateutil.parser.parse(datum)
             return sa.DATETIME
-    except TypeError:
+    except (TypeError, ValueError):
         pass
     try:
         (prec, scale) = precision_and_scale(datum)
         return sa.DECIMAL(prec, scale)
     except TypeError:
         return sa.String(len(datum))
-           
+
+def _eval_csv(target):
+    """
+    Yields OrderedDicts from a CSV string
+    """
+    reader = csv.DictReader(StringIO(target))
+    return [(OrderedDict((k, row[k]) for k in reader.fieldnames)) for row in reader]
+            
 def _dump(sql, *multiparams, **params):
     pass
    
@@ -237,12 +249,12 @@ class Table(object):
     <BLANKLINE>
     ;
     """
-
+        
     eval_funcs_by_ext = {'.py': [eval, ],
                          '.json': [functools.partial(json.loads, 
                                                     object_pairs_hook=OrderedDict), ],
                          '.yaml': [ordered_yaml_load, ],
-                         '.csv': [], 
+                         '.csv': [_eval_csv, ], 
                          }
     eval_funcs_by_ext['*'] = [eval, ] + eval_funcs_by_ext['.yaml'] + eval_funcs_by_ext['.json'] \
                              + eval_funcs_by_ext['.csv'] 
@@ -255,6 +267,7 @@ class Table(object):
         TODO: accept XML, pickles; open files
         """
         file_extension = None
+        remembered_exception = None
         if hasattr(data, 'lower'):  # duck-type string test
             if os.path.isfile(data):
                 (file_path, file_extension) = os.path.splitext(data)
@@ -267,8 +280,10 @@ class Table(object):
                     self.data = func(data)
                     return 
                 except Exception as e:  # our deserializers may throw a variety of errors
+                    remembered_exception = e
                     pass
-            raise e
+            if remembered_exception:
+                raise (remembered_exception)
         else:
             self.data = data
                   

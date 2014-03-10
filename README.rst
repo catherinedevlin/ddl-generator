@@ -44,6 +44,7 @@ Supported data formats
 - Pure Python
 - YAML
 - JSON
+- CSV
 
 Features
 --------
@@ -51,6 +52,7 @@ Features
 - Supports all SQL dialects supported by SQLAlchemy
 - Coerces data into numeric or date form if possible
 - Takes table name from file name
+- Guesses format of input data if unspecified
 
 Credits
 -------
