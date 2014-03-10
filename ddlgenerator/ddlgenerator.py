@@ -44,12 +44,14 @@ import os.path
 import re
 import textwrap
 import sqlalchemy as sa
-from sqlalchemy.schema import CreateTable, DropTable
+from sqlalchemy.schema import CreateTable
 import dateutil.parser
 import yaml
 
 logging.basicConfig(filename='ddlgenerator.log', filemode='w')
 metadata = sa.MetaData()
+
+dialect_names = 'drizzle firebird mssql mysql oracle postgresql sqlite sybase'.split()
 
 def is_scalar(x):
     return hasattr(x, 'lower') or not hasattr(x, '__iter__')
@@ -237,7 +239,7 @@ class Table(object):
     ...   name: Gawain
     ...   kg: 69.4  '''
     >>> print(Table(data, "knights").ddl('postgresql').strip())
-    DROP TABLE knights;
+    DROP TABLE IF EXISTS knights;
     CREATE TABLE knights (
     	name VARCHAR(8) NOT NULL, 
     	kg DECIMAL(3, 1) NOT NULL, 
@@ -335,24 +337,37 @@ class Table(object):
         if dialect not in mock_engines:
             raise NotImplementedError("SQL dialect '%s' unknown" % dialect)        
         return dialect
-        
+    
+    _supports_if_exists = {k: False for k in dialect_names}
+    _supports_if_exists['postgresql'] = _supports_if_exists['sqlite'] = True
+    _supports_if_exists['mysql'] = _supports_if_exists['sybase'] = True
+    def _dropper(self, dialect):
+        template = "DROP TABLE %s %s" 
+        if_exists = "IF EXISTS" if self._supports_if_exists[dialect] else ""
+        return template % (if_exists, self.table_name)
+            
     _comment_wrapper = textwrap.TextWrapper(initial_indent='-- ', subsequent_indent='-- ')
     def ddl(self, dialect=None):
         """
         Returns SQL to define the table.
         """
         dialect = self._dialect(dialect)
-        dropper = DropTable(self.table).compile(mock_engines[dialect])
         creator = CreateTable(self.table).compile(mock_engines[dialect]) 
         creator = "\n".join(l for l in str(creator).splitlines() if l.strip()) # remove empty lines 
         comments = "\n\n".join(self._comment_wrapper.fill("in %s: %s" % 
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
-        return "%s;\n%s\n%s;" % (dropper, creator, comments)
+        return "%s;\n%s\n%s;" % (self._dropper(dialect), creator, comments)
         # TODO: Accept NamedTuple data source
       
     _datetime_format = {}
-    def _wrap_datum(self, datum, dialect):
+    def _prep_datum(self, datum, dialect, col):
+        #import ipdb; ipdb.set_trace()
+        pytype = self.pytypes[col]
+        if pytype == datetime.datetime:
+            datum = dateutil.parser.parse(datum)
+        else:
+            datum = pytype(str(datum))
         if isinstance(datum, datetime.datetime):
             if dialect in self._datetime_format:
                 return datum.strftime(self._datetime_format[dialect])
@@ -368,7 +383,7 @@ class Table(object):
         dialect = self._dialect(dialect)
         for row in self.data:
             cols = ", ".join(c for c in row)
-            vals = ", ".join(str(self._wrap_datum(val, dialect)) for val in row.values())
+            vals = ", ".join(str(self._prep_datum(val, dialect, key)) for (key, val) in row.items())
             yield self._insert_template.format(table_name=self.table_name, cols=cols, vals=vals)
         #TODO: distinguish between inserting blank strings and inserting NULLs
             

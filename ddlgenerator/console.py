@@ -2,9 +2,9 @@ import argparse
 import logging
 import sys
 try:
-    from ddlgenerator.ddlgenerator import Table
+    from ddlgenerator.ddlgenerator import Table, dialect_names
 except ImportError:
-    from ddlgenerator import Table
+    from ddlgenerator import Table, dialect_names
 # If anyone can explain these import differences to me, I will buy you a cookie.
 
 def read_args():
@@ -25,16 +25,14 @@ def set_logging(args):
         raise NotImplementedError('log level "%s" not one of CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN' % args.log)
     logging.getLogger().setLevel(args.log)
 
-dialects = 'drizzle firebird mssql mysql oracle postgresql sqlite sybase'.split()
-
 def generate():
     args = read_args()
     set_logging(args)
     logging.info(str(args))
     if args.dialect in ('pg', 'pgsql', 'postgres'):
         args.dialect = 'postgresql'
-    if args.dialect not in dialects:
-        raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialects))
+    if args.dialect not in dialect_names:
+        raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
     table = Table(args.datafile, varying_length_text=args.text, uniques=args.uniques, loglevel=args.log)
     print(table.sql(args.dialect, args.inserts))
    

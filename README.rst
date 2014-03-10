@@ -51,6 +51,16 @@ Features
 - Takes table name from file name
 - Guesses format of input data if unspecified
 - with ``-u``/``--uniques`` flag, surmises UNIQUE constraints from data
+- Chokes demurely on nested data
+
+Installing
+----------
+
+::
+
+    git clone git clone https://github.com/catherinedevlin/ddl-generator.git
+    cd ddl-generator
+    python setup.py install
 
 Credits
 -------
