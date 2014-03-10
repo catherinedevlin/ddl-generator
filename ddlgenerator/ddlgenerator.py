@@ -287,14 +287,21 @@ class Table(object):
         else:
             self.data = data
                   
-    def __init__(self, data, table_name=None, default_dialect=None, loglevel=logging.ERROR):
+    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False):
+        """
+        Initialize a Table and load its data.
+        
+        If ``varying_length_text`` is ``True``, text columns will be TEXT rather than VARCHAR.
+        This *improves* performance in PostgreSQL.
+        """
+        
         self.table_name = 'generated_table'
         self._load_data(data)
         self.table_name = self._clean_column_name(table_name or self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
         self.default_dialect = default_dialect
-        self._determine_types()
+        self._determine_types(varying_length_text)
         self.table = sa.Table(self.table_name, metadata, 
                               *[sa.Column(c, t, 
                                           unique=self.is_unique[c],
@@ -377,7 +384,7 @@ class Table(object):
             result = '_%s' % result
         return result.lower()
     
-    def _determine_types(self):
+    def _determine_types(self, varying_length_text=False):
         self.columns = OrderedDict()
         self.satypes = OrderedDict() 
         self.pytypes = {}
@@ -405,7 +412,10 @@ class Table(object):
             if isinstance(sample_datum, Decimal):
                 self.satypes[col] = sa.DECIMAL(*precision_and_scale(sample_datum))
             elif isinstance(sample_datum, str):
-                self.satypes[col] = sa.String(len(sample_datum))
+                if varying_length_text:
+                    self.satypes[col] = sa.Text()
+                else:
+                    self.satypes[col] = sa.String(len(sample_datum))
             else:
                 self.satypes[col] = self.types2sa[type(sample_datum)]
             self.is_unique[col] = (len(set(self.columns[col])) == len(self.columns[col]))

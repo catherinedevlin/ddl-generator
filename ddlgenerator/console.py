@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(description='Generate DDL based on data')
 parser.add_argument('dialect', help='SQL dialect to output', type=str.lower)
 parser.add_argument('datafile', help='Path to file storing data (accepts .yaml, .json)')
 parser.add_argument('-i', '--inserts', action='store_true', help='also generate INSERT statements')
+parser.add_argument('-t', '--text', action='store_true', help='Use variable-length TEXT columns instead of VARCHAR')
 # parser.add_argument('-l', '--log', type=str, help='log level (CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN)', default='INFO')
 # parser.add_argument('-l', '--log', type=str, help='log level (CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN)', default='INFO')
 args = parser.parse_args()
@@ -29,6 +30,6 @@ def generate():
         args.dialect = 'postgresql'
     if args.dialect not in dialects:
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialects))
-    table = Table(args.datafile)
+    table = Table(args.datafile, varying_length_text=args.text)
     print(table.sql(args.dialect, args.inserts))
    
