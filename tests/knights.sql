@@ -7,8 +7,6 @@ CREATE TABLE knights (
 	UNIQUE (name), 
 	UNIQUE (kg)
 )
-
-
 ;
 INSERT INTO knights (name, dob, kg) VALUES ('Lancelot', '9 jan 471', 82);
 INSERT INTO knights (name, kg) VALUES ('Gawain', 69.2);

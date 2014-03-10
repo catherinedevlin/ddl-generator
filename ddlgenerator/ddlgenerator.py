@@ -48,7 +48,7 @@ from sqlalchemy.schema import CreateTable, DropTable
 import dateutil.parser
 import yaml
 
-logging.basicConfig(filename='ddlgenerator.log', filemode='w', level=logging.WARN)
+logging.basicConfig(filename='ddlgenerator.log', filemode='w')
 metadata = sa.MetaData()
 
 def is_scalar(x):
@@ -96,6 +96,8 @@ def ordered_yaml_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict)
         lambda loader, node: object_pairs_hook(loader.construct_pairs(node)))
     return yaml.load(stream, OrderedLoader)
 
+json_loader = functools.partial(json.loads, object_pairs_hook=OrderedDict)
+json_loader.__name__ = 'json_loader'
 
 complex_enough_to_be_date = re.compile(r"[\-\. /]")
 def coerce_to_specific(datum):
@@ -234,31 +236,27 @@ class Table(object):
     ... -
     ...   name: Gawain
     ...   kg: 69.4  '''
-    >>> print(Table(data, "knights").ddl('postgresql'))
-    <BLANKLINE>
+    >>> print(Table(data, "knights").ddl('postgresql').strip())
     DROP TABLE knights;
     CREATE TABLE knights (
     	name VARCHAR(8) NOT NULL, 
     	kg DECIMAL(3, 1) NOT NULL, 
-    	dob TIMESTAMP WITHOUT TIME ZONE, 
-    	UNIQUE (name), 
-    	UNIQUE (kg), 
-    	UNIQUE (dob)
+    	dob TIMESTAMP WITHOUT TIME ZONE 
     )
-    <BLANKLINE>
-    <BLANKLINE>
     ;
     """
+    
         
     eval_funcs_by_ext = {'.py': [eval, ],
-                         '.json': [functools.partial(json.loads, 
-                                                    object_pairs_hook=OrderedDict), ],
+                         '.json': [json_loader, ],
                          '.yaml': [ordered_yaml_load, ],
                          '.csv': [_eval_csv, ], 
                          }
-    eval_funcs_by_ext['*'] = [eval, ] + eval_funcs_by_ext['.yaml'] + eval_funcs_by_ext['.json'] \
+    eval_funcs_by_ext['.json'][0].__name__ = 'json'
+    eval_funcs_by_ext['*'] = [eval, ] + eval_funcs_by_ext['.json'] + eval_funcs_by_ext['.yaml'] \
                              + eval_funcs_by_ext['.csv'] 
-                         
+                        
+    _looks_like_filename = re.compile(r'^[^\s\,]+$') 
     def _load_data(self, data):
         """
         Populates ``self.data`` from ``data``, whether ``data`` is a 
@@ -272,31 +270,52 @@ class Table(object):
             if os.path.isfile(data):
                 (file_path, file_extension) = os.path.splitext(data)
                 self.table_name = os.path.split(file_path)[1]
+                logging.info('Reading data from %s' % data)
                 with open(data) as infile:
                     data = infile.read()
+                    if hasattr(data, 'decode'):
+                        data = data.decode('utf8')  # TODO: fix messy Py 2/3 unicode problem
+                logging.info('Reading data from %s' % data)
+            else:
+                logging.debug('Not called with a valid file path')
             funcs = self.eval_funcs_by_ext.get(file_extension, self.eval_funcs_by_ext['*'])
             for func in funcs:
+                logging.debug('Applying %s to data' % func.__name__)
                 try:
                     self.data = func(data)
-                    return 
+                    if hasattr(self.data, 'lower'):
+                        logging.warn("Data was interpreted as a single string - no table structure:\n%s" 
+                                     % self.data[:100])                    
+                    elif self.data:
+                        logging.info('Data successfully interpreted with %s' % func.__name__)
+                        return 
                 except Exception as e:  # our deserializers may throw a variety of errors
-                    remembered_exception = e
+                    logging.warn('Could not interpret data with %s' % func.__name__)
                     pass
-            if remembered_exception:
-                raise (remembered_exception)
+            logging.critical('All interpreters failed')
+            if self._looks_like_filename.search(data):
+                raise IOError("Filename not found")
+            else:
+                raise SyntaxError("Unable to interpret data")
         else:
             self.data = data
+        if not self.data:
+            raise SyntaxError("No data found")
                   
-    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, uniques=False):
+    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, uniques=False,
+                 loglevel=logging.WARN):
         """
         Initialize a Table and load its data.
         
         If ``varying_length_text`` is ``True``, text columns will be TEXT rather than VARCHAR.
         This *improves* performance in PostgreSQL.
         """
-        
+        logging.getLogger().setLevel(loglevel) 
         self.table_name = 'generated_table'
         self._load_data(data)
+        if hasattr(self.data, 'lower'):
+            raise SyntaxError("Data was interpreted as a single string - no table structure:\n%s" 
+                              % self.data[:100])
         self.table_name = self._clean_column_name(table_name or self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
@@ -325,12 +344,12 @@ class Table(object):
         dialect = self._dialect(dialect)
         dropper = DropTable(self.table).compile(mock_engines[dialect])
         creator = CreateTable(self.table).compile(mock_engines[dialect]) 
+        creator = "\n".join(l for l in str(creator).splitlines() if l.strip()) # remove empty lines 
         comments = "\n\n".join(self._comment_wrapper.fill("in %s: %s" % 
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
-        return "%s;%s\n%s;" % (dropper, creator, comments)
+        return "%s;\n%s\n%s;" % (dropper, creator, comments)
         # TODO: Accept NamedTuple data source
-        # my_ordered_dict = json.loads(json_str, object_pairs_hook=collections.OrderedDict)
       
     _datetime_format = {}
     def _wrap_datum(self, datum, dialect):
@@ -339,7 +358,7 @@ class Table(object):
                 return datum.strftime(self._datetime_format[dialect])
             else:
                 return "'%s'" % datum
-        elif isinstance(datum, str):
+        elif hasattr(datum, 'lower'):
             return "'%s'" % datum.replace("'", "''")
         else:
             return datum
@@ -351,6 +370,7 @@ class Table(object):
             cols = ", ".join(c for c in row)
             vals = ", ".join(str(self._wrap_datum(val, dialect)) for val in row.values())
             yield self._insert_template.format(table_name=self.table_name, cols=cols, vals=vals)
+        #TODO: distinguish between inserting blank strings and inserting NULLs
             
     def sql(self, dialect=None, inserts=False):
         """
@@ -402,6 +422,7 @@ class Table(object):
                 if not is_scalar(v):
                     v = str(v)
                     self.comments[k] = 'nested values! example: %s' % v
+                    logging.warn('in %s: %s' % (k, self.comments[k]))
                 k = self._clean_column_name(k)
                 if k not in self.columns:
                     self.columns[k] = []

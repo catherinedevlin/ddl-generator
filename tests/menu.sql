@@ -7,8 +7,6 @@ CREATE TABLE menu (
 	UNIQUE (name), 
 	UNIQUE (warning)
 )
-
-
 ;
 INSERT INTO menu (name, cost) VALUES ('soup', 4.99);
 INSERT INTO menu (name, cost) VALUES ('sweet potatoes', 4.99);

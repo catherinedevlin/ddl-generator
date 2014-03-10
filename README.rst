@@ -12,10 +12,7 @@ Use at command line::
     CREATE TABLE generated_table (
 	    name VARCHAR(6) NOT NULL, 
 	    kg INTEGER NOT NULL, 
-	    species VARCHAR(8) NOT NULL, 
-	    UNIQUE (name), 
-	    UNIQUE (kg), 
-	    UNIQUE (species)
+	    species VARCHAR(8) NOT NULL 
     )
     ;
     INSERT INTO generated_table (kg, Name, species) VALUES (22, 'Alfred', 'wart hog');
@@ -53,6 +50,7 @@ Features
 - Coerces data into numeric or date form if possible
 - Takes table name from file name
 - Guesses format of input data if unspecified
+- with ``-u``/``--uniques`` flag, surmises UNIQUE constraints from data
 
 Credits
 -------

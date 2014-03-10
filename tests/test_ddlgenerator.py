@@ -23,9 +23,9 @@ class TestFiles(unittest.TestCase):
             for source_fname in glob.glob('%s.*' % fname):
                 (fname, ext) = source_fname.split('.')
                 if ext != 'sql':
-                    tbl = Table(source_fname)
-                    generated = tbl.sql('postgresql', inserts=True, uniques=True)
-                    self.assertEqual(generated.strip(), expected.strip())
+                    tbl = Table(source_fname, uniques=True)
+                    generated = tbl.sql('postgresql', inserts=True).strip()
+                    self.assertEqual(generated, expected)
             
 if __name__ == '__main__':
     unittest.main()
