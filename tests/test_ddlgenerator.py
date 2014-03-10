@@ -6,7 +6,6 @@ Tests for `ddlgenerator` module.
 """
 
 import glob
-import sys
 import unittest
 try:
     from ddlgenerator.ddlgenerator import Table

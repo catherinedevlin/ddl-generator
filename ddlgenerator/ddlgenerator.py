@@ -31,12 +31,11 @@ from collections import OrderedDict
 from io import StringIO 
 import csv
 import datetime
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 import doctest
 import functools
 import json
 import logging
-import math
 import os.path
 import re
 import pprint
@@ -45,43 +44,15 @@ import sqlalchemy as sa
 from sqlalchemy.schema import CreateTable
 import dateutil.parser
 import yaml
-
+try:
+    import ddlgenerator.typehelpers as th
+except ImportError:
+    import typehelpers as th # TODO: can py2/3 split this
+    
 logging.basicConfig(filename='ddlgenerator.log', filemode='w')
 metadata = sa.MetaData()
 
 dialect_names = 'drizzle firebird mssql mysql oracle postgresql sqlite sybase'.split()
-
-def is_scalar(x):
-    return hasattr(x, 'lower') or not hasattr(x, '__iter__')
-
-def precision_and_scale(x):
-    """
-    From a float, decide what precision and scale are needed to represent it.
-   
-    >>> precision_and_scale(54.2)
-    (3, 1)
-    >>> precision_and_scale(9)
-    (1, 0)
-    
-    Thanks to Mark Ransom, 
-    http://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
-    """
-    if isinstance(x, Decimal):
-        precision = len(x.as_tuple().digits)
-        scale = -1 * x.as_tuple().exponent
-        return (precision, scale)
-    max_digits = 14
-    int_part = int(abs(x))
-    magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1
-    if magnitude >= max_digits:
-        return (magnitude, 0)
-    frac_part = abs(x) - int_part
-    multiplier = 10 ** (max_digits - magnitude)
-    frac_digits = multiplier + int(multiplier * frac_part + 0.5)
-    while frac_digits % 10 == 0:
-        frac_digits /= 10
-    scale = int(math.log10(frac_digits))
-    return (magnitude + scale, scale)
 
 def ordered_yaml_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
     """
@@ -98,119 +69,7 @@ def ordered_yaml_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict)
 
 json_loader = functools.partial(json.loads, object_pairs_hook=OrderedDict)
 json_loader.__name__ = 'json_loader'
-
-complex_enough_to_be_date = re.compile(r"[\-\. /]")
-def coerce_to_specific(datum):
-    """
-    Coerces datum to the most specific data type possible
-    Order of preference: datetime, integer, decimal, float, string
-    
-    >>> coerce_to_specific(7.2)
-    Decimal('7.2')
-    >>> coerce_to_specific("Jan 17 2012")
-    datetime.datetime(2012, 1, 17, 0, 0)
-    >>> coerce_to_specific("something else")
-    'something else'
-    """
-    try:
-        if len(complex_enough_to_be_date.findall(datum)) > 1:
-            return dateutil.parser.parse(datum)
-    except (ValueError, TypeError) as e:
-        pass
-    try:
-        return int(str(datum))
-    except ValueError:
-        pass
-    try: 
-        return Decimal(str(datum))
-    except InvalidOperation:
-        pass
-    try:
-        return float(str(datum))
-    except ValueError:
-        pass
-    return str(datum)
-
-def _places_b4_and_after_decimal(d):
-    """
-    >>> _places_b4_and_after_decimal(Decimal('54.212'))
-    (2, 3)
-    """
-    tup = d.as_tuple()
-    return (len(tup.digits) + tup.exponent, max(-1*tup.exponent, 0))
-    
-def worst_decimal(d1, d2):
-    """
-    Given two Decimals, return a 9-filled decimal representing both enough > 0 digits
-    and enough < 0 digits (scale) to accomodate numbers like either.
-    
-    >>> worst_decimal(Decimal('762.1'), Decimal('-1.983'))
-    Decimal('999.999')
-    """
-    (d1b4, d1after) = _places_b4_and_after_decimal(d1)
-    (d2b4, d2after) = _places_b4_and_after_decimal(d2)
-    return Decimal('9' * max(d1b4, d2b4) + '.' + '9' * max(d1after, d2after))
-    
-def best_coercable(data):
-    """
-    Given an iterable of scalar data, returns the datum representing the most specific
-    data type the list overall can be coerced into, preferring datetimes,
-    then integers, then decimals, then floats, then strings.  
-    
-    >>> best_coercable((6, '2', 9))
-    6
-    >>> best_coercable((Decimal('6.1'), 2, 9))
-    Decimal('6.1')
-    >>> best_coercable(('2014 jun 7', '2011 may 2'))
-    datetime.datetime(2014, 6, 7, 0, 0)
-    >>> best_coercable((7, 21.4, 'ruining everything'))
-    'ruining everything'
-    """
-    preference = (datetime.datetime, int, Decimal, float, str)
-    worst_pref = 0 
-    worst = ''
-    for datum in data:
-        coerced = coerce_to_specific(datum)
-        pref = preference.index(type(coerced))
-        if pref > worst_pref:
-            worst_pref = pref
-            worst = coerced
-        elif pref == worst_pref:
-            if isinstance(coerced, Decimal):
-                worst = worst_decimal(coerced, worst)
-                # TODO: how do signs affect precision in various RDBMSs?
-            elif isinstance(coerced, float):
-                worst = max(coerced, worst)
-            else:  # int, str
-                if len(str(coerced)) > len(str(worst)):
-                    worst = coerced
-    return worst
-            
-    
-complex_enough_to_be_date = re.compile(r"[\\\-\. /]")
-def sqla_datatype_for(datum):
-    """
-    Given a scalar Python value, picks an appropriate SQLAlchemy data type.
-    
-    >>> sqla_datatype_for(7.2)
-    DECIMAL(precision=2, scale=1)
-    >>> sqla_datatype_for("Jan 17 2012")
-    <class 'sqlalchemy.sql.sqltypes.DATETIME'>
-    >>> sqla_datatype_for("something else")
-    String(length=14)
-    """
-    try:
-        if complex_enough_to_be_date.search(datum):
-            result = dateutil.parser.parse(datum)
-            return sa.DATETIME
-    except (TypeError, ValueError):
-        pass
-    try:
-        (prec, scale) = precision_and_scale(datum)
-        return sa.DECIMAL(prec, scale)
-    except TypeError:
-        return sa.String(len(datum))
-
+     
 def _eval_csv(target):
     """
     Yields OrderedDicts from a CSV string
@@ -264,7 +123,6 @@ class Table(object):
         TODO: accept open files
         """
         file_extension = None
-        remembered_exception = None
         if hasattr(data, 'lower'):  # duck-type string test
             if os.path.isfile(data):
                 (file_path, file_extension) = os.path.splitext(data)
@@ -315,7 +173,12 @@ class Table(object):
         if hasattr(self.data, 'lower'):
             raise SyntaxError("Data was interpreted as a single string - no table structure:\n%s" 
                               % self.data[:100])
-        self.table_name = self._clean_column_name(table_name or self.table_name)
+        if table_name:
+            # keep dots if explicitly given by user
+            self.table_name = '.'.join(self._clean_column_name(piece) 
+                                       for piece in table_name.split('.'))
+        else:
+            self.table_name = self._clean_column_name(self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
         self.default_dialect = default_dialect
@@ -431,7 +294,7 @@ class Table(object):
                 keys = sorted(keys)
             for k in keys:
                 v = row[k]
-                if not is_scalar(v):
+                if not th.is_scalar(v):
                     v = str(v)
                     self.comments[k] = 'nested values! example:\n%s' % pprint.pprint(v)
                     logging.warn('in %s: %s' % (k, self.comments[k]))
@@ -440,10 +303,10 @@ class Table(object):
                     self.columns[k] = []
                 self.columns[k].append(v)
         for col in self.columns:
-            sample_datum = best_coercable(self.columns[col])
+            sample_datum = th.best_coercable(self.columns[col])
             self.pytypes[col] = type(sample_datum)
             if isinstance(sample_datum, Decimal):
-                self.satypes[col] = sa.DECIMAL(*precision_and_scale(sample_datum))
+                self.satypes[col] = sa.DECIMAL(*th.precision_and_scale(sample_datum))
             elif isinstance(sample_datum, str):
                 if varying_length_text:
                     self.satypes[col] = sa.Text()

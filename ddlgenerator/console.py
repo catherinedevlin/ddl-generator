@@ -1,10 +1,9 @@
 import argparse
 import logging
-import sys
 try:
     from ddlgenerator.ddlgenerator import Table, dialect_names
 except ImportError:
-    from ddlgenerator import Table, dialect_names
+    from ddlgenerator import Table, dialect_names  # TODO: can py2/3 split this
 # If anyone can explain these import differences to me, I will buy you a cookie.
 
 def read_args():
@@ -23,7 +22,7 @@ def set_logging(args):
         loglevel = int(getattr(logging, args.log.upper()))
     except (AttributeError, TypeError) as e:
         raise NotImplementedError('log level "%s" not one of CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN' % args.log)
-    logging.getLogger().setLevel(args.log)
+    logging.getLogger().setLevel(loglevel)
 
 def generate():
     args = read_args()
