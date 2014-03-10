@@ -287,7 +287,7 @@ class Table(object):
         else:
             self.data = data
                   
-    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False):
+    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, uniques=False):
         """
         Initialize a Table and load its data.
         
@@ -301,7 +301,7 @@ class Table(object):
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
         self.default_dialect = default_dialect
-        self._determine_types(varying_length_text)
+        self._determine_types(varying_length_text, uniques=uniques)
         self.table = sa.Table(self.table_name, metadata, 
                               *[sa.Column(c, t, 
                                           unique=self.is_unique[c],
@@ -384,7 +384,7 @@ class Table(object):
             result = '_%s' % result
         return result.lower()
     
-    def _determine_types(self, varying_length_text=False):
+    def _determine_types(self, varying_length_text=False, uniques=False):
         self.columns = OrderedDict()
         self.satypes = OrderedDict() 
         self.pytypes = {}
@@ -418,7 +418,7 @@ class Table(object):
                     self.satypes[col] = sa.String(len(sample_datum))
             else:
                 self.satypes[col] = self.types2sa[type(sample_datum)]
-            self.is_unique[col] = (len(set(self.columns[col])) == len(self.columns[col]))
+            self.is_unique[col] = uniques and (len(set(self.columns[col])) == len(self.columns[col]))
             self.is_nullable[col] = (len(self.columns[col]) < rowcount 
                                       or None in self.columns[col])
         
