@@ -42,6 +42,7 @@ import logging
 import math
 import os.path
 import re
+import pprint
 import textwrap
 import sqlalchemy as sa
 from sqlalchemy.schema import CreateTable
@@ -264,7 +265,7 @@ class Table(object):
         Populates ``self.data`` from ``data``, whether ``data`` is a 
         string of JSON or YAML, a filename containing the same, 
         or simply Python data. 
-        TODO: accept XML, pickles; open files
+        TODO: accept open files
         """
         file_extension = None
         remembered_exception = None
@@ -357,7 +358,7 @@ class Table(object):
         comments = "\n\n".join(self._comment_wrapper.fill("in %s: %s" % 
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
-        return "%s;\n%s\n%s;" % (self._dropper(dialect), creator, comments)
+        return "%s;\n%s;\n%s" % (self._dropper(dialect), creator, comments)
         # TODO: Accept NamedTuple data source
       
     _datetime_format = {}
@@ -436,7 +437,7 @@ class Table(object):
                 v = row[k]
                 if not is_scalar(v):
                     v = str(v)
-                    self.comments[k] = 'nested values! example: %s' % v
+                    self.comments[k] = 'nested values! example:\n%s' % pprint.pprint(v)
                     logging.warn('in %s: %s' % (k, self.comments[k]))
                 k = self._clean_column_name(k)
                 if k not in self.columns:
