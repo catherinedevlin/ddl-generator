@@ -2,17 +2,11 @@
 DDL Generator
 =============
 
-Infers SQL DDL (Data Definition Language) from table data
+Infers SQL DDL (Data Definition Language) from table data.
 
 Use at command line::
 
-    $ ddlgenerator postgresql mydata.yaml > mytable.sql
-
-or use in Python::
-
-    >>> from ddlgenerator.ddlgenerator import Table
-    >>> table = Table({"Name": "Alfred", "species": "wart hog", "kg": 22})
-    >>> print(table.ddl('postgresql'))
+    $ ddlgenerator -i postgresql '{"Name": "Alfred", "species": "wart hog", "kg": 22}'
 
     DROP TABLE generated_table;
     CREATE TABLE generated_table (
@@ -23,11 +17,24 @@ or use in Python::
 	    UNIQUE (kg), 
 	    UNIQUE (species)
     )
+    ;
+    INSERT INTO generated_table (kg, Name, species) VALUES (22, 'Alfred', 'wart hog');
     
+Accepts file paths::
 
-Of *course* it makes a ton of guesses and assumptions.  It's your
-job to edit the resulting DDL.  We just give you something to get
-a quick start with.
+    $ ddlgenerator postgresql mydata.yaml > mytable.sql
+
+Enables one-line creation of tables with their data
+
+    $ ddlgenerator --inserts postgresql mydata.json | psql 
+
+With ``-i``/``--inserts`` flag, insert statements are included.
+
+or use in Python::
+
+    >>> from ddlgenerator.ddlgenerator import Table
+    >>> table = Table({"Name": "Alfred", "species": "wart hog", "kg": 22})
+    >>> sql = table.sql('postgresql', inserts=True)
 
 * Free software: MIT license
 
@@ -43,11 +50,13 @@ Features
 
 - Supports all SQL dialects supported by SQLAlchemy
 - Coerces data into numeric or date form if possible
+- Takes table name from file name
 
 Credits
 -------
 
 - Mike Bayer for sqlalchemy
 - coldfix and Mark Ransom for their StackOverflow answers
+- Audrey Roy for cookiecutter
 
 

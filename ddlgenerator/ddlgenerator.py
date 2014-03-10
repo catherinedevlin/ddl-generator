@@ -7,14 +7,16 @@ Invoke with one table's worth of data at a time, from command line::
 
     $ ddlgenerator postgresql sourcedata.yaml
     
+The ``-i`` flag generates INSERT statements as well::
+
+    $ ddlgenerator -i postgresql sourcedata.yaml
+    
 or from Python::
 
-    >>> table = DDL('sourcedata.json')
-    >>> print(table.ddl())
-    >>> print(table.inserts())
-    
-Badly untested, and probably still full of errors!  Still interesting,
-though.
+    >>> menu = Table('../tests/menu.json')
+    >>> ddl = menu.ddl('postgresql')
+    >>> inserts = menu.inserts('postgresql')
+    >>> all_sql = menu.sql('postgresql', inserts=True)
 
 You will need to hand-edit the resulting SQL to add:
 
@@ -122,6 +124,26 @@ def coerce_to_specific(datum):
         pass
     return str(datum)
 
+def _places_b4_and_after_decimal(d):
+    """
+    >>> _places_b4_and_after_decimal(Decimal('54.212'))
+    (2, 3)
+    """
+    tup = d.as_tuple()
+    return (len(tup.digits) + tup.exponent, max(-1*tup.exponent, 0))
+    
+def worst_decimal(d1, d2):
+    """
+    Given two Decimals, return a 9-filled decimal representing both enough > 0 digits
+    and enough < 0 digits (scale) to accomodate numbers like either.
+    
+    >>> worst_decimal(Decimal('762.1'), Decimal('-1.983'))
+    Decimal('999.999')
+    """
+    (d1b4, d1after) = _places_b4_and_after_decimal(d1)
+    (d2b4, d2after) = _places_b4_and_after_decimal(d2)
+    return Decimal('9' * max(d1b4, d2b4) + '.' + '9' * max(d1after, d2after))
+    
 def best_coercable(data):
     """
     Given an iterable of scalar data, returns the datum representing the most specific
@@ -139,9 +161,7 @@ def best_coercable(data):
     """
     preference = (datetime.datetime, int, Decimal, float, str)
     worst_pref = 0 
-    (worst_prec, worst_scale, worst_digits) = (0, 0, 0)
     worst = ''
-    import ipdb; ipdb.set_trace()
     for datum in data:
         coerced = coerce_to_specific(datum)
         pref = preference.index(type(coerced))
@@ -150,19 +170,13 @@ def best_coercable(data):
             worst = coerced
         elif pref == worst_pref:
             if isinstance(coerced, Decimal):
-                (prec, scale) = precision_and_scale(coerced)
-                # precision is not really of interest... ``worst`` needs to represent both the 
-                # finest-scale and the largest numbers
-                digits = len(str(coerced).split('.')[0])
+                worst = worst_decimal(coerced, worst)
                 # TODO: how do signs affect precision in various RDBMSs?
-                (worst_digits, worst_scale) = (max(digits, worst_digits), max(scale, worst_scale))
-                worst = Decimal("%s.%s" % ('9' * worst_digits, '9' * worst_scale))
             elif isinstance(coerced, float):
                 worst = max(coerced, worst)
             else:  # int, str
                 if len(str(coerced)) > len(str(worst)):
                     worst = coerced
-    print(worst)
     return worst
             
     
@@ -210,25 +224,28 @@ class Table(object):
     ...   kg: 69.4  '''
     >>> print(Table(data, "knights").ddl('postgresql'))
     <BLANKLINE>
+    DROP TABLE knights;
     CREATE TABLE knights (
-    	dob TIMESTAMP WITHOUT TIME ZONE, 
     	name VARCHAR(8) NOT NULL, 
     	kg DECIMAL(3, 1) NOT NULL, 
-    	UNIQUE (dob), 
+    	dob TIMESTAMP WITHOUT TIME ZONE, 
     	UNIQUE (name), 
-    	UNIQUE (kg)
+    	UNIQUE (kg), 
+    	UNIQUE (dob)
     )
     <BLANKLINE>
     <BLANKLINE>
-
+    ;
     """
 
-    eval_funcs_by_ext = {'py': [eval, ],
-                         'json': [functools.partial(json.loads, 
+    eval_funcs_by_ext = {'.py': [eval, ],
+                         '.json': [functools.partial(json.loads, 
                                                     object_pairs_hook=OrderedDict), ],
-                         'yaml': [ordered_yaml_load, ],
+                         '.yaml': [ordered_yaml_load, ],
+                         '.csv': [], 
                          }
-    eval_funcs_by_ext['*'] = [eval, ] + eval_funcs_by_ext['yaml'] + eval_funcs_by_ext['json']
+    eval_funcs_by_ext['*'] = [eval, ] + eval_funcs_by_ext['.yaml'] + eval_funcs_by_ext['.json'] \
+                             + eval_funcs_by_ext['.csv'] 
                          
     def _load_data(self, data):
         """
@@ -240,8 +257,8 @@ class Table(object):
         file_extension = None
         if hasattr(data, 'lower'):  # duck-type string test
             if os.path.isfile(data):
-                file_extension = data.split('.')[-1]
-                self.table_name = data.split('.')[0]
+                (file_path, file_extension) = os.path.splitext(data)
+                self.table_name = os.path.split(file_path)[1]
                 with open(data) as infile:
                     data = infile.read()
             funcs = self.eval_funcs_by_ext.get(file_extension, self.eval_funcs_by_ext['*'])
@@ -312,6 +329,16 @@ class Table(object):
             cols = ", ".join(c for c in row)
             vals = ", ".join(str(self._wrap_datum(val, dialect)) for val in row.values())
             yield self._insert_template.format(table_name=self.table_name, cols=cols, vals=vals)
+            
+    def sql(self, dialect=None, inserts=False):
+        """
+        Combined results of ``.ddl(dialect)`` and, if ``inserts==True``, ``.inserts(dialect)``.
+        """
+        result = [self.ddl(dialect), ]
+        if inserts:
+            for row in self.inserts(dialect):
+                result.append(row)
+        return '\n'.join(result)
         
     def __str__(self):
         if self.default_dialect:
