@@ -3,25 +3,49 @@
 """
 Given data, automatically guess-generates DDL to create SQL tables.
 
+Invoke with one table's worth of data at a time, from command line::
+
+    $ ddlgenerator postgresql sourcedata.yaml
+    
+or from Python::
+
+    >>> table = DDL('sourcedata.json')
+    >>> print(table.ddl())
+    >>> print(table.inserts())
+    
 Badly untested, and probably still full of errors!  Still interesting,
 though.
+
+You will need to hand-edit the resulting SQL to add:
+
+ - Primary keys
+ - Foreign keys
+ - Indexes
+ - Delete unwanted UNIQUE indexes 
+   (ddlgenerator adds them wherever a column's data is unique)
+ 
 """
 from collections import OrderedDict
 import datetime
 from decimal import Decimal, InvalidOperation
 import doctest
+import functools
 import json
 import logging
 import math
 import os.path
 import re
+import textwrap
 import sqlalchemy as sa
-from sqlalchemy.schema import CreateTable
+from sqlalchemy.schema import CreateTable, DropTable
 import dateutil.parser
 import yaml
 
 logging.basicConfig(filename='ddlgenerator.log', filemode='w', level=logging.WARN)
 metadata = sa.MetaData()
+
+def is_scalar(x):
+    return hasattr(x, 'lower') or not hasattr(x, '__iter__')
 
 def precision_and_scale(x):
     """
@@ -52,6 +76,20 @@ def precision_and_scale(x):
     scale = int(math.log10(frac_digits))
     return (magnitude + scale, scale)
 
+def ordered_yaml_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
+    """
+    Preserves order with OrderedDict as yaml is loaded
+    Thanks to coldfix
+    http://stackoverflow.com/questions/5121931/in-python-how-can-you-load-yaml-mappings-as-ordereddicts
+    """
+    class OrderedLoader(Loader):
+        pass
+    OrderedLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+        lambda loader, node: object_pairs_hook(loader.construct_pairs(node)))
+    return yaml.load(stream, OrderedLoader)
+
+
 complex_enough_to_be_date = re.compile(r"[\-\. /]")
 def coerce_to_specific(datum):
     """
@@ -68,7 +106,7 @@ def coerce_to_specific(datum):
     try:
         if len(complex_enough_to_be_date.findall(datum)) > 1:
             return dateutil.parser.parse(datum)
-    except TypeError:
+    except (ValueError, TypeError) as e:
         pass
     try:
         return int(str(datum))
@@ -101,8 +139,9 @@ def best_coercable(data):
     """
     preference = (datetime.datetime, int, Decimal, float, str)
     worst_pref = 0 
-    (worst_prec, worst_scale) = (0, 0)
+    (worst_prec, worst_scale, worst_digits) = (0, 0, 0)
     worst = ''
+    import ipdb; ipdb.set_trace()
     for datum in data:
         coerced = coerce_to_specific(datum)
         pref = preference.index(type(coerced))
@@ -112,13 +151,18 @@ def best_coercable(data):
         elif pref == worst_pref:
             if isinstance(coerced, Decimal):
                 (prec, scale) = precision_and_scale(coerced)
-                (worst_prec, worst_scale) = (max(prec, worst_prec), max(scale, worst_scale))
-                worst = Decimal("%s.%s" % ('9' * (worst_prec - worst_scale), '9' * worst_scale))
+                # precision is not really of interest... ``worst`` needs to represent both the 
+                # finest-scale and the largest numbers
+                digits = len(str(coerced).split('.')[0])
+                # TODO: how do signs affect precision in various RDBMSs?
+                (worst_digits, worst_scale) = (max(digits, worst_digits), max(scale, worst_scale))
+                worst = Decimal("%s.%s" % ('9' * worst_digits, '9' * worst_scale))
             elif isinstance(coerced, float):
                 worst = max(coerced, worst)
             else:  # int, str
                 if len(str(coerced)) > len(str(worst)):
                     worst = coerced
+    print(worst)
     return worst
             
     
@@ -180,8 +224,11 @@ class Table(object):
     """
 
     eval_funcs_by_ext = {'py': [eval, ],
-                         'json': [json.loads, ],
-                         'yaml': [yaml.load, ], }
+                         'json': [functools.partial(json.loads, 
+                                                    object_pairs_hook=OrderedDict), ],
+                         'yaml': [ordered_yaml_load, ],
+                         }
+    eval_funcs_by_ext['*'] = [eval, ] + eval_funcs_by_ext['yaml'] + eval_funcs_by_ext['json']
                          
     def _load_data(self, data):
         """
@@ -197,42 +244,74 @@ class Table(object):
                 self.table_name = data.split('.')[0]
                 with open(data) as infile:
                     data = infile.read()
-            funcs = self.eval_funcs_by_ext.get(file_extension, [yaml.load, json.loads, eval])
+            funcs = self.eval_funcs_by_ext.get(file_extension, self.eval_funcs_by_ext['*'])
             for func in funcs:
                 try:
                     self.data = func(data)
                     return 
-                except:  # our deserializers may throw a variety of errors
+                except Exception as e:  # our deserializers may throw a variety of errors
                     pass
-            raise SyntaxError("Failed to interpret data provided")
+            raise e
         else:
             self.data = data
                   
     def __init__(self, data, table_name=None, default_dialect=None, loglevel=logging.ERROR):
         self.table_name = 'generated_table'
         self._load_data(data)
-        self.table_name = table_name or self.table_name
+        self.table_name = self._clean_column_name(table_name or self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
         self.default_dialect = default_dialect
-        self.table_name = table_name or 'generated_table'
         self._determine_types()
         self.table = sa.Table(self.table_name, metadata, 
                               *[sa.Column(c, t, 
                                           unique=self.is_unique[c],
-                                          nullable=self.is_nullable[c]) 
+                                          nullable=self.is_nullable[c],
+                                          doc=self.comments.get(c)) 
                                 for (c, t) in self.satypes.items()])
-        
-    def ddl(self, dialect=None):
+
+    def _dialect(self, dialect):
         if not dialect and not self.default_dialect:
             raise KeyError("No SQL dialect specified")
         dialect = dialect or self.default_dialect
         if dialect not in mock_engines:
-            raise NotImplementedError("SQL dialect '%s' unknown" % dialect)
-        return CreateTable(self.table).compile(mock_engines[dialect])
+            raise NotImplementedError("SQL dialect '%s' unknown" % dialect)        
+        return dialect
+        
+    _comment_wrapper = textwrap.TextWrapper(initial_indent='-- ', subsequent_indent='-- ')
+    def ddl(self, dialect=None):
+        """
+        Returns SQL to define the table.
+        """
+        dialect = self._dialect(dialect)
+        dropper = DropTable(self.table).compile(mock_engines[dialect])
+        creator = CreateTable(self.table).compile(mock_engines[dialect]) 
+        comments = "\n\n".join(self._comment_wrapper.fill("in %s: %s" % 
+                                                        (col, self.comments[col])) 
+                                                        for col in self.comments)
+        return "%s;%s\n%s;" % (dropper, creator, comments)
         # TODO: Accept NamedTuple data source
-        # preserve ordering from .json, .yml, .csv?
         # my_ordered_dict = json.loads(json_str, object_pairs_hook=collections.OrderedDict)
+      
+    _datetime_format = {}
+    def _wrap_datum(self, datum, dialect):
+        if isinstance(datum, datetime.datetime):
+            if dialect in self._datetime_format:
+                return datum.strftime(self._datetime_format[dialect])
+            else:
+                return "'%s'" % datum
+        elif isinstance(datum, str):
+            return "'%s'" % datum.replace("'", "''")
+        else:
+            return datum
+        
+    _insert_template = "INSERT INTO {table_name} ({cols}) VALUES ({vals});" 
+    def inserts(self, dialect=None):
+        dialect = self._dialect(dialect)
+        for row in self.data:
+            cols = ", ".join(c for c in row)
+            vals = ", ".join(str(self._wrap_datum(val, dialect)) for val in row.values())
+            yield self._insert_template.format(table_name=self.table_name, cols=cols, vals=vals)
         
     def __str__(self):
         if self.default_dialect:
@@ -242,13 +321,27 @@ class Table(object):
         
     types2sa = {datetime.datetime: sa.DateTime, int: sa.Integer, 
                 float: sa.Numeric, }
+   
+    _illegal_in_column_name = re.compile(r'[^a-zA-Z0-9_$#]') 
+    def _clean_column_name(self, col_name):
+        """
+        Replaces illegal characters in column names with ``_``
+        
+        Also lowercases all identifiers.  If you want mixed-case table
+        or column names, you are a bad person and you should feel bad.
+        """
+        result = self._illegal_in_column_name.sub("_", col_name)
+        if result[0].isdigit():
+            result = '_%s' % result
+        return result.lower()
     
     def _determine_types(self):
-        self.columns = {}
+        self.columns = OrderedDict()
         self.satypes = OrderedDict() 
         self.pytypes = {}
         self.is_unique = {}
         self.is_nullable = {}
+        self.comments = {}
         rowcount = 0
         for row in self.data:
             rowcount += 1
@@ -257,11 +350,13 @@ class Table(object):
                 keys = sorted(keys)
             for k in keys:
                 v = row[k]
-                k = k.lower()   # case-sensitive column names are evil
+                if not is_scalar(v):
+                    v = str(v)
+                    self.comments[k] = 'nested values! example: %s' % v
+                k = self._clean_column_name(k)
                 if k not in self.columns:
                     self.columns[k] = []
                 self.columns[k].append(v)
-            # TODO: mark primary key, nullable
         for col in self.columns:
             sample_datum = best_coercable(self.columns[col])
             self.pytypes[col] = type(sample_datum)

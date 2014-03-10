@@ -49,7 +49,7 @@ setup(
     test_suite='tests',
     entry_points={
         'console_scripts': [
-            'generate-ddl = ddlgenerator.console:generate',
+            'ddlgenerator = ddlgenerator.console:generate',
         ]
     }    
 )

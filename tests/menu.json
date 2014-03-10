@@ -1,0 +1,16 @@
+[
+  {
+    "name": "soup",
+    "cost": 4.99
+  }, 
+  { 
+    "name": "sweet potatoes",
+    "cost": 4.99
+  },
+  {
+    "name": "nuts",
+    "warning": "contains nuts", 
+    "cost": 2.95 
+  }
+]
+
