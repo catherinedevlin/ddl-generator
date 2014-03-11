@@ -68,18 +68,18 @@ def coerce_to_specific(datum):
     elif unicode(datum).strip().lower() in ('1', 'true', 't', 'y', 'yes'):
         return True
     try:
-        return int(str(datum))
+        return int(unicode(datum))
     except ValueError:
         pass
     try: 
-        return Decimal(str(datum))
+        return Decimal(unicode(datum))
     except InvalidOperation:
         pass
     try:
-        return float(str(datum))
+        return float(unicode(datum))
     except ValueError:
         pass
-    return str(datum)
+    return unicode(datum)
 
 def _places_b4_and_after_decimal(d):
     """
@@ -132,7 +132,7 @@ def best_coercable(data):
             elif isinstance(coerced, float):
                 worst = max(coerced, worst)
             else:  # int, str
-                if len(str(coerced)) > len(str(worst)):
+                if len(unicode(coerced)) > len(unicode(worst)):
                     worst = coerced
     return worst
             
