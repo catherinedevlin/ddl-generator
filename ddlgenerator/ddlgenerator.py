@@ -300,7 +300,7 @@ class Table(object):
                 v = row[k]
                 if not th.is_scalar(v):
                     v = unicode(v)
-                    self.comments[k] = 'nested values! example:\n%s' % pprint.pprint(v)
+                    self.comments[k] = 'nested values! example:\n%s' % pprint.pformat(v)
                     logging.warn('in %s: %s' % (k, self.comments[k]))
                 k = self._clean_column_name(k)
                 if k not in self.columns:
