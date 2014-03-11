@@ -15,6 +15,18 @@ except ImportError:
 
 class TestFiles(unittest.TestCase):
     
+    def test_nested(self):
+        merovingians = [
+                        OrderedDict([('name', {'name_id': 1, 'name_txt': 'Clovis I'}), 
+                                     ('reign', {'from': 486, 'to': 511}),
+                                     ]),
+                        OrderedDict([('name', {'name_id': 1, 'name_txt': 'Childebert I'}), 
+                                     ('reign', {'from': 511, 'to': 558}),
+                                     ]),
+                        ]
+        tbl = Table(merovingians)
+        generated = tbl.sql('postgresql', inserts=True).strip()
+        
     def test_pydata_named_tuples(self):
         prov_type = namedtuple('province', ['name', 'capital', 'pop'])
         canada = [prov_type('Quebec', 'Quebec City', '7903001'),

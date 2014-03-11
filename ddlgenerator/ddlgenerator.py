@@ -27,7 +27,7 @@ You will need to hand-edit the resulting SQL to add:
    (ddlgenerator adds them wherever a column's data is unique)
  
 """
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from io import StringIO 
 import csv
 import datetime
@@ -46,11 +46,15 @@ import dateutil.parser
 import yaml
 try:
     import ddlgenerator.typehelpers as th
+    import ddlgenerator.reshape as reshape
 except ImportError:
     import typehelpers as th # TODO: can py2/3 split this
     
 logging.basicConfig(filename='ddlgenerator.log', filemode='w')
 metadata = sa.MetaData()
+
+class KeyAlreadyExists(KeyError):
+    pass
 
 dialect_names = 'drizzle firebird mssql mysql oracle postgresql sqlite sybase'.split()
 
@@ -158,7 +162,7 @@ class Table(object):
             self.data = data
         if not self.data:
             raise SyntaxError("No data found")
-                  
+                         
     def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, uniques=False,
                  loglevel=logging.WARN):
         """
@@ -181,10 +185,13 @@ class Table(object):
             self.table_name = self._clean_column_name(self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
-        # namedtuples to OrderedDicts
-        self.data = [OrderedDict((k,v) for (k,v) in zip(row._fields, row))
-                     if hasattr(row, '_fields') else row
-                     for row in self.data]
+            
+        self.data = reshape.namedtuples_to_ordereddicts(self.data)
+      
+        self.id_sequence = 1 
+        import ipdb; ipdb.set_trace()
+        self.explode_children()
+        
         self.default_dialect = default_dialect
         self._determine_types(varying_length_text, uniques=uniques)
         self.table = sa.Table(self.table_name, metadata, 
