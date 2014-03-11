@@ -47,7 +47,7 @@ _complex_enough_to_be_date = re.compile(r"[\-\. /]")
 def coerce_to_specific(datum):
     """
     Coerces datum to the most specific data type possible
-    Order of preference: datetime, integer, decimal, float, string
+    Order of preference: datetime, boolean, integer, decimal, float, string
     
     >>> coerce_to_specific(7.2)
     Decimal('7.2')
@@ -55,12 +55,18 @@ def coerce_to_specific(datum):
     datetime.datetime(2012, 1, 17, 0, 0)
     >>> coerce_to_specific("something else")
     'something else'
+    
+    TODO: Boolean
     """
     try:
         if len(_complex_enough_to_be_date.findall(datum)) > 1:
             return dateutil.parser.parse(datum)
     except (ValueError, TypeError) as e:
         pass
+    if str(datum).strip().lower() in ('0', 'false', 'f', 'n', 'no'):
+        return False
+    elif str(datum).strip().lower() in ('1', 'true', 't', 'y', 'yes'):
+        return True
     try:
         return int(str(datum))
     except ValueError:
@@ -98,7 +104,7 @@ def worst_decimal(d1, d2):
 def best_coercable(data):
     """
     Given an iterable of scalar data, returns the datum representing the most specific
-    data type the list overall can be coerced into, preferring datetimes,
+    data type the list overall can be coerced into, preferring datetimes, then bools,
     then integers, then decimals, then floats, then strings.  
     
     >>> best_coercable((6, '2', 9))
@@ -110,7 +116,7 @@ def best_coercable(data):
     >>> best_coercable((7, 21.4, 'ruining everything'))
     'ruining everything'
     """
-    preference = (datetime.datetime, int, Decimal, float, str)
+    preference = (datetime.datetime, bool, int, Decimal, float, str)
     worst_pref = 0 
     worst = ''
     for datum in data:

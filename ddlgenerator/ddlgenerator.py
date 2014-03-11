@@ -181,6 +181,10 @@ class Table(object):
             self.table_name = self._clean_column_name(self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
+        # namedtuples to OrderedDicts
+        self.data = [OrderedDict((k,v) for (k,v) in zip(row._fields, row))
+                     if hasattr(row, '_fields') else row
+                     for row in self.data]
         self.default_dialect = default_dialect
         self._determine_types(varying_length_text, uniques=uniques)
         self.table = sa.Table(self.table_name, metadata, 
@@ -218,14 +222,14 @@ class Table(object):
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
         return "%s;\n%s;\n%s" % (self._dropper(dialect), creator, comments)
-        # TODO: Accept NamedTuple data source
       
     _datetime_format = {}
     def _prep_datum(self, datum, dialect, col):
-        #import ipdb; ipdb.set_trace()
         pytype = self.pytypes[col]
         if pytype == datetime.datetime:
             datum = dateutil.parser.parse(datum)
+        elif pytype == bool:
+            datum = th.coerce_to_specific(datum)
         else:
             datum = pytype(unicode(datum))
         if isinstance(datum, datetime.datetime):
@@ -264,7 +268,7 @@ class Table(object):
             return self.__repr__()
         
     types2sa = {datetime.datetime: sa.DateTime, int: sa.Integer, 
-                float: sa.Numeric, }
+                float: sa.Numeric, bool: sa.Boolean}
    
     _illegal_in_column_name = re.compile(r'[^a-zA-Z0-9_$#]') 
     def _clean_column_name(self, col_name):
