@@ -242,7 +242,7 @@ class Table(object):
         else:
             return datum
         
-    _insert_template = "INSERT INTO {table_name} ({cols}) VALUES ({vals});" 
+    _insert_template = u"INSERT INTO {table_name} ({cols}) VALUES ({vals});" 
     def inserts(self, dialect=None):
         dialect = self._dialect(dialect)
         for row in self.data:

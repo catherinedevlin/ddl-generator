@@ -116,7 +116,7 @@ def best_coercable(data):
     >>> best_coercable((7, 21.4, 'ruining everything'))
     'ruining everything'
     """
-    preference = (datetime.datetime, bool, int, Decimal, float, str)
+    preference = (datetime.datetime, bool, int, Decimal, float, unicode)
     worst_pref = 0 
     worst = ''
     for datum in data:
