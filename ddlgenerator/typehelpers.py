@@ -63,9 +63,9 @@ def coerce_to_specific(datum):
             return dateutil.parser.parse(datum)
     except (ValueError, TypeError) as e:
         pass
-    if str(datum).strip().lower() in ('0', 'false', 'f', 'n', 'no'):
+    if unicode(datum).strip().lower() in ('0', 'false', 'f', 'n', 'no'):
         return False
-    elif str(datum).strip().lower() in ('1', 'true', 't', 'y', 'yes'):
+    elif unicode(datum).strip().lower() in ('1', 'true', 't', 'y', 'yes'):
         return True
     try:
         return int(str(datum))
