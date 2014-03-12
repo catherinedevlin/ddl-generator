@@ -166,8 +166,8 @@ class Table(object):
         
     table_index = 0
     
-    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, uniques=False,
-                 loglevel=logging.WARN):
+    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, 
+                 uniques=False, fk=None, loglevel=logging.WARN):
         """
         Initialize a Table and load its data.
         
@@ -191,17 +191,40 @@ class Table(object):
             self.data = [self.data,]
             
         self.data = reshape.namedtuples_to_ordereddicts(self.data)
+        (self.data, self.pk_name, children, child_fk_names) = reshape.unnest_children(data, self.table_name)
       
-        self.id_sequence = 1 
-        
         self.default_dialect = default_dialect
         self._determine_types(varying_length_text, uniques=uniques)
+        if fk:
+            fk = sa.ForeignKey(fk)
+        else:
+            fk = None
         self.table = sa.Table(self.table_name, metadata, 
-                              *[sa.Column(c, t, 
+                              *[sa.Column(c, t, fk,
+                                          primary_key=(c == self.pk_name),
                                           unique=self.is_unique[c],
                                           nullable=self.is_nullable[c],
                                           doc=self.comments.get(c)) 
                                 for (c, t) in self.satypes.items()])
+        
+        self.children = {child_name: Table(self, child_data, table_name=child_name, 
+                                           default_dialect=self.default_dialect, 
+                                           varying_length_text = varying_length_text, 
+                                           uniques=uniques, 
+                                           fk="%s.%s" % (self.table_name, self.pk_name),
+                                           loglevel=loglevel)
+                         for (child_name, child_data) in children.items()}
+        
+        for (child_table_name, child_data) in children:
+            self.children[child_table_name] = sa.Table(child_table_name, metadata,
+                                                       *[sa.Column(c, t, 
+                                                                   primary_key=(c == pk_name),
+                                                                   unique=self.is_unique[c],
+                                                                   nullable=self.is_nullable[c],
+                                                                   doc=self.comments.get(c)) 
+                                                         for (c, t) in self.satypes.items()])                                                       
+            
+            
 
     def _dialect(self, dialect):
         if not dialect and not self.default_dialect:
@@ -230,7 +253,11 @@ class Table(object):
         comments = "\n\n".join(self._comment_wrapper.fill("in %s: %s" % 
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
-        return "%s;\n%s;\n%s" % (self._dropper(dialect), creator, comments)
+        result = ["%s;\n%s;\n%s" % (self._dropper(dialect), creator, comments)]
+        for child in self.children:
+            result.append(child.ddl(dialect=dialect))
+        return '\n\n'.join(result)
+        
       
     _datetime_format = {}
     def _prep_datum(self, datum, dialect, col):
@@ -258,6 +285,9 @@ class Table(object):
             cols = ", ".join(c for c in row)
             vals = ", ".join(str(self._prep_datum(val, dialect, key)) for (key, val) in row.items())
             yield self._insert_template.format(table_name=self.table_name, cols=cols, vals=vals)
+        for child in self.children:
+            for row in child.inserts(dialect):
+                yield row
         #TODO: distinguish between inserting blank strings and inserting NULLs
             
     def sql(self, dialect=None, inserts=False):

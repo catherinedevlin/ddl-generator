@@ -56,21 +56,22 @@ class ID_Giver(object):
        
 id_giver = ID_Giver()   # TODO: maybe should be a singleton?
 
-class ID_provider(object):
+class UniqueKey(object):
     """
     Provides unique IDs.
     
-    >>> idp1 = ID_provider(int, max=4)
+    >>> idp1 = UniqueKey('id', int, max=4)
     >>> idp1.next()
     5
     >>> idp1.next()
     6
-    >>> idp2 = ID_provider(str)
+    >>> idp2 = UniqueKey('id', str)
     >>> id2 = idp2.next()
     >>> (len(id2), type(id2))
     (32, <class 'str'>)
     """
-    def __init__(self, type, max=0):
+    def __init__(self, key_name, type, max=0):
+        self.name = key_name
         if type not in (str, int):
             raise NotImplementedError("can only work with ``str`` or ``int`` IDs")
         self.type = type
@@ -160,31 +161,36 @@ _sample_data = [{'province': 'Québec', 'capital': {'name': 'Québec City', 'pop
 
 def all_values_for(data, field_name):
     return [row.get(field_name) for row in data if field_name in row]
-                                   
+                     
+def unused_field_name(data, preferences):
+    for pref in preferences:
+        if not all_values_for(data, pref):
+            return pref
+    raise KeyError("All desired names already taken in %s" % self.name)    
+
 class ParentTable(list):
     """
     List of ``dict``s that knows (or creates) its own primary key field. 
     
     >>> provinces = ParentTable(_sample_data, 'province')
-    >>> provinces.pk_name
+    >>> provinces.pk.name
     'province_id'
-    >>> [p[provinces.pk_name] for p in provinces]
+    >>> [p[provinces.pk.name] for p in provinces]
     [1, 2, 3]
-    >>> provinces.pk_giver.max
+    >>> provinces.pk.max
     3
     
     Now if province_id is unusable because it's nonunique:
     >>> data2 = copy.deepcopy(_sample_data)
     >>> for row in data2: row['province_id'] = 4
     >>> provinces2 = ParentTable(data2, 'province')
-    >>> provinces2.pk_name
+    >>> provinces2.pk.name
     '_province_id'
-    >>> [p[provinces2.pk_name] for p in provinces2]
+    >>> [p[provinces2.pk.name] for p in provinces2]
     [1, 2, 3]
     
     """
     def __init__(self, data, singular_name):
-        #import ipdb; ipdb.set_trace()
         self.name = singular_name
         super(ParentTable, self).__init__(data)
         self.assign_pk()
@@ -211,17 +217,15 @@ class ParentTable(list):
         return ('partial', key_type) # unique, but some rows need populating
        
     def use_this_pk(self, pk_name, key_type):
-        self.pk_name = pk_name
         if key_type == int:
-            self.pk_giver = ID_provider(key_type, max([0, ] + all_values_for(self, self.pk_name)))
+            self.pk = UniqueKey(pk_name, key_type, max([0, ] + all_values_for(self, pk_name)))
         else:
-            self.pk_giver = ID_provider(key_type)
+            self.pk = UniqueKey(pk_name, key_type)
 
     def assign_pk(self):
         """
         
         """
-        #import ipdb; ipdb.set_trace()
         preferences = ['id', '%s_id' % self.name, '_%s_id' % self.name, ]
         suitabilities = []
         for pk_name in preferences:
@@ -239,7 +243,7 @@ class ParentTable(list):
                     self.use_this_pk(pk_name, key_type)
                     for row in self:
                         if pk_name not in row:
-                            row[pk_name] = self.pk_giver.next()
+                            row[pk_name] = self.pk.next()
                     return
         raise Exception("""Failed to assign primary key to %s
                            Potential key names %s all in use but nonunique"""
@@ -251,36 +255,38 @@ def unnest_children(data, parent_name=''):
     For each ``key`` in each row of ``data`` (which must be a list of dicts),
     unnest any dict values into ``parent``, and remove list values into separate lists.
     
-    Return a defaultdict(list) of data extracted from child lists.
+    Return (``data``, ``pk_name``, ``children``, ``child_fk_names``) where
     
-    >>> provinces = [{'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140},
-    ...              'cities': [{'name': 'Montreal', 'pop': 1649519}, {'name': 'Laval', 'pop': 401553}]},
-    ...              {'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140},
-    ...              'cities': [{'name': 'Montreal', 'pop': 1649519}, {'name': 'Laval', 'pop': 401553}]},
-    ...             ]
-    
-    # >>> unnest_children(provinces)
-    
-    # >>> pprint(parent)
-    
+    ``data`` 
+      the transformed input list
+    ``pk_name``
+      field name of ``data``'s (possibly new) primary key
+    ``children``
+      a defaultdict(list) of data extracted from child lists
+    ``child_fk_names``
+      dict of the foreign key field name in each child 
+   
     """
-    child_data = defaultdict(list)
-    data = ParentTable(data, parent_name)
-    for row in data:
+    children = defaultdict(list)
+    child_fk_names = {}
+    parent = ParentTable(data, parent_name)
+    for row in parent.data:
         for (key, val) in row.items():
             if hasattr(val, 'items'): 
                 unnest_child_dict(row, val, key)
             elif isinstance(val, list) or isinstance(val, tuple):
                 for child in val:
-                    if hasattr(child, 'items'):
-                        if parent_id_key_name in child and child[parent_id_key_name] != parent_id:
-                            errmsg = ('Cannot create %s in %s.%s, already present'
-                                      % (parent_id_key_name, self.table_name, key))
-                            raise KeyAlreadyExists(errmsg)
-                        child[parent_id_key_name] = parent_id
-                        self.children.append(child)
-                        row.pop(key)
-
-
+                    if not hasattr(child, 'items'):
+                        child = {'name': child}
+                    children[key].append(child)
+                fk_name = unused_field_name(children[key], ('%s_id' % parent_name, 
+                                                            '_%s_id' % parent_name, 
+                                                            'parent_id', ))
+                for child in children[key]:
+                    child[fk_name] = row[data.pk.name]
+                row.pop(key)
+            # TODO: What if rows have a mix of scalar / list / dict types?    
+    return (parent.data, parent.pk.name, children, child_fk_names)
+        
 if __name__ == '__main__':
     doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)    
