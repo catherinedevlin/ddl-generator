@@ -205,30 +205,36 @@ class Table(object):
             fk = sa.ForeignKey(fk)
         else:
             fk = None
+        # TODO: legalize column names
+        column_args = []
         self.table = sa.Table(self.table_name, metadata, 
-                              *[sa.Column(c, t, fk,
+                              *[sa.Column(c, t, 
+                                          # fk if else None
                                           primary_key=(c == self.pk_name),
                                           unique=self.is_unique[c],
                                           nullable=self.is_nullable[c],
                                           doc=self.comments.get(c)) 
                                 for (c, t) in self.satypes.items()])
-        
-        self.children = {child_name: Table(self, child_data, table_name=child_name, 
+      
+        self.children = {child_name: Table(child_data, table_name=child_name, 
                                            default_dialect=self.default_dialect, 
                                            varying_length_text = varying_length_text, 
                                            uniques=uniques, pk_name=pk_name,
                                            fk="%s.%s" % (self.table_name, self.pk_name),
                                            loglevel=loglevel)
                          for (child_name, child_data) in children.items()}
-        
-        for (child_table_name, child_data) in children:
-            self.children[child_table_name] = sa.Table(child_table_name, metadata,
+      
+        """ 
+        self.sqla_children = {} 
+        for (child_table_name, child_data) in children.items():
+            self.sqla_children[child_table_name] = sa.Table(child_table_name, metadata,
                                                        *[sa.Column(c, t, 
                                                                    primary_key=(c == pk_name),
                                                                    unique=self.is_unique[c],
                                                                    nullable=self.is_nullable[c],
                                                                    doc=self.comments.get(c)) 
-                                                         for (c, t) in self.satypes.items()])                                                       
+                                                         for (c, t) in self.satypes.items()])                                                      
+        """
             
             
 
@@ -260,7 +266,7 @@ class Table(object):
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
         result = ["%s;\n%s;\n%s" % (self._dropper(dialect), creator, comments)]
-        for child in self.children:
+        for child in self.children.values():
             result.append(child.ddl(dialect=dialect))
         return '\n\n'.join(result)
         
@@ -291,7 +297,7 @@ class Table(object):
             cols = ", ".join(c for c in row)
             vals = ", ".join(str(self._prep_datum(val, dialect, key)) for (key, val) in row.items())
             yield self._insert_template.format(table_name=self.table_name, cols=cols, vals=vals)
-        for child in self.children:
+        for child in self.children.values():
             for row in child.inserts(dialect):
                 yield row
         #TODO: distinguish between inserting blank strings and inserting NULLs

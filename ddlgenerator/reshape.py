@@ -119,7 +119,6 @@ def unnest_child_dict(parent, key, parent_name=''):
     {'capital': 'Québec City', 'province': 'Québec'}
     
     """
-    #import ipdb; ipdb.set_trace()
     val = parent[key]
     name = "%s['%s']" % (parent_name, key)
     logging.debug("Unnesting dict %s" % name)
@@ -263,7 +262,9 @@ def unnest_children(data, parent_name='', pk_name=None):
       dict of the foreign key field name in each child 
    
     """
+    possible_fk_names = ('%s_id' % parent_name, '_%s_id' % parent_name, 'parent_id', )
     children = defaultdict(list)
+    field_names_used_by_children = defaultdict(set)
     child_fk_names = {}
     parent = ParentTable(data, parent_name, pk_name=pk_name)
     for row in parent:
@@ -271,19 +272,27 @@ def unnest_children(data, parent_name='', pk_name=None):
             if hasattr(val, 'items'): 
                 unnest_child_dict(parent=row, key=key, parent_name=parent_name)
             elif isinstance(val, list) or isinstance(val, tuple):
-                if not self.pk:
-                    self.assign_pk()
                 for child in val:
+                    field_names_used_by_children[key].update(set(child.keys()))
+    for (child_name, names_in_use) in field_names_used_by_children.items():
+        if not parent.pk:
+            parent.assign_pk()
+        for fk_name in possible_fk_names:
+            if fk_name not in names_in_use:
+                break
+        else:
+            raise Exception("Cannot find unused field name in %s.%s to use as foreign key"
+                            % (parent_name, child_name))
+        child_fk_names[child_name] = fk_name
+        for row in parent:
+            if child_name in row:
+                for child in row[child_name]:
+                    child[fk_name] = row[parent.pk.name]
                     if not hasattr(child, 'items'):
                         child = {'name': child}
-                    children[key].append(child)
-                fk_name = unused_field_name(children[key], ('%s_id' % parent_name, 
-                                                            '_%s_id' % parent_name, 
-                                                            'parent_id', ))
-                for child in children[key]:
-                    child[fk_name] = row[data.pk.name]
-                row.pop(key)
-            # TODO: What if rows have a mix of scalar / list / dict types?    
+                    children[child_name].append(child)
+                row.pop(child_name)
+    # TODO: What if rows have a mix of scalar / list / dict types?    
     return (parent, parent.pk.name if parent.pk else None, children, child_fk_names)
         
 if __name__ == '__main__':
