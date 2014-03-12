@@ -46,9 +46,10 @@ import dateutil.parser
 import yaml
 try:
     import ddlgenerator.typehelpers as th
-    import ddlgenerator.reshape as reshape
+    from ddlgenerator import reshape
 except ImportError:
     import typehelpers as th # TODO: can py2/3 split this
+    import reshape
     
 logging.basicConfig(filename='ddlgenerator.log', filemode='w')
 metadata = sa.MetaData()
@@ -162,7 +163,9 @@ class Table(object):
             self.data = data
         if not self.data:
             raise SyntaxError("No data found")
-                         
+        
+    table_index = 0
+    
     def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, uniques=False,
                  loglevel=logging.WARN):
         """
@@ -172,7 +175,8 @@ class Table(object):
         This *improves* performance in PostgreSQL.
         """
         logging.getLogger().setLevel(loglevel) 
-        self.table_name = 'generated_table'
+        self.table_name = 'generated_table%d' % Table.table_index
+        Table.table_index += 1
         self._load_data(data)
         if hasattr(self.data, 'lower'):
             raise SyntaxError("Data was interpreted as a single string - no table structure:\n%s" 
@@ -189,8 +193,6 @@ class Table(object):
         self.data = reshape.namedtuples_to_ordereddicts(self.data)
       
         self.id_sequence = 1 
-        import ipdb; ipdb.set_trace()
-        self.explode_children()
         
         self.default_dialect = default_dialect
         self._determine_types(varying_length_text, uniques=uniques)

@@ -3,6 +3,7 @@ from collections import OrderedDict, namedtuple, defaultdict
 import doctest
 from hashlib import md5
 import hashlib
+import copy
 from pprint import pprint
 
 def namedtuples_to_ordereddicts(data):
@@ -147,45 +148,55 @@ def unnest_child_dict(parent, key, parent_name=''):
             parent[new_field_name] = child_val
         parent.pop(key)
 
+_sample_data = [{'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140}, 
+                 'id': 1, 'province_id': 1,
+                 'cities': [{'name': 'Montreal', 'pop': 1649519}, {'name': 'Laval', 'pop': 401553}]},
+                {'province': 'Ontario', 'capital': {'name': 'Toronto', 'pop': 2615060}, 'province_id': 2,
+                 'cities': [{'name': 'Ottawa', 'pop': 883391}, {'name': 'Missisauga', 'pop': 713443}]},
+                {'province': 'New Brunswick', 'capital': {'name': 'Fredricton', 'pop': 56224}, 
+                 'id': 3, 'province_id': 3,
+                 'cities': [{'name': 'Saint John', 'pop': 70063}, {'name': 'Moncton', 'pop': 69074}]},
+               ]
+
+def all_values_for(data, field_name):
+    return [row.get(field_name) for row in data if field_name in row]
+                                   
 class ParentTable(list):
     """
     List of ``dict``s that knows (or creates) its own primary key field. 
+    
+    >>> provinces = ParentTable(_sample_data, 'province')
+    >>> provinces.pk_name
+    'province_id'
+    >>> [p[provinces.pk_name] for p in provinces]
+    [1, 2, 3]
+    >>> provinces.pk_giver.max
+    3
+    
+    Now if province_id is unusable because it's nonunique:
+    >>> data2 = copy.deepcopy(_sample_data)
+    >>> for row in data2: row['province_id'] = 4
+    >>> provinces2 = ParentTable(data2, 'province')
+    >>> provinces2.pk_name
+    '_province_id'
+    >>> [p[provinces2.pk_name] for p in provinces2]
+    [1, 2, 3]
+    
     """
     def __init__(self, data, singular_name):
-        """
-        >>> data =     [{'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140},
-        ...              'cities': [{'name': 'Montreal', 'pop': 1649519}, {'name': 'Laval', 'pop': 401553}]},
-        ...              {'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140},
-        ...              'cities': [{'name': 'Montreal', 'pop': 1649519}, {'name': 'Laval', 'pop': 401553}]},
-        ...             ]
-        >>> provinces = ParentTable(data, 'province')
-        >>> provinces.pk_name
-        'id'
-       
-        """
+        #import ipdb; ipdb.set_trace()
         self.name = singular_name
         super(ParentTable, self).__init__(data)
         self.assign_pk()
-       
-    def all_values_for(self, key_name): 
-        return [row.get(key_name) for row in self if row.get(key_name)]
-
+                          
     def suitability_as_key(self, key_name):
         """
         Returns: (result, key_type)
         ``result`` is True, False, or 'absent' or 'partial' (both still usable)
         ``key_type`` is ``int`` for integer keys or ``str`` for hash keys
         
-        >>> data =     [{'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140},
-        ...              'cities': [{'name': 'Montreal', 'pop': 1649519}, {'name': 'Laval', 'pop': 401553}]},
-        ...              {'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140},
-        ...              'cities': [{'name': 'Montreal', 'pop': 1649519}, {'name': 'Laval', 'pop': 401553}]},
-        ...             ]
-        >>> provinces = ParentTable(data, 'province')        
-        >>>
-        
         """
-        pk_values = self.all_values_for(key_name)
+        pk_values = all_values_for(self, key_name)
         if not pk_values:
             return ('absent', int)  # could still use it
         types = set(type(v) for v in pk_values)
@@ -195,18 +206,22 @@ class ParentTable(list):
         num_unique_values = len(set(pk_values))
         if num_unique_values < len(pk_values):
             return (False, None)     # non-unique
-        if num_unique_values == len(pk_values):
+        if num_unique_values == len(self):
             return (True, key_type)  # perfect!
         return ('partial', key_type) # unique, but some rows need populating
        
     def use_this_pk(self, pk_name, key_type):
         self.pk_name = pk_name
         if key_type == int:
-            self.pk_giver = ID_provider(key_type, max([0, ] + self.all_values_for(self.pk_name)))
+            self.pk_giver = ID_provider(key_type, max([0, ] + all_values_for(self, self.pk_name)))
         else:
             self.pk_giver = ID_provider(key_type)
 
     def assign_pk(self):
+        """
+        
+        """
+        #import ipdb; ipdb.set_trace()
         preferences = ['id', '%s_id' % self.name, '_%s_id' % self.name, ]
         suitabilities = []
         for pk_name in preferences:
@@ -230,26 +245,7 @@ class ParentTable(list):
                            Potential key names %s all in use but nonunique"""
                         % (','.join(preferences), self.name))
     
-   
-class ForeignKey(object):
-    def __init__(self, data, list_name):
-        """
-        >>> provinces = [{'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140},
-        ...              'cities': [{'name': 'Montreal', 'pop': 1649519}, {'name': 'Laval', 'pop': 401553}]},
-        ...              {'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140},
-        ...              'cities': [{'name': 'Montreal', 'pop': 1649519}, {'name': 'Laval', 'pop': 401553}]},
-        ...             ]
-        >>> provinces = ParentTable(provinces, 'province')
-        >>> fk = ForeignKey(provinces, 'cities')
-        
-        # >>> fk.parent.name
-        'province'
-        # >>> fk.in_child
-        'province.id'
-        
-        """
-        
-      
+     
 def unnest_children(data, parent_name=''):
     """
     For each ``key`` in each row of ``data`` (which must be a list of dicts),
