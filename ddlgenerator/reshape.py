@@ -119,6 +119,7 @@ def unnest_child_dict(parent, key, parent_name=''):
     {'capital': 'Québec City', 'province': 'Québec'}
     
     """
+    #import ipdb; ipdb.set_trace()
     val = parent[key]
     name = "%s['%s']" % (parent_name, key)
     logging.debug("Unnesting dict %s" % name)
@@ -172,7 +173,7 @@ class ParentTable(list):
     """
     List of ``dict``s that knows (or creates) its own primary key field. 
     
-    >>> provinces = ParentTable(_sample_data, 'province')
+    >>> provinces = ParentTable(_sample_data, 'province', pk_name='province_id')
     >>> provinces.pk.name
     'province_id'
     >>> [p[provinces.pk.name] for p in provinces]
@@ -183,17 +184,21 @@ class ParentTable(list):
     Now if province_id is unusable because it's nonunique:
     >>> data2 = copy.deepcopy(_sample_data)
     >>> for row in data2: row['province_id'] = 4
-    >>> provinces2 = ParentTable(data2, 'province')
+    >>> provinces2 = ParentTable(data2, 'province', pk_name='id')
     >>> provinces2.pk.name
-    '_province_id'
+    'id'
     >>> [p[provinces2.pk.name] for p in provinces2]
-    [1, 2, 3]
+    [1, 4, 3]
     
     """
-    def __init__(self, data, singular_name):
+    def __init__(self, data, singular_name, pk_name=None):
         self.name = singular_name
         super(ParentTable, self).__init__(data)
-        self.assign_pk()
+        self.pk_name = pk_name
+        if self.pk_name:
+            self.assign_pk()
+        else:
+            self.pk = None
                           
     def suitability_as_key(self, key_name):
         """
@@ -226,31 +231,22 @@ class ParentTable(list):
         """
         
         """
-        preferences = ['id', '%s_id' % self.name, '_%s_id' % self.name, ]
-        suitabilities = []
-        for pk_name in preferences:
-            (suitability, key_type) = self.suitability_as_key(pk_name)
-            suitabilities.append((suitability, key_type))
-            if not suitability:
-                continue
-            elif suitability == True:
-                self.use_this_pk(pk_name, key_type)
-                return
-        # Fine, then, we'll manufacture a primary key
-        for settle_for in ('absent', 'partial'):
-            for (pk_name, (suitability, key_type)) in zip(preferences, suitabilities):
-                if suitability == settle_for:
-                    self.use_this_pk(pk_name, key_type)
-                    for row in self:
-                        if pk_name not in row:
-                            row[pk_name] = self.pk.next()
-                    return
-        raise Exception("""Failed to assign primary key to %s
-                           Potential key names %s all in use but nonunique"""
-                        % (','.join(preferences), self.name))
-    
+        if not self.pk_name:
+            self.pk_name = '%s_id' % self.name
+            logging.warning('Primary key %s.%s not requested, but nesting demands it'
+                            % (self.name, self.pk_name))
+        (suitability, key_type) = self.suitability_as_key(self.pk_name)
+        if not suitability:
+            raise Exception('Duplicate values in %s.%s, unsuitable primary key'
+                            % (self.name, self.pk_name))
+        self.use_this_pk(self.pk_name, key_type)
+        if suitability in ('absent', 'partial'):
+            for row in self:
+                if self.pk_name not in row:
+                    row[self.pk_name] = self.pk.next()
+   
      
-def unnest_children(data, parent_name=''):
+def unnest_children(data, parent_name='', pk_name=None):
     """
     For each ``key`` in each row of ``data`` (which must be a list of dicts),
     unnest any dict values into ``parent``, and remove list values into separate lists.
@@ -269,12 +265,14 @@ def unnest_children(data, parent_name=''):
     """
     children = defaultdict(list)
     child_fk_names = {}
-    parent = ParentTable(data, parent_name)
-    for row in parent.data:
+    parent = ParentTable(data, parent_name, pk_name=pk_name)
+    for row in parent:
         for (key, val) in row.items():
             if hasattr(val, 'items'): 
-                unnest_child_dict(row, val, key)
+                unnest_child_dict(parent=row, key=key, parent_name=parent_name)
             elif isinstance(val, list) or isinstance(val, tuple):
+                if not self.pk:
+                    self.assign_pk()
                 for child in val:
                     if not hasattr(child, 'items'):
                         child = {'name': child}
@@ -286,7 +284,7 @@ def unnest_children(data, parent_name=''):
                     child[fk_name] = row[data.pk.name]
                 row.pop(key)
             # TODO: What if rows have a mix of scalar / list / dict types?    
-    return (parent.data, parent.pk.name, children, child_fk_names)
+    return (parent, parent.pk.name if parent.pk else None, children, child_fk_names)
         
 if __name__ == '__main__':
     doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)    

@@ -18,6 +18,11 @@ or from Python::
     >>> inserts = menu.inserts('postgresql')
     >>> all_sql = menu.sql('postgresql', inserts=True)
 
+Use ``-k <keyname>`` or ``--key=<keyname>`` to set ``keyname`` as the table's
+primary key.  If the field does not exist, it will be added.  If ``-k`` is not given,
+no primary key will be created, *unless* it is required to set up child tables
+(split out from sub-tables nested inside the original data).
+
 You will need to hand-edit the resulting SQL to add:
 
  - Primary keys
@@ -167,7 +172,7 @@ class Table(object):
     table_index = 0
     
     def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, 
-                 uniques=False, fk=None, loglevel=logging.WARN):
+                 uniques=False, fk=None, pk_name=None, loglevel=logging.WARN):
         """
         Initialize a Table and load its data.
         
@@ -189,9 +194,10 @@ class Table(object):
             self.table_name = self._clean_column_name(self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
-            
+        
         self.data = reshape.namedtuples_to_ordereddicts(self.data)
-        (self.data, self.pk_name, children, child_fk_names) = reshape.unnest_children(data, self.table_name)
+        (self.data, self.pk_name, children, child_fk_names) = reshape.unnest_children(
+            data=self.data, parent_name=self.table_name, pk_name=pk_name)
       
         self.default_dialect = default_dialect
         self._determine_types(varying_length_text, uniques=uniques)
@@ -210,7 +216,7 @@ class Table(object):
         self.children = {child_name: Table(self, child_data, table_name=child_name, 
                                            default_dialect=self.default_dialect, 
                                            varying_length_text = varying_length_text, 
-                                           uniques=uniques, 
+                                           uniques=uniques, pk_name=pk_name,
                                            fk="%s.%s" % (self.table_name, self.pk_name),
                                            loglevel=loglevel)
                          for (child_name, child_data) in children.items()}
