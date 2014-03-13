@@ -195,7 +195,6 @@ class Table(object):
             self.table_name = self._clean_column_name(self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
-        import ipdb; ipdb.set_trace()
         self.data = reshape.transform_all_keys(self.data, str.lower)
         
         self.data = reshape.namedtuples_to_ordereddicts(self.data)
@@ -205,7 +204,6 @@ class Table(object):
         self.default_dialect = default_dialect
         self._determine_types(varying_length_text, uniques=uniques)
 
-        # import ipdb; ipdb.set_trace()        
         if parent_table:
             fk = sa.ForeignKey('%s.%s' % (parent_table.table_name, parent_table.pk_name))
         else:
