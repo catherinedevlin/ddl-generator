@@ -172,7 +172,8 @@ class Table(object):
     table_index = 0
     
     def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, 
-                 uniques=False, fk=None, pk_name=None, loglevel=logging.WARN):
+                 uniques=False, pk_name=None, parent_table=None, fk_field_name=None,
+                 loglevel=logging.WARN):
         """
         Initialize a Table and load its data.
         
@@ -194,6 +195,8 @@ class Table(object):
             self.table_name = self._clean_column_name(self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
+        import ipdb; ipdb.set_trace()
+        self.data = reshape.transform_all_keys(self.data, str.lower)
         
         self.data = reshape.namedtuples_to_ordereddicts(self.data)
         (self.data, self.pk_name, children, child_fk_names) = reshape.unnest_children(
@@ -201,15 +204,18 @@ class Table(object):
       
         self.default_dialect = default_dialect
         self._determine_types(varying_length_text, uniques=uniques)
-        if fk:
-            fk = sa.ForeignKey(fk)
+
+        # import ipdb; ipdb.set_trace()        
+        if parent_table:
+            fk = sa.ForeignKey('%s.%s' % (parent_table.table_name, parent_table.pk_name))
         else:
             fk = None
+            
         # TODO: legalize column names
         column_args = []
         self.table = sa.Table(self.table_name, metadata, 
                               *[sa.Column(c, t, 
-                                          # fk if else None
+                                          fk if fk and (fk_field_name == c) else None,
                                           primary_key=(c == self.pk_name),
                                           unique=self.is_unique[c],
                                           nullable=self.is_nullable[c],
@@ -219,24 +225,12 @@ class Table(object):
         self.children = {child_name: Table(child_data, table_name=child_name, 
                                            default_dialect=self.default_dialect, 
                                            varying_length_text = varying_length_text, 
-                                           uniques=uniques, pk_name=pk_name,
-                                           fk="%s.%s" % (self.table_name, self.pk_name),
+                                           uniques=uniques, pk_name=pk_name, 
+                                           parent_table=self, 
+                                           fk_field_name = child_fk_names[child_name],
                                            loglevel=loglevel)
                          for (child_name, child_data) in children.items()}
-      
-        """ 
-        self.sqla_children = {} 
-        for (child_table_name, child_data) in children.items():
-            self.sqla_children[child_table_name] = sa.Table(child_table_name, metadata,
-                                                       *[sa.Column(c, t, 
-                                                                   primary_key=(c == pk_name),
-                                                                   unique=self.is_unique[c],
-                                                                   nullable=self.is_nullable[c],
-                                                                   doc=self.comments.get(c)) 
-                                                         for (c, t) in self.satypes.items()])                                                      
-        """
-            
-            
+           
 
     def _dialect(self, dialect):
         if not dialect and not self.default_dialect:

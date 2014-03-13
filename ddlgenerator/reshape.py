@@ -17,6 +17,33 @@ def namedtuples_to_ordereddicts(data):
              if hasattr(row, '_fields') else row
              for row in data]
 
+def transform_all_keys(data, transform=str.lower):
+    """
+    Recursively walks list of dicts (which may themselves embed lists and dicts).
+    Applies ``transform`` to all key fields found in dicts 
+    
+    Usually used to lowercase key names 
+    
+    >>> data = [{'a': 1}, [{'B': 2}, {'B': 3}], {'F': {'G': 4}}]
+    >>> pprint(transform_all_keys(data))
+        [OrderedDict([('a', 1)]),
+         [OrderedDict([('b', 2)]), OrderedDict([('b', 3)])],
+          OrderedDict([('f', OrderedDict([('g', 4)]))])]
+    """
+    if hasattr(data, 'items'):
+        for (key, val) in data.items():
+            data[key] = transform_all_keys(val, transform)
+    elif isinstance(data, list) or isinstance(data, tuple):
+        data = [transform_all_keys(d) for d in data]
+    if hasattr(data, 'items'):
+        original_len = len(data)
+        tup = ((transform(k), v) for (k, v) in data.items())
+        data = OrderedDict(tup)
+        if len(data) < original_len:
+            raise KeyError('Applying %s caused duplicate keys in %s' %
+                           (transform, data))
+    return data
+                        
 def _id_fieldname(fieldnames, table_name = ''):
     """
     Finds the field name from a dict likeliest to be its unique ID
@@ -272,6 +299,10 @@ def unnest_children(data, parent_name='', pk_name=None):
             if hasattr(val, 'items'): 
                 unnest_child_dict(parent=row, key=key, parent_name=parent_name)
             elif isinstance(val, list) or isinstance(val, tuple):
+                # force listed items to be dicts, not scalars
+                row[key] = [v if hasattr(v, 'items') else {key: v} for v in val]
+        for (key, val) in row.items():
+            if isinstance(val, list) or isinstance(val, tuple):
                 for child in val:
                     field_names_used_by_children[key].update(set(child.keys()))
     for (child_name, names_in_use) in field_names_used_by_children.items():
@@ -288,8 +319,6 @@ def unnest_children(data, parent_name='', pk_name=None):
             if child_name in row:
                 for child in row[child_name]:
                     child[fk_name] = row[parent.pk.name]
-                    if not hasattr(child, 'items'):
-                        child = {'name': child}
                     children[child_name].append(child)
                 row.pop(child_name)
     # TODO: What if rows have a mix of scalar / list / dict types?    
