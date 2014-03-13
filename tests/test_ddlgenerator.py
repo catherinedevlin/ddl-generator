@@ -7,7 +7,7 @@ Tests for `ddlgenerator` module.
 
 import glob
 import unittest
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 try:
     from ddlgenerator.ddlgenerator import Table
 except ImportError:
@@ -15,14 +15,26 @@ except ImportError:
 
 class TestFiles(unittest.TestCase):
     
+    def test_nested(self):
+        merovingians = [
+                        OrderedDict([('name', {'name_id': 1, 'name_txt': 'Clovis I'}), 
+                                     ('reign', {'from': 486, 'to': 511}),
+                                     ]),
+                        OrderedDict([('name', {'name_id': 1, 'name_txt': 'Childebert I'}), 
+                                     ('reign', {'from': 511, 'to': 558}),
+                                     ]),
+                        ]
+        tbl = Table(merovingians)
+        generated = tbl.sql('postgresql', inserts=True).strip()
+        
     def test_pydata_named_tuples(self):
         prov_type = namedtuple('province', ['name', 'capital', 'pop'])
         canada = [prov_type('Quebec', 'Quebec City', '7903001'),
                   prov_type('Ontario', 'Toronto', '12851821'), ]
         tbl = Table(canada)
         generated = tbl.sql('postgresql', inserts=True).strip()
-        expected = "DROP TABLE IF EXISTS generated_table;\nCREATE TABLE generated_table (\n\tname VARCHAR(7) NOT NULL, \n\tcapital VARCHAR(11) NOT NULL, \n\tpop INTEGER NOT NULL\n);\n\nINSERT INTO generated_table (name, capital, pop) VALUES ('Quebec', 'Quebec City', 7903001);\nINSERT INTO generated_table (name, capital, pop) VALUES ('Ontario', 'Toronto', 12851821);"
-        self.assertEqual(generated, expected)
+        self.assertIn('capital VARCHAR(11) NOT NULL,', generated)
+        self.assertIn('(name, capital, pop) VALUES (\'Quebec\', \'Quebec City\', 7903001)', generated)
         
     def test_files(self):
         for sql_fname in glob.glob('*.sql'):

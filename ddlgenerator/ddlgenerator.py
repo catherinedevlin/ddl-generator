@@ -18,6 +18,11 @@ or from Python::
     >>> inserts = menu.inserts('postgresql')
     >>> all_sql = menu.sql('postgresql', inserts=True)
 
+Use ``-k <keyname>`` or ``--key=<keyname>`` to set ``keyname`` as the table's
+primary key.  If the field does not exist, it will be added.  If ``-k`` is not given,
+no primary key will be created, *unless* it is required to set up child tables
+(split out from sub-tables nested inside the original data).
+
 You will need to hand-edit the resulting SQL to add:
 
  - Primary keys
@@ -27,7 +32,7 @@ You will need to hand-edit the resulting SQL to add:
    (ddlgenerator adds them wherever a column's data is unique)
  
 """
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from io import StringIO 
 import csv
 import datetime
@@ -46,11 +51,16 @@ import dateutil.parser
 import yaml
 try:
     import ddlgenerator.typehelpers as th
+    from ddlgenerator import reshape
 except ImportError:
     import typehelpers as th # TODO: can py2/3 split this
+    import reshape
     
 logging.basicConfig(filename='ddlgenerator.log', filemode='w')
 metadata = sa.MetaData()
+
+class KeyAlreadyExists(KeyError):
+    pass
 
 dialect_names = 'drizzle firebird mssql mysql oracle postgresql sqlite sybase'.split()
 
@@ -158,8 +168,11 @@ class Table(object):
             self.data = data
         if not self.data:
             raise SyntaxError("No data found")
-                  
-    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, uniques=False,
+        
+    table_index = 0
+    
+    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, 
+                 uniques=False, pk_name=None, parent_table=None, fk_field_name=None,
                  loglevel=logging.WARN):
         """
         Initialize a Table and load its data.
@@ -168,7 +181,8 @@ class Table(object):
         This *improves* performance in PostgreSQL.
         """
         logging.getLogger().setLevel(loglevel) 
-        self.table_name = 'generated_table'
+        self.table_name = 'generated_table%d' % Table.table_index
+        Table.table_index += 1
         self._load_data(data)
         if hasattr(self.data, 'lower'):
             raise SyntaxError("Data was interpreted as a single string - no table structure:\n%s" 
@@ -181,18 +195,40 @@ class Table(object):
             self.table_name = self._clean_column_name(self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
-        # namedtuples to OrderedDicts
-        self.data = [OrderedDict((k,v) for (k,v) in zip(row._fields, row))
-                     if hasattr(row, '_fields') else row
-                     for row in self.data]
+        self.data = reshape.transform_all_keys(self.data, str.lower)
+        
+        self.data = reshape.namedtuples_to_ordereddicts(self.data)
+        (self.data, self.pk_name, children, child_fk_names) = reshape.unnest_children(
+            data=self.data, parent_name=self.table_name, pk_name=pk_name)
+      
         self.default_dialect = default_dialect
         self._determine_types(varying_length_text, uniques=uniques)
+
+        if parent_table:
+            fk = sa.ForeignKey('%s.%s' % (parent_table.table_name, parent_table.pk_name))
+        else:
+            fk = None
+            
+        # TODO: legalize column names
+        column_args = []
         self.table = sa.Table(self.table_name, metadata, 
                               *[sa.Column(c, t, 
+                                          fk if fk and (fk_field_name == c) else None,
+                                          primary_key=(c == self.pk_name),
                                           unique=self.is_unique[c],
                                           nullable=self.is_nullable[c],
                                           doc=self.comments.get(c)) 
                                 for (c, t) in self.satypes.items()])
+      
+        self.children = {child_name: Table(child_data, table_name=child_name, 
+                                           default_dialect=self.default_dialect, 
+                                           varying_length_text = varying_length_text, 
+                                           uniques=uniques, pk_name=pk_name, 
+                                           parent_table=self, 
+                                           fk_field_name = child_fk_names[child_name],
+                                           loglevel=loglevel)
+                         for (child_name, child_data) in children.items()}
+           
 
     def _dialect(self, dialect):
         if not dialect and not self.default_dialect:
@@ -221,7 +257,11 @@ class Table(object):
         comments = "\n\n".join(self._comment_wrapper.fill("in %s: %s" % 
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
-        return "%s;\n%s;\n%s" % (self._dropper(dialect), creator, comments)
+        result = ["%s;\n%s;\n%s" % (self._dropper(dialect), creator, comments)]
+        for child in self.children.values():
+            result.append(child.ddl(dialect=dialect))
+        return '\n\n'.join(result)
+        
       
     _datetime_format = {}
     def _prep_datum(self, datum, dialect, col):
@@ -249,6 +289,9 @@ class Table(object):
             cols = ", ".join(c for c in row)
             vals = ", ".join(unicode(self._prep_datum(val, dialect, key)) for (key, val) in row.items())
             yield self._insert_template.format(table_name=self.table_name, cols=cols, vals=vals)
+        for child in self.children.values():
+            for row in child.inserts(dialect):
+                yield row
         #TODO: distinguish between inserting blank strings and inserting NULLs
             
     def sql(self, dialect=None, inserts=False):
