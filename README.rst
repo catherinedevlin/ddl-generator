@@ -42,6 +42,7 @@ Supported data formats
 - YAML
 - JSON
 - CSV
+- Pickle
 
 Features
 --------

@@ -43,6 +43,7 @@ import json
 import logging
 import os.path
 import re
+import pickle
 import pprint
 import textwrap
 import sqlalchemy as sa
@@ -79,7 +80,7 @@ def ordered_yaml_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict)
 
 json_loader = functools.partial(json.loads, object_pairs_hook=OrderedDict)
 json_loader.__name__ = 'json_loader'
-     
+    
 def _eval_csv(target):
     """
     Yields OrderedDicts from a CSV string
@@ -119,6 +120,7 @@ class Table(object):
                          '.json': [json_loader, ],
                          '.yaml': [ordered_yaml_load, ],
                          '.csv': [_eval_csv, ], 
+                         '.pickle': [pickle.loads, ],
                          }
     eval_funcs_by_ext['.json'][0].__name__ = 'json'
     eval_funcs_by_ext['*'] = [eval, ] + eval_funcs_by_ext['.json'] + eval_funcs_by_ext['.yaml'] \
@@ -132,15 +134,20 @@ class Table(object):
         or simply Python data. 
         TODO: accept open files
         """
-        file_extension = None
+        if hasattr(data, 'read'): # duck-type open file object test
+            data = data.read()    # and then go on and handle the data as a string
         if hasattr(data, 'lower'):  # duck-type string test
             if os.path.isfile(data):
                 (file_path, file_extension) = os.path.splitext(data)
                 self.table_name = os.path.split(file_path)[1]
                 logging.info('Reading data from %s' % data)
-                with open(data) as infile:
+                if data.endswith('.pickle'):
+                    file_mode = 'rb'
+                else:
+                    file_mode = 'r'
+                with open(data, file_mode) as infile:
                     data = infile.read()
-                    if hasattr(data, 'decode'):
+                    if file_mode == 'r' and hasattr(data, 'decode'):
                         data = data.decode('utf8')  # TODO: fix messy Py 2/3 unicode problem
                 logging.info('Reading data from %s' % data)
             else:
