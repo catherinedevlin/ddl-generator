@@ -171,9 +171,9 @@ class Table(object):
         
     table_index = 0
     
-    def __init__(self, data, table_name=None, default_dialect=None, varying_length_text = False, 
-                 uniques=False, pk_name=None, parent_table=None, fk_field_name=None,
-                 loglevel=logging.WARN):
+    def __init__(self, data, table_name=None, schema_name=None, default_dialect=None, 
+                 varying_length_text = False, uniques=False, pk_name=None, parent_table=None, 
+                 fk_field_name=None, loglevel=logging.WARN):
         """
         Initialize a Table and load its data.
         
@@ -181,18 +181,14 @@ class Table(object):
         This *improves* performance in PostgreSQL.
         """
         logging.getLogger().setLevel(loglevel) 
-        self.table_name = 'generated_table%d' % Table.table_index
-        Table.table_index += 1
         self._load_data(data)
         if hasattr(self.data, 'lower'):
             raise SyntaxError("Data was interpreted as a single string - no table structure:\n%s" 
                               % self.data[:100])
-        if table_name:
-            # keep dots if explicitly given by user
-            self.table_name = '.'.join(reshape.clean_key_name(piece) 
-                                       for piece in table_name.split('.'))
-        else:
-            self.table_name = reshape.clean_key_name(self.table_name)
+        self.table_name = table_name or 'generated_table%s' % Table.table_index
+        self.table_name = reshape.clean_key_name(self.table_name)
+        self.schema_name = ('%s.' % schema_name.strip('.')) or ''
+        
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
         self.data = reshape.clean_all_keys(self.data)
