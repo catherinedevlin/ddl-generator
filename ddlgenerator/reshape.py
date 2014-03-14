@@ -80,30 +80,7 @@ def _id_fieldname(fieldnames, table_name = ''):
         for t in templates:
             if t % stub in fieldnames:
                 return t % stub
-
-class ID_Giver(object):
-    """
-    Works like a database's SEQUENCE to assign ascending numeric IDs.
-    
-    Initialize once per program, pass table name.
-    
-    >>> test_id_giver = ID_Giver()
-    >>> test_id_giver.assign('tbl1')
-    1
-    >>> test_id_giver.assign('tbl1')
-    2
-    >>> test_id_giver.assign('tbl2')
-    1 
-    """
-    def __init__(self):
-        self.sequences = defaultdict(int)
-       
-    def assign(self, table_name):
-        self.sequences[table_name] += 1
-        return self.sequences[table_name]
-       
-id_giver = ID_Giver()   # TODO: maybe should be a singleton?
-
+            
 class UniqueKey(object):
     """
     Provides unique IDs.
@@ -130,19 +107,7 @@ class UniqueKey(object):
             return self.max
         else:
             return md5().hexdigest()
-        
-def ensure_id(dct, table_name):
-    """
-    Finds an *id field in ``dct``; creates it if absent;
-    returns (its name, its value)
-    """
-    id = self._id_fieldname(dct, key)
-    if not id:
-        logging.warning('%s lacks ID field, adding' % self.table_name)
-        dct['id'] = id_giver(table_name)
-        id = 'id'
-    return (id, dct[id])
-   
+       
 def unnest_child_dict(parent, key, parent_name=''):
     """
     If ``parent`` dictionary has a ``key`` whose ``val`` is a dict,
