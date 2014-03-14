@@ -187,7 +187,6 @@ class Table(object):
                               % self.data[:100])
         self.table_name = table_name or 'generated_table%s' % Table.table_index
         self.table_name = reshape.clean_key_name(self.table_name)
-        self.schema_name = ('%s.' % schema_name.strip('.')) or ''
         
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
