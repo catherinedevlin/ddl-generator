@@ -189,13 +189,13 @@ class Table(object):
                               % self.data[:100])
         if table_name:
             # keep dots if explicitly given by user
-            self.table_name = '.'.join(self._clean_column_name(piece) 
+            self.table_name = '.'.join(reshape.clean_key_name(piece) 
                                        for piece in table_name.split('.'))
         else:
-            self.table_name = self._clean_column_name(self.table_name)
+            self.table_name = reshape.clean_key_name(self.table_name)
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
-        self.data = reshape.transform_all_keys(self.data, str.lower)
+        self.data = reshape.clean_all_keys(self.data)
         
         self.data = reshape.namedtuples_to_ordereddicts(self.data)
         (self.data, self.pk_name, children, child_fk_names) = reshape.unnest_children(
@@ -313,19 +313,6 @@ class Table(object):
     types2sa = {datetime.datetime: sa.DateTime, int: sa.Integer, 
                 float: sa.Numeric, bool: sa.Boolean}
    
-    _illegal_in_column_name = re.compile(r'[^a-zA-Z0-9_$#]') 
-    def _clean_column_name(self, col_name):
-        """
-        Replaces illegal characters in column names with ``_``
-        
-        Also lowercases all identifiers.  If you want mixed-case table
-        or column names, you are a bad person and you should feel bad.
-        """
-        result = self._illegal_in_column_name.sub("_", col_name)
-        if result[0].isdigit():
-            result = '_%s' % result
-        return result.lower()
-    
     def _determine_types(self, varying_length_text=False, uniques=False):
         self.columns = OrderedDict()
         self.satypes = OrderedDict() 
@@ -345,7 +332,6 @@ class Table(object):
                     v = str(v)
                     self.comments[k] = 'nested values! example:\n%s' % pprint.pformat(v)
                     logging.warn('in %s: %s' % (k, self.comments[k]))
-                k = self._clean_column_name(k)
                 if k not in self.columns:
                     self.columns[k] = []
                 self.columns[k].append(v)

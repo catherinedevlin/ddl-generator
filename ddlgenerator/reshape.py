@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf8
 import logging
 from collections import OrderedDict, namedtuple, defaultdict
 import doctest
@@ -5,6 +7,7 @@ from hashlib import md5
 import hashlib
 import copy
 from pprint import pprint
+import re
 
 def namedtuples_to_ordereddicts(data):
     """
@@ -17,31 +20,49 @@ def namedtuples_to_ordereddicts(data):
              if hasattr(row, '_fields') else row
              for row in data]
 
-def transform_all_keys(data, transform=str.lower):
+_illegal_in_column_name = re.compile(r'[^a-zA-Z0-9_$#]') 
+def clean_key_name(key):
     """
-    Recursively walks list of dicts (which may themselves embed lists and dicts).
-    Applies ``transform`` to all key fields found in dicts 
+    Makes ``key`` a valid and appropriate SQL column name:
     
-    Usually used to lowercase key names 
+    1. Replaces illegal characters in column names with ``_``
+    
+    2. Prevents name from beginning with a digit (prepends ``_``)
+    
+    3. Lowercases name.  If you want case-sensitive table
+    or column names, you are a bad person and you should feel bad.
+    """
+    result = _illegal_in_column_name.sub("_", key)
+    if result[0].isdigit():
+        result = '_%s' % result
+    return result.lower()
+
+def clean_all_keys(data):
+    """
+    Recursively walks list of dicts (which may themselves embed lists and dicts),
+    using ``clean_key_name(k)`` to make them SQL-safe column names
     
     >>> data = [{'a': 1}, [{'B': 2}, {'B': 3}], {'F': {'G': 4}}]
-    >>> pprint(transform_all_keys(data))
+    >>> pprint(clean_all_keys(data))
         [OrderedDict([('a', 1)]),
          [OrderedDict([('b', 2)]), OrderedDict([('b', 3)])],
           OrderedDict([('f', OrderedDict([('g', 4)]))])]
     """
+    # Recursively clean up child dicts and lists
     if hasattr(data, 'items'):
         for (key, val) in data.items():
-            data[key] = transform_all_keys(val, transform)
+            data[key] = clean_all_keys(val)
     elif isinstance(data, list) or isinstance(data, tuple):
-        data = [transform_all_keys(d) for d in data]
+        data = [clean_all_keys(d) for d in data]
+    
+    # Clean up any keys in this dict itself
     if hasattr(data, 'items'):
-        original_len = len(data)
-        tup = ((transform(k), v) for (k, v) in data.items())
+        original_keys = data.keys()
+        tup = ((clean_key_name(k), v) for (k, v) in data.items())
         data = OrderedDict(tup)
-        if len(data) < original_len:
-            raise KeyError('Applying %s caused duplicate keys in %s' %
-                           (transform, data))
+        if len(data) < len(original_keys):
+            raise KeyError('Cleaning up %s created duplicates' %
+                           original_keys)
     return data
                         
 def _id_fieldname(fieldnames, table_name = ''):
