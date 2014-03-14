@@ -8,18 +8,11 @@ import hashlib
 import copy
 from pprint import pprint
 import re
-
-def namedtuples_to_ordereddicts(data):
-    """
-    For each item in a list of ``data``, if it is a ``namedtuple``,
-    convert it to an ``OrderedDict``.
+try:
+    import ddlgenerator.typehelpers as th
+except ImportError:
+    import typehelpers as th # TODO: can py2/3 split this
     
-    Does not drill down into child objects.
-    """
-    return [ OrderedDict((k,v) for (k,v) in zip(row._fields, row))
-             if hasattr(row, '_fields') else row
-             for row in data]
-
 _illegal_in_column_name = re.compile(r'[^a-zA-Z0-9_$#]') 
 def clean_key_name(key):
     """
@@ -37,23 +30,27 @@ def clean_key_name(key):
         result = '_%s' % result
     return result.lower()
 
-def clean_all_keys(data):
+def walk_and_clean(data):
     """
     Recursively walks list of dicts (which may themselves embed lists and dicts),
-    using ``clean_key_name(k)`` to make them SQL-safe column names
+    transforming namedtuples to OrderedDicts and
+    using ``clean_key_name(k)`` to make keys into SQL-safe column names
     
     >>> data = [{'a': 1}, [{'B': 2}, {'B': 3}], {'F': {'G': 4}}]
-    >>> pprint(clean_all_keys(data))
+    >>> pprint(walk_and_clean(data))
         [OrderedDict([('a', 1)]),
          [OrderedDict([('b', 2)]), OrderedDict([('b', 3)])],
           OrderedDict([('f', OrderedDict([('g', 4)]))])]
     """
+    # transform namedtuples to OrderedDicts
+    if hasattr(data, '_fields'):
+        data = OrderedDict((k,v) for (k,v) in zip(data._fields, data))
     # Recursively clean up child dicts and lists
     if hasattr(data, 'items'):
         for (key, val) in data.items():
-            data[key] = clean_all_keys(val)
+            data[key] = walk_and_clean(val)
     elif isinstance(data, list) or isinstance(data, tuple):
-        data = [clean_all_keys(d) for d in data]
+        data = [walk_and_clean(d) for d in data]
     
     # Clean up any keys in this dict itself
     if hasattr(data, 'items'):
@@ -95,11 +92,12 @@ class UniqueKey(object):
     >>> (len(id2), type(id2))
     (32, <class 'str'>)
     """
-    def __init__(self, key_name, type, max=0):
+    def __init__(self, key_name, key_type, max=0):
         self.name = key_name
-        if type not in (str, int):
-            raise NotImplementedError("can only work with ``str`` or ``int`` IDs")
-        self.type = type
+        if key_type != int and not hasattr(key_type, 'lower'):
+            raise NotImplementedError("Primary key field %s is %s, must be string or integer"
+                                      % (key_name, key_type))
+        self.type = key_type
         self.max = max
     def next(self):
         if self.type == int:
@@ -222,10 +220,7 @@ class ParentTable(list):
         pk_values = all_values_for(self, key_name)
         if not pk_values:
             return ('absent', int)  # could still use it
-        types = set(type(v) for v in pk_values)
-        if len(types) > 1:
-            return (False, None)     # no heterogeneously typed keys!
-        key_type = list(types)[0]
+        key_type = type(th.best_coercable(pk_values))
         num_unique_values = len(set(pk_values))
         if num_unique_values < len(pk_values):
             return (False, None)     # non-unique

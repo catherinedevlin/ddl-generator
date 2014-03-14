@@ -181,18 +181,19 @@ class Table(object):
         This *improves* performance in PostgreSQL.
         """
         logging.getLogger().setLevel(loglevel) 
+        self.table_name = None
         self._load_data(data)
         if hasattr(self.data, 'lower'):
             raise SyntaxError("Data was interpreted as a single string - no table structure:\n%s" 
                               % self.data[:100])
-        self.table_name = table_name or 'generated_table%s' % Table.table_index
+        self.table_name = table_name or self.table_name or 'generated_table%s' % Table.table_index
+        Table.table_index += 1
         self.table_name = reshape.clean_key_name(self.table_name)
         
         if not hasattr(self.data, 'append'): # not a list
             self.data = [self.data,]
-        self.data = reshape.clean_all_keys(self.data)
+        self.data = reshape.walk_and_clean(self.data)
         
-        self.data = reshape.namedtuples_to_ordereddicts(self.data)
         (self.data, self.pk_name, children, child_fk_names) = reshape.unnest_children(
             data=self.data, parent_name=self.table_name, pk_name=pk_name)
       
