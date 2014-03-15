@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS animals;
+
 CREATE TABLE animals (
 	name VARCHAR(8) NOT NULL, 
 	species VARCHAR(10) NOT NULL, 

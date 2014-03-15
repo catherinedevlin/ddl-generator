@@ -34,6 +34,7 @@ You will need to hand-edit the resulting SQL to add:
 """
 from collections import OrderedDict, defaultdict
 from io import StringIO 
+import copy
 import csv
 import datetime
 from decimal import Decimal
@@ -43,6 +44,7 @@ import json
 import logging
 import os.path
 import re
+import pickle
 import pprint
 import textwrap
 import sqlalchemy as sa
@@ -119,6 +121,7 @@ class Table(object):
                          '.json': [json_loader, ],
                          '.yaml': [ordered_yaml_load, ],
                          '.csv': [_eval_csv, ], 
+                         '.pickle': [pickle.loads, ],
                          }
     eval_funcs_by_ext['.json'][0].__name__ = 'json'
     eval_funcs_by_ext['*'] = [eval, ] + eval_funcs_by_ext['.json'] + eval_funcs_by_ext['.yaml'] \
@@ -132,15 +135,21 @@ class Table(object):
         or simply Python data. 
         TODO: accept open files
         """
-        file_extension = None
+        if hasattr(data, 'read'): # duck-type open file object test
+            data = data.read()    # and then go on and handle the data as a string
+        file_extension = '*'
         if hasattr(data, 'lower'):  # duck-type string test
             if os.path.isfile(data):
                 (file_path, file_extension) = os.path.splitext(data)
                 self.table_name = os.path.split(file_path)[1]
                 logging.info('Reading data from %s' % data)
-                with open(data) as infile:
+                if data.endswith('.pickle'):
+                    file_mode = 'rb'
+                else:
+                    file_mode = 'r'
+                with open(data, file_mode) as infile:
                     data = infile.read()
-                    if hasattr(data, 'decode'):
+                    if file_mode == 'r' and hasattr(data, 'decode'):
                         data = data.decode('utf8')  # TODO: fix messy Py 2/3 unicode problem
                 logging.info('Reading data from %s' % data)
             else:
@@ -171,17 +180,24 @@ class Table(object):
         
     table_index = 0
     
-    def __init__(self, data, table_name=None, schema_name=None, default_dialect=None, 
-                 varying_length_text = False, uniques=False, pk_name=None, parent_table=None, 
-                 fk_field_name=None, loglevel=logging.WARN):
+    def __init__(self, data, table_name=None, default_dialect=None, 
+                 save_metadata_to=None, metadata_source=None,
+                 varying_length_text = False, uniques=False, pk_name=None, 
+                 _parent_table=None, _fk_field_name=None, 
+                 loglevel=logging.WARN):
         """
         Initialize a Table and load its data.
         
         If ``varying_length_text`` is ``True``, text columns will be TEXT rather than VARCHAR.
         This *improves* performance in PostgreSQL.
+        
+        If a ``metadata<timestamp>`` YAML file generated from a previous ddlgenerator run is
+        provided, *only* ``INSERT`` statements will be produced, and the table structure 
+        determined during the previous run will be assumed.
         """
         logging.getLogger().setLevel(loglevel) 
         self.table_name = None
+        self.varying_length_text = varying_length_text
         self._load_data(data)
         if hasattr(self.data, 'lower'):
             raise SyntaxError("Data was interpreted as a single string - no table structure:\n%s" 
@@ -198,34 +214,58 @@ class Table(object):
             data=self.data, parent_name=self.table_name, pk_name=pk_name)
       
         self.default_dialect = default_dialect
-        self._determine_types(varying_length_text, uniques=uniques)
+        self.comments = {}
+        if metadata_source:
+            logging.info('Pulling column data from file %s' % metadata_source)
+            with open(metadata_source) as infile:
+                self.columns = yaml.load(infile.read())
+                for (col_name, col) in self.columns.items():
+                    self._fill_metadata_from_sample(col)
+        else:
+            self._determine_types(varying_length_text, uniques=uniques)
 
-        if parent_table:
-            fk = sa.ForeignKey('%s.%s' % (parent_table.table_name, parent_table.pk_name))
+        if _parent_table:
+            fk = sa.ForeignKey('%s.%s' % (_parent_table.table_name, _parent_table.pk_name))
         else:
             fk = None
             
-        # TODO: legalize column names
         column_args = []
         self.table = sa.Table(self.table_name, metadata, 
-                              *[sa.Column(c, t, 
-                                          fk if fk and (fk_field_name == c) else None,
-                                          primary_key=(c == self.pk_name),
-                                          unique=self.is_unique[c],
-                                          nullable=self.is_nullable[c],
-                                          doc=self.comments.get(c)) 
-                                for (c, t) in self.satypes.items()])
+                              *[sa.Column(cname, col['satype'], 
+                                          fk if fk and (_fk_field_name == cname) else None,
+                                          primary_key=(cname == self.pk_name),
+                                          unique=col['is_unique'],
+                                          nullable=col['is_nullable'],
+                                          doc=self.comments.get(cname)) 
+                                for (cname, col) in self.columns.items()
+                                if True
+                                ])
       
         self.children = {child_name: Table(child_data, table_name=child_name, 
                                            default_dialect=self.default_dialect, 
                                            varying_length_text = varying_length_text, 
                                            uniques=uniques, pk_name=pk_name, 
-                                           parent_table=self, 
-                                           fk_field_name = child_fk_names[child_name],
+                                           _parent_table=self, 
+                                           _fk_field_name = child_fk_names[child_name],
                                            loglevel=loglevel)
                          for (child_name, child_data) in children.items()}
-           
+       
+        if save_metadata_to:
+            if not save_metadata_to.endswith(('.yml','yaml')):
+                save_metadata_to += '.yaml'
+            with open(save_metadata_to, 'w') as outfile:
+                outfile.write(yaml.dump(self._saveable_metadata()))
+            logging.info('Pass ``--save-metadata-to %s`` next time to re-use structure' %
+                         save_metadata_to)
 
+    def _saveable_metadata(self):
+        result = copy.copy(self.columns)
+        for v in result.values():
+            v.pop('satype')  # yaml chokes on sqla classes
+        for (child_name, child) in self.children.items():
+            result[child_name] = child._saveable_metadata()
+        return result
+    
     def _dialect(self, dialect):
         if not dialect and not self.default_dialect:
             raise KeyError("No SQL dialect specified")
@@ -243,7 +283,7 @@ class Table(object):
         return template % (if_exists, self.table_name)
             
     _comment_wrapper = textwrap.TextWrapper(initial_indent='-- ', subsequent_indent='-- ')
-    def ddl(self, dialect=None):
+    def ddl(self, dialect=None, creates=True, drops=True):
         """
         Returns SQL to define the table.
         """
@@ -253,15 +293,19 @@ class Table(object):
         comments = "\n\n".join(self._comment_wrapper.fill("in %s: %s" % 
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
-        result = ["%s;\n%s;\n%s" % (self._dropper(dialect), creator, comments)]
+        result = []
+        if drops:
+            result.append(self._dropper(dialect) + ';')
+        if creates:
+            result.append("%s;\n%s" % (creator, comments))
         for child in self.children.values():
-            result.append(child.ddl(dialect=dialect))
+            result.append(child.ddl(dialect=dialect, creates=creates, drops=drops))
         return '\n\n'.join(result)
         
       
-    _datetime_format = {}
+    _datetime_format = {}  # TODO: test the various RDBMS for power to read the standard
     def _prep_datum(self, datum, dialect, col):
-        pytype = self.pytypes[col]
+        pytype = self.columns[col]['pytype']
         if pytype == datetime.datetime:
             datum = dateutil.parser.parse(datum)
         elif pytype == bool:
@@ -290,11 +334,11 @@ class Table(object):
                 yield row
         #TODO: distinguish between inserting blank strings and inserting NULLs
             
-    def sql(self, dialect=None, inserts=False):
+    def sql(self, dialect=None, inserts=False, creates=True, drops=True, metadata_source=None):
         """
         Combined results of ``.ddl(dialect)`` and, if ``inserts==True``, ``.inserts(dialect)``.
         """
-        result = [self.ddl(dialect), ]
+        result = [self.ddl(dialect, creates=creates, drops=drops)]
         if inserts:
             for row in self.inserts(dialect):
                 result.append(row)
@@ -306,15 +350,25 @@ class Table(object):
         else:
             return self.__repr__()
         
+    def _fill_metadata_from_sample(self, col):
+        col['pytype'] = type(col['sample_datum'])
+        if isinstance(col['sample_datum'], Decimal):
+            col['satype'] = sa.DECIMAL(*th.precision_and_scale(col['sample_datum']))
+        elif isinstance(col['sample_datum'], str):
+            if self.varying_length_text:
+                col['satype'] = sa.Text()
+            else:
+                col['satype'] = sa.Unicode(len(col['sample_datum']))
+        else:
+            col['satype'] = self.types2sa[type(col['sample_datum'])]        
+        return col
+        
     types2sa = {datetime.datetime: sa.DateTime, int: sa.Integer, 
                 float: sa.Numeric, bool: sa.Boolean}
    
     def _determine_types(self, varying_length_text=False, uniques=False):
-        self.columns = OrderedDict()
-        self.satypes = OrderedDict() 
-        self.pytypes = {}
-        self.is_unique = {}
-        self.is_nullable = {}
+        self.column_data = OrderedDict()
+        self.columns = OrderedDict() 
         self.comments = {}
         rowcount = 0
         for row in self.data:
@@ -328,24 +382,18 @@ class Table(object):
                     v = unicode(v)
                     self.comments[k] = 'nested values! example:\n%s' % pprint.pformat(v)
                     logging.warn('in %s: %s' % (k, self.comments[k]))
-                if k not in self.columns:
-                    self.columns[k] = []
-                self.columns[k].append(v)
-        for col in self.columns:
-            sample_datum = th.best_coercable(self.columns[col])
-            self.pytypes[col] = type(sample_datum)
-            if isinstance(sample_datum, Decimal):
-                self.satypes[col] = sa.DECIMAL(*th.precision_and_scale(sample_datum))
-            elif isinstance(sample_datum, basestring):
-                if varying_length_text:
-                    self.satypes[col] = sa.Text()
-                else:
-                    self.satypes[col] = sa.String(len(sample_datum))
-            else:
-                self.satypes[col] = self.types2sa[type(sample_datum)]
-            self.is_unique[col] = uniques and (len(set(self.columns[col])) == len(self.columns[col]))
-            self.is_nullable[col] = (len(self.columns[col]) < rowcount 
-                                      or None in self.columns[col])
+                if k not in self.column_data:
+                    self.column_data[k] = []
+                self.column_data[k].append(v)
+        for col_name in self.column_data:
+            sample_datum = th.best_coercable(self.column_data[col_name])
+            col = {'sample_datum': sample_datum}
+            self._fill_metadata_from_sample(col)
+            col['is_unique'] = uniques and (len(set(self.column_data[col_name])) 
+                                            == len(self.column_data[col_name]))
+            col['is_nullable'] = (len(self.column_data[col_name]) < rowcount 
+                                  or None in self.column_data[col_name])
+            self.columns[col_name] = col
         
     
 if __name__ == '__main__':
