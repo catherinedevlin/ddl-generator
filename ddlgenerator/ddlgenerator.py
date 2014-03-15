@@ -358,7 +358,7 @@ class Table(object):
             if self.varying_length_text:
                 col['satype'] = sa.Text()
             else:
-                col['satype'] = sa.String(len(col['sample_datum']))
+                col['satype'] = sa.Unicode(len(col['sample_datum']))
         else:
             col['satype'] = self.types2sa[type(col['sample_datum'])]        
         return col

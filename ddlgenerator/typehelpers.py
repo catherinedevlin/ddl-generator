@@ -145,7 +145,7 @@ def sqla_datatype_for(datum):
     >>> sqla_datatype_for("Jan 17 2012")
     <class 'sqlalchemy.sql.sqltypes.DATETIME'>
     >>> sqla_datatype_for("something else")
-    String(length=14)
+    Unicode(length=14)
     """
     try:
         if len(_complex_enough_to_be_date.findall(datum)) > 1:
@@ -157,7 +157,7 @@ def sqla_datatype_for(datum):
         (prec, scale) = precision_and_scale(datum)
         return sa.DECIMAL(prec, scale)
     except TypeError:
-        return sa.String(len(datum))
+        return sa.Unicode(len(datum))
   
 if __name__ == '__main__':
     doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)    
