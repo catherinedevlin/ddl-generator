@@ -34,6 +34,7 @@ You will need to hand-edit the resulting SQL to add:
 """
 from collections import OrderedDict, defaultdict
 from io import StringIO 
+import copy
 import csv
 import datetime
 from decimal import Decimal
@@ -179,9 +180,11 @@ class Table(object):
         
     table_index = 0
     
-    def __init__(self, data, table_name=None, default_dialect=None, metadata_source=None,
-                 varying_length_text = False, uniques=False, pk_name=None, parent_table=None, 
-                 fk_field_name=None, loglevel=logging.WARN):
+    def __init__(self, data, table_name=None, default_dialect=None, 
+                 save_metadata_to=None, metadata_source=None,
+                 varying_length_text = False, uniques=False, pk_name=None, 
+                 _parent_table=None, _fk_field_name=None, 
+                 loglevel=logging.WARN):
         """
         Initialize a Table and load its data.
         
@@ -213,6 +216,7 @@ class Table(object):
         self.default_dialect = default_dialect
         self.comments = {}
         if metadata_source:
+            logging.info('Pulling column data from file %s' % metadata_source)
             with open(metadata_source) as infile:
                 self.columns = yaml.load(infile.read())
                 for (col_name, col) in self.columns.items():
@@ -220,15 +224,15 @@ class Table(object):
         else:
             self._determine_types(varying_length_text, uniques=uniques)
 
-        if parent_table:
-            fk = sa.ForeignKey('%s.%s' % (parent_table.table_name, parent_table.pk_name))
+        if _parent_table:
+            fk = sa.ForeignKey('%s.%s' % (_parent_table.table_name, _parent_table.pk_name))
         else:
             fk = None
             
         column_args = []
         self.table = sa.Table(self.table_name, metadata, 
                               *[sa.Column(cname, col['satype'], 
-                                          fk if fk and (fk_field_name == cname) else None,
+                                          fk if fk and (_fk_field_name == cname) else None,
                                           primary_key=(cname == self.pk_name),
                                           unique=col['is_unique'],
                                           nullable=col['is_nullable'],
@@ -241,24 +245,27 @@ class Table(object):
                                            default_dialect=self.default_dialect, 
                                            varying_length_text = varying_length_text, 
                                            uniques=uniques, pk_name=pk_name, 
-                                           parent_table=self, 
-                                           fk_field_name = child_fk_names[child_name],
+                                           _parent_table=self, 
+                                           _fk_field_name = child_fk_names[child_name],
                                            loglevel=loglevel)
                          for (child_name, child_data) in children.items()}
        
-        # save findings about column types, for future insert-only runs 
-        for (child_name, child) in self.children.items():
-            self.columns[child_name] = child.columns
-        if not parent_table and not metadata_source:
-            outfilename = 'metadata_%s.yml' % datetime.datetime.now().isoformat()
-            for col in self.columns.values():
-                col.pop('pytype')
-                col.pop('satype')
-            with open(outfilename, 'w') as outfile:
-                outfile.write(yaml.dump(self.columns))
-            logging.info('Pass ``-i %s`` next time to re-use for insert-only run' %
-                         outfilename)
+        if save_metadata_to:
+            if not save_metadata_to.endswith(('.yml','yaml')):
+                save_metadata_to += '.yaml'
+            with open(save_metadata_to, 'w') as outfile:
+                outfile.write(yaml.dump(self._saveable_metadata()))
+            logging.info('Pass ``--save-metadata-to %s`` next time to re-use structure' %
+                         save_metadata_to)
 
+    def _saveable_metadata(self):
+        result = copy.copy(self.columns)
+        for v in result.values():
+            v.pop('satype')  # yaml chokes on sqla classes
+        for (child_name, child) in self.children.items():
+            result[child_name] = child._saveable_metadata()
+        return result
+    
     def _dialect(self, dialect):
         if not dialect and not self.default_dialect:
             raise KeyError("No SQL dialect specified")
@@ -276,7 +283,7 @@ class Table(object):
         return template % (if_exists, self.table_name)
             
     _comment_wrapper = textwrap.TextWrapper(initial_indent='-- ', subsequent_indent='-- ')
-    def ddl(self, dialect=None):
+    def ddl(self, dialect=None, creates=True, drops=True):
         """
         Returns SQL to define the table.
         """
@@ -286,9 +293,13 @@ class Table(object):
         comments = "\n\n".join(self._comment_wrapper.fill("in %s: %s" % 
                                                         (col, self.comments[col])) 
                                                         for col in self.comments)
-        result = ["%s;\n%s;\n%s" % (self._dropper(dialect), creator, comments)]
+        result = []
+        if drops:
+            result.append(self._dropper(dialect) + ';')
+        if creates:
+            result.append("%s;\n%s" % (creator, comments))
         for child in self.children.values():
-            result.append(child.ddl(dialect=dialect))
+            result.append(child.ddl(dialect=dialect, creates=creates, drops=drops))
         return '\n\n'.join(result)
         
       
@@ -323,13 +334,11 @@ class Table(object):
                 yield row
         #TODO: distinguish between inserting blank strings and inserting NULLs
             
-    def sql(self, dialect=None, inserts=False, metadata_source=None):
+    def sql(self, dialect=None, inserts=False, creates=True, drops=True, metadata_source=None):
         """
         Combined results of ``.ddl(dialect)`` and, if ``inserts==True``, ``.inserts(dialect)``.
         """
-        result = []
-        if not metadata_source:
-            result.append(self.ddl(dialect))
+        result = [self.ddl(dialect, creates=creates, drops=drops)]
         if inserts:
             for row in self.inserts(dialect):
                 result.append(row)

@@ -11,18 +11,24 @@ def read_args():
     parser.add_argument('dialect', help='SQL dialect to output', type=str.lower)
     parser.add_argument('datafile', help='Path to file storing data (accepts .yaml, .json)')
     parser.add_argument('-k', '--key', help='Field to use as primary key', type=str.lower)
-    parser.add_argument('-i', '--inserts', action='store_true', help='also generate INSERT statements')
-    parser.add_argument('-m', '--reuse_metadata', type=str, 
-                        help='Re-use specified ``metadata<timestamp>.yml``, generate only INSERTS (no DDL)')
-    parser.add_argument('-t', '--text', action='store_true', 
-                        help='Use variable-length TEXT columns instead of VARCHAR')
     parser.add_argument('-u', '--uniques', action='store_true', 
                         help='Include UNIQUE constraints where data is unique')
+    parser.add_argument('-t', '--text', action='store_true', 
+                        help='Use variable-length TEXT columns instead of VARCHAR')    
+    
+    parser.add_argument('-d', '--drops', action='store_true', help='Include DROP TABLE statements')
+    parser.add_argument('-i', '--inserts', action='store_true', help='Include INSERT statements')
+    parser.add_argument('--no-creates', action='store_true', help='Do not include CREATE TABLE statements')
+    
+    parser.add_argument('--save-metadata-to', type=str, metavar='FILENAME',
+                        help='Save table definition in FILENAME for later --use-saved-metadata run')
+    parser.add_argument('--use-metadata-from', type=str, metavar='FILENAME',
+                        help='Use metadata saved in FROM for table definition, do not re-analyze table structure')
+    
     parser.add_argument('-l', '--log', type=str.upper, 
                         help='log level (CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN)', default='WARN')
     args = parser.parse_args()
-    if args.reuse_metadata:
-        args.inserts = True
+    
     return args
     
 def set_logging(args):
@@ -42,6 +48,10 @@ def generate():
     if args.dialect not in dialect_names:
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
     table = Table(args.datafile, varying_length_text=args.text, uniques=args.uniques, 
-                  pk_name = args.key, metadata_source=args.reuse_metadata, loglevel=args.log)
-    print(table.sql(dialect=args.dialect, inserts=args.inserts, metadata_source=args.reuse_metadata))
+                  pk_name = args.key, 
+                  save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from, 
+                  loglevel=args.log)
+    print(table.sql(dialect=args.dialect, inserts=args.inserts, 
+                    creates=(not args.no_creates), drops=args.drops,
+                    metadata_source=args.use_metadata_from))
    

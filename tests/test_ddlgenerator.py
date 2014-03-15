@@ -45,7 +45,7 @@ class TestFiles(unittest.TestCase):
                 (fname, ext) = source_fname.split('.')
                 if ext != 'sql':
                     tbl = Table(source_fname, uniques=True)
-                    generated = tbl.sql('postgresql', inserts=True).strip()
+                    generated = tbl.sql('postgresql', inserts=True, drops=True).strip()
                     self.assertEqual(generated, expected)
             
         

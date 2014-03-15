@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS menu;
+
 CREATE TABLE menu (
 	name VARCHAR(14) NOT NULL, 
 	cost DECIMAL(3, 2) NOT NULL, 

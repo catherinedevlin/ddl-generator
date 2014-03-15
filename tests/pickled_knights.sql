@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS pickled_knights;
+
 CREATE TABLE pickled_knights (
 	name VARCHAR(10) NOT NULL, 
 	dob TIMESTAMP WITHOUT TIME ZONE, 

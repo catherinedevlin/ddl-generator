@@ -1,0 +1,33 @@
+-
+  common name: Northern Cardinal
+  scientific name: Carnidalis cardinalis
+  length in cm: 21
+  state: 
+    - 
+      name: Illinois
+      abbrev: IL
+    -
+      name: Indiana
+      abbrev: IN
+    - 
+      name: Kentucky
+      abbrev: KY
+    - 
+      name: North Carolina
+      abbrev: NC
+    - 
+      name: Ohio
+      abbrev: OH
+    - 
+      name: Virginia
+      abbrev: VA
+    - 
+      name: West Virginia
+      abbrev: WV
+- 
+  common name: Great Northern Loon
+  scientific name: Gavia immer
+  state:
+    - 
+      name: Minnesota
+      abbrev: MN
