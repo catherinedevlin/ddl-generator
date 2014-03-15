@@ -12,17 +12,25 @@ def read_args():
     parser.add_argument('datafile', help='Path to file storing data (accepts .yaml, .json)')
     parser.add_argument('-k', '--key', help='Field to use as primary key', type=str.lower)
     parser.add_argument('-i', '--inserts', action='store_true', help='also generate INSERT statements')
-    parser.add_argument('-t', '--text', action='store_true', help='Use variable-length TEXT columns instead of VARCHAR')
-    parser.add_argument('-u', '--uniques', action='store_true', help='Include UNIQUE constraints where data is unique')
-    parser.add_argument('-l', '--log', type=str.upper, help='log level (CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN)', default='WARN')
+    parser.add_argument('-m', '--reuse_metadata', type=str, 
+                        help='Re-use specified ``metadata<timestamp>.yml``, generate only INSERTS (no DDL)')
+    parser.add_argument('-t', '--text', action='store_true', 
+                        help='Use variable-length TEXT columns instead of VARCHAR')
+    parser.add_argument('-u', '--uniques', action='store_true', 
+                        help='Include UNIQUE constraints where data is unique')
+    parser.add_argument('-l', '--log', type=str.upper, 
+                        help='log level (CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN)', default='WARN')
     args = parser.parse_args()
+    if args.reuse_metadata:
+        args.inserts = True
     return args
     
 def set_logging(args):
     try:
         loglevel = int(getattr(logging, args.log))
     except (AttributeError, TypeError) as e:
-        raise NotImplementedError('log level "%s" not one of CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN' % args.log)
+        raise NotImplementedError('log level "%s" not one of CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN' % 
+                                  args.log)
     logging.getLogger().setLevel(loglevel)
 
 def generate():
@@ -34,6 +42,6 @@ def generate():
     if args.dialect not in dialect_names:
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
     table = Table(args.datafile, varying_length_text=args.text, uniques=args.uniques, 
-                  pk_name = args.key, loglevel=args.log)
-    print(table.sql(args.dialect, args.inserts))
+                  pk_name = args.key, metadata_source=args.reuse_metadata, loglevel=args.log)
+    print(table.sql(dialect=args.dialect, inserts=args.inserts, metadata_source=args.reuse_metadata))
    
