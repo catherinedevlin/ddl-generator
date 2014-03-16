@@ -55,8 +55,6 @@ def coerce_to_specific(datum):
     datetime.datetime(2012, 1, 17, 0, 0)
     >>> coerce_to_specific("something else")
     'something else'
-    
-    TODO: Boolean
     """
     try:
         if len(_complex_enough_to_be_date.findall(datum)) > 1:
@@ -128,7 +126,6 @@ def best_coercable(data):
         elif pref == worst_pref:
             if isinstance(coerced, Decimal):
                 worst = worst_decimal(coerced, worst)
-                # TODO: how do signs affect precision in various RDBMSs?
             elif isinstance(coerced, float):
                 worst = max(coerced, worst)
             else:  # int, str
