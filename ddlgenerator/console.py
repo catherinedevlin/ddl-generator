@@ -11,6 +11,8 @@ def read_args():
     parser.add_argument('dialect', help='SQL dialect to output', type=str.lower)
     parser.add_argument('datafile', help='Path to file storing data (accepts .yaml, .json)')
     parser.add_argument('-k', '--key', help='Field to use as primary key', type=str.lower)
+    parser.add_argument('-r', '--reorder', help='Reorder fields alphabetically, ``key`` first', 
+                        action='store_true')
     parser.add_argument('-u', '--uniques', action='store_true', 
                         help='Include UNIQUE constraints where data is unique')
     parser.add_argument('-t', '--text', action='store_true', 
@@ -48,7 +50,7 @@ def generate():
     if args.dialect not in dialect_names:
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
     table = Table(args.datafile, varying_length_text=args.text, uniques=args.uniques, 
-                  pk_name = args.key, 
+                  pk_name = args.key, reorder=args.reorder,
                   save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from, 
                   loglevel=args.log)
     print(table.sql(dialect=args.dialect, inserts=args.inserts, 

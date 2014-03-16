@@ -183,7 +183,7 @@ class Table(object):
     def __init__(self, data, table_name=None, default_dialect=None, 
                  save_metadata_to=None, metadata_source=None,
                  varying_length_text = False, uniques=False, pk_name=None, 
-                 _parent_table=None, _fk_field_name=None, 
+                 _parent_table=None, _fk_field_name=None, reorder=False,
                  loglevel=logging.WARN):
         """
         Initialize a Table and load its data.
@@ -224,6 +224,15 @@ class Table(object):
         else:
             self._determine_types(varying_length_text, uniques=uniques)
 
+        if reorder:
+            #import ipdb; ipdb.set_trace()
+            ordered_columns = OrderedDict()
+            if pk_name and pk_name in self.columns:
+                ordered_columns[pk_name] = self.columns.pop(pk_name)
+            for (c, v) in sorted(self.columns.items()):
+                ordered_columns[c] = v
+            self.columns = ordered_columns    
+            
         if _parent_table:
             fk = sa.ForeignKey('%s.%s' % (_parent_table.table_name, _parent_table.pk_name))
         else:
@@ -245,7 +254,7 @@ class Table(object):
                                            default_dialect=self.default_dialect, 
                                            varying_length_text = varying_length_text, 
                                            uniques=uniques, pk_name=pk_name, 
-                                           _parent_table=self, 
+                                           _parent_table=self, reorder=reorder,
                                            _fk_field_name = child_fk_names[child_name],
                                            loglevel=loglevel)
                          for (child_name, child_data) in children.items()}
@@ -367,7 +376,7 @@ class Table(object):
                 float: sa.Numeric, bool: sa.Boolean}
    
     def _determine_types(self, varying_length_text=False, uniques=False):
-        self.column_data = OrderedDict()
+        column_data = OrderedDict()
         self.columns = OrderedDict() 
         self.comments = {}
         rowcount = 0
@@ -382,17 +391,17 @@ class Table(object):
                     v = str(v)
                     self.comments[k] = 'nested values! example:\n%s' % pprint.pformat(v)
                     logging.warn('in %s: %s' % (k, self.comments[k]))
-                if k not in self.column_data:
-                    self.column_data[k] = []
-                self.column_data[k].append(v)
-        for col_name in self.column_data:
-            sample_datum = th.best_coercable(self.column_data[col_name])
+                if k not in column_data:
+                    column_data[k] = []
+                column_data[k].append(v)
+        for col_name in column_data:
+            sample_datum = th.best_coercable(column_data[col_name])
             col = {'sample_datum': sample_datum}
             self._fill_metadata_from_sample(col)
-            col['is_unique'] = uniques and (len(set(self.column_data[col_name])) 
-                                            == len(self.column_data[col_name]))
-            col['is_nullable'] = (len(self.column_data[col_name]) < rowcount 
-                                  or None in self.column_data[col_name])
+            col['is_unique'] = uniques and (len(set(column_data[col_name])) 
+                                            == len(column_data[col_name]))
+            col['is_nullable'] = (len(column_data[col_name]) < rowcount 
+                                  or None in column_data[col_name])
             self.columns[col_name] = col
         
     
