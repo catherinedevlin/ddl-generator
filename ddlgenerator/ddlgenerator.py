@@ -354,7 +354,7 @@ class Table(object):
         col['pytype'] = type(col['sample_datum'])
         if isinstance(col['sample_datum'], Decimal):
             col['satype'] = sa.DECIMAL(*th.precision_and_scale(col['sample_datum']))
-        elif isinstance(col['sample_datum'], str):
+        elif isinstance(col['sample_datum'], unicode):
             if self.varying_length_text:
                 col['satype'] = sa.Text()
             else:
@@ -364,7 +364,7 @@ class Table(object):
         return col
         
     types2sa = {datetime.datetime: sa.DateTime, int: sa.Integer, 
-                float: sa.Numeric, bool: sa.Boolean, unicode: sa.Unicode}
+                float: sa.Numeric, bool: sa.Boolean, } 
    
     def _determine_types(self, varying_length_text=False, uniques=False):
         self.column_data = OrderedDict()
