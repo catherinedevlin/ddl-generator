@@ -40,6 +40,7 @@ import datetime
 from decimal import Decimal
 import doctest
 import functools
+import inspect
 import json
 import logging
 import os.path
@@ -134,8 +135,11 @@ class Table(object):
         string of JSON or YAML, a filename containing the same, 
         or simply Python data. 
         """
-        if hasattr(data, 'read'): # duck-type open file object test
-            data = data.read()    # and then go on and handle the data as a string
+        if inspect.isgenerator(data):
+            data = list(data)       # TODO: actually handling from generator would be
+                                    # much more memory-efficient for large data sets
+        elif hasattr(data, 'read'): # duck-type open file object test
+            data = data.read()      # and then go on and handle the data as a string
         file_extension = '*'
         if hasattr(data, 'lower'):  # duck-type string test
             if os.path.isfile(data):
