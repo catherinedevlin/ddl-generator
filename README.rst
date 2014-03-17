@@ -64,6 +64,7 @@ Options
 
       -h, --help            show this help message and exit
       -k KEY, --key KEY     Field to use as primary key
+      -r, --reorder         Reorder fields alphabetically, ``key`` first
       -u, --uniques         Include UNIQUE constraints where data is unique
       -t, --text            Use variable-length TEXT columns instead of VARCHAR
       -d, --drops           Include DROP TABLE statements

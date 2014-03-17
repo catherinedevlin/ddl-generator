@@ -133,7 +133,6 @@ class Table(object):
         Populates ``self.data`` from ``data``, whether ``data`` is a 
         string of JSON or YAML, a filename containing the same, 
         or simply Python data. 
-        TODO: accept open files
         """
         if hasattr(data, 'read'): # duck-type open file object test
             data = data.read()    # and then go on and handle the data as a string
@@ -160,14 +159,13 @@ class Table(object):
                 try:
                     self.data = func(data)
                     if hasattr(self.data, 'lower'):
-                        logging.warn("Data was interpreted as a single string - no table structure:\n%s" 
-                                     % self.data[:100])                    
+                        logging.warning("Data was interpreted as a single string - no table structure:\n%s" 
+                                        % self.data[:100])                    
                     elif self.data:
                         logging.info('Data successfully interpreted with %s' % func.__name__)
                         return 
                 except Exception as e:  # our deserializers may throw a variety of errors
-                    logging.warn('Could not interpret data; %s threw\n%s' % (func.__name__, str(e)))
-                    pass
+                    logging.warning('Could not interpret data; %s threw\n%s' % (func.__name__, str(e)))
             logging.critical('All interpreters failed')
             if self._looks_like_filename.search(data):
                 raise IOError("Filename not found")
@@ -341,7 +339,6 @@ class Table(object):
         for child in self.children.values():
             for row in child.inserts(dialect):
                 yield row
-        #TODO: distinguish between inserting blank strings and inserting NULLs
             
     def sql(self, dialect=None, inserts=False, creates=True, drops=True, metadata_source=None):
         """
@@ -390,7 +387,7 @@ class Table(object):
                 if not th.is_scalar(v):
                     v = unicode(v)
                     self.comments[k] = 'nested values! example:\n%s' % pprint.pformat(v)
-                    logging.warn('in %s: %s' % (k, self.comments[k]))
+                    logging.warning('in %s: %s' % (k, self.comments[k]))
                 if k not in column_data:
                     column_data[k] = []
                 column_data[k].append(v)

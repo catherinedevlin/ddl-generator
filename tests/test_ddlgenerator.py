@@ -15,6 +15,12 @@ except ImportError:
 
 class TestFiles(unittest.TestCase):
     
+    def test_use_open_file(self):
+        with open('knights.yaml') as infile:
+            knights = Table(infile)
+            generated = knights.sql('postgresql', inserts=True)
+            self.assertIn('Lancelot', generated)
+            
     def test_nested(self):
         merovingians = [
                         OrderedDict([('name', {'name_id': 1, 'name_txt': 'Clovis I'}), 
