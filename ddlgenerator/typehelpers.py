@@ -54,7 +54,7 @@ def coerce_to_specific(datum):
     >>> coerce_to_specific("Jan 17 2012")
     datetime.datetime(2012, 1, 17, 0, 0)
     >>> coerce_to_specific("something else")
-    'something else'
+    u'something else'
     """
     try:
         if len(_complex_enough_to_be_date.findall(datum)) > 1:
@@ -112,7 +112,7 @@ def best_coercable(data):
     >>> best_coercable(('2014 jun 7', '2011 may 2'))
     datetime.datetime(2014, 6, 7, 0, 0)
     >>> best_coercable((7, 21.4, 'ruining everything'))
-    'ruining everything'
+    u'ruining everything'
     """
     preference = (datetime.datetime, bool, int, Decimal, float, unicode)
     worst_pref = 0 

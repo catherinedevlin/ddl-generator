@@ -111,23 +111,23 @@ def unnest_child_dict(parent, key, parent_name=''):
     If ``parent`` dictionary has a ``key`` whose ``val`` is a dict,
     unnest ``val``'s fields into ``parent`` and remove ``key``.
     
-    >>> parent = {'province': 'Québec', 'capital': {'name': 'Québec City', 'pop': 491140}}
+    >>> parent = {'province': u'Québec', 'capital': {'name': u'Québec City', 'pop': 491140}}
     >>> unnest_child_dict(parent, 'capital', 'provinces')
     >>> pprint(parent)
-    {'capital_name': 'Québec City', 'capital_pop': 491140, 'province': 'Québec'}
+    {'capital_name': u'Québec City', 'capital_pop': 491140, 'province': u'Québec'}
 
-    >>> parent = {'province': 'Québec', 'capital': {'id': 1, 'name': 'Québec City', 'pop': 491140}}
+    >>> parent = {'province': u'Québec', 'capital': {'id': 1, 'name': u'Québec City', 'pop': 491140}}
     >>> unnest_child_dict(parent, 'capital', 'provinces')
     >>> pprint(parent)
     {'capital_id': 1,
-     'capital_name': 'Québec City',
+     'capital_name': u'Québec City',
      'capital_pop': 491140,
-     'province': 'Québec'}
+     'province': u'Québec'}
 
-    >>> parent = {'province': 'Québec', 'capital': {'id': 1, 'name': 'Québec City'}}
+    >>> parent = {'province': u'Québec', 'capital': {'id': 1, 'name': u'Québec City'}}
     >>> unnest_child_dict(parent, 'capital', 'provinces')
     >>> pprint(parent)
-    {'capital': 'Québec City', 'province': 'Québec'}
+    {'capital': u'Québec City', 'province': u'Québec'}
     
     """
     val = parent[key]

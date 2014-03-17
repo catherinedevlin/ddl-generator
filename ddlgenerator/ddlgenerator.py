@@ -165,7 +165,7 @@ class Table(object):
                         logging.info('Data successfully interpreted with %s' % func.__name__)
                         return 
                 except Exception as e:  # our deserializers may throw a variety of errors
-                    logging.warning('Could not interpret data; %s threw\n%s' % (func.__name__, str(e)))
+                    logging.warning('Could not interpret data; %s threw\n%s' % (func.__name__, unicode(e)))
             logging.critical('All interpreters failed')
             if self._looks_like_filename.search(data):
                 raise IOError("Filename not found")
