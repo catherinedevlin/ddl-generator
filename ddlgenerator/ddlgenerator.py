@@ -217,17 +217,24 @@ class Table(object):
       
         self.default_dialect = default_dialect
         self.comments = {}
+        child_metadata_sources = {}
         if metadata_source:
-            logging.info('Pulling column data from file %s' % metadata_source)
-            with open(metadata_source) as infile:
-                self.columns = yaml.load(infile.read())
-                for (col_name, col) in self.columns.items():
+            if isinstance(metadata_source, OrderedDict):
+                logging.info('Column metadata passed in as OrderedDict')
+                self.columns = metadata_source
+            else:
+                logging.info('Pulling column metadata from file %s' % metadata_source)
+                with open(metadata_source) as infile:
+                    self.columns = yaml.load(infile.read())
+            for (col_name, col) in self.columns.items():
+                if isinstance(col, OrderedDict):
+                    child_metadata_sources[col_name] = col
+                else:
                     self._fill_metadata_from_sample(col)
         else:
             self._determine_types(varying_length_text, uniques=uniques)
 
         if reorder:
-            #import ipdb; ipdb.set_trace()
             ordered_columns = OrderedDict()
             if pk_name and pk_name in self.columns:
                 ordered_columns[pk_name] = self.columns.pop(pk_name)
@@ -258,6 +265,7 @@ class Table(object):
                                            uniques=uniques, pk_name=pk_name, 
                                            _parent_table=self, reorder=reorder,
                                            _fk_field_name = child_fk_names[child_name],
+                                           metadata_source = child_metadata_sources.get(child_name),
                                            loglevel=loglevel)
                          for (child_name, child_data) in children.items()}
        
