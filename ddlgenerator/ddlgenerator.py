@@ -229,6 +229,7 @@ class Table(object):
             for (col_name, col) in self.columns.items():
                 if isinstance(col, OrderedDict):
                     child_metadata_sources[col_name] = col
+                    self.columns.pop(col_name)
                 else:
                     self._fill_metadata_from_sample(col)
         else:
