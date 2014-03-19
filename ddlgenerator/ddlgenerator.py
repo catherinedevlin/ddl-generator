@@ -258,7 +258,7 @@ class Table(object):
                                           doc=self.comments.get(cname)) 
                                 for (cname, col) in self.columns.items()
                                 if True
-                                ])
+                                ], extend_existing=True)
       
         self.children = {child_name: Table(child_data, table_name=child_name, 
                                            default_dialect=self.default_dialect, 
