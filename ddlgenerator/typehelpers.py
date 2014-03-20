@@ -17,13 +17,13 @@ def is_scalar(x):
 def precision_and_scale(x):
     """
     From a float, decide what precision and scale are needed to represent it.
-   
+
     >>> precision_and_scale(54.2)
     (3, 1)
     >>> precision_and_scale(9)
     (1, 0)
-    
-    Thanks to Mark Ransom, 
+
+    Thanks to Mark Ransom,
     http://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
     """
     if isinstance(x, Decimal):
@@ -48,7 +48,7 @@ def coerce_to_specific(datum):
     """
     Coerces datum to the most specific data type possible
     Order of preference: datetime, boolean, integer, decimal, float, string
-    
+
     >>> coerce_to_specific(7.2)
     Decimal('7.2')
     >>> coerce_to_specific("Jan 17 2012")
@@ -59,7 +59,7 @@ def coerce_to_specific(datum):
     try:
         if len(_complex_enough_to_be_date.findall(datum)) > 1:
             return dateutil.parser.parse(datum)
-    except (ValueError, TypeError) as e:
+    except Exception as e:
         pass
     if str(datum).strip().lower() in ('0', 'false', 'f', 'n', 'no'):
         return False
@@ -69,7 +69,7 @@ def coerce_to_specific(datum):
         return int(str(datum))
     except ValueError:
         pass
-    try: 
+    try:
         return Decimal(str(datum))
     except InvalidOperation:
         pass
@@ -86,25 +86,25 @@ def _places_b4_and_after_decimal(d):
     """
     tup = d.as_tuple()
     return (len(tup.digits) + tup.exponent, max(-1*tup.exponent, 0))
-    
+
 def worst_decimal(d1, d2):
     """
     Given two Decimals, return a 9-filled decimal representing both enough > 0 digits
     and enough < 0 digits (scale) to accomodate numbers like either.
-    
+
     >>> worst_decimal(Decimal('762.1'), Decimal('-1.983'))
     Decimal('999.999')
     """
     (d1b4, d1after) = _places_b4_and_after_decimal(d1)
     (d2b4, d2after) = _places_b4_and_after_decimal(d2)
     return Decimal('9' * max(d1b4, d2b4) + '.' + '9' * max(d1after, d2after))
-    
+
 def best_coercable(data):
     """
     Given an iterable of scalar data, returns the datum representing the most specific
     data type the list overall can be coerced into, preferring datetimes, then bools,
-    then integers, then decimals, then floats, then strings.  
-    
+    then integers, then decimals, then floats, then strings.
+
     >>> best_coercable((6, '2', 9))
     6
     >>> best_coercable((Decimal('6.1'), 2, 9))
@@ -115,7 +115,7 @@ def best_coercable(data):
     'ruining everything'
     """
     preference = (datetime.datetime, bool, int, Decimal, float, str)
-    worst_pref = 0 
+    worst_pref = 0
     worst = ''
     for datum in data:
         coerced = coerce_to_specific(datum)
@@ -132,11 +132,11 @@ def best_coercable(data):
                 if len(str(coerced)) > len(str(worst)):
                     worst = coerced
     return worst
-            
+
 def sqla_datatype_for(datum):
     """
     Given a scalar Python value, picks an appropriate SQLAlchemy data type.
-    
+
     >>> sqla_datatype_for(7.2)
     DECIMAL(precision=2, scale=1)
     >>> sqla_datatype_for("Jan 17 2012")
@@ -155,6 +155,6 @@ def sqla_datatype_for(datum):
         return sa.DECIMAL(prec, scale)
     except TypeError:
         return sa.Unicode(len(datum))
-  
+
 if __name__ == '__main__':
-    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)    
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
