@@ -49,7 +49,7 @@ def walk_and_clean(data):
     if hasattr(data, 'items'):
         for (key, val) in data.items():
             data[key] = walk_and_clean(val)
-    elif isinstance(data, list) or isinstance(data, tuple):
+    elif isinstance(data, list) or isinstance(data, tuple) or hasattr(data, '__next__'):
         data = [walk_and_clean(d) for d in data]
     
     # Clean up any keys in this dict itself
@@ -194,18 +194,21 @@ class ParentTable(list):
     Now if province_id is unusable because it's nonunique:
     >>> data2 = copy.deepcopy(_sample_data)
     >>> for row in data2: row['province_id'] = 4
-    >>> provinces2 = ParentTable(data2, 'province', pk_name='id')
+    >>> provinces2 = ParentTable(data2, 'province', pk_name='id', force_pk=True)
     >>> provinces2.pk.name
     'id'
     >>> [p[provinces2.pk.name] for p in provinces2]
     [1, 4, 3]
     
     """
-    def __init__(self, data, singular_name, pk_name=None):
+    def is_in_all_rows(self, value):
+        return len([1 for r in self if r.get(value)]) == len(self)
+    
+    def __init__(self, data, singular_name, pk_name=None, force_pk=False):
         self.name = singular_name
         super(ParentTable, self).__init__(data)
         self.pk_name = pk_name
-        if self.pk_name:
+        if force_pk or (self.pk_name and self.is_in_all_rows(self.pk_name)):
             self.assign_pk()
         else:
             self.pk = None
@@ -253,7 +256,7 @@ class ParentTable(list):
                     row[self.pk_name] = self.pk.next()
    
      
-def unnest_children(data, parent_name='', pk_name=None):
+def unnest_children(data, parent_name='', pk_name=None, force_pk=False):
     """
     For each ``key`` in each row of ``data`` (which must be a list of dicts),
     unnest any dict values into ``parent``, and remove list values into separate lists.
@@ -270,11 +273,13 @@ def unnest_children(data, parent_name='', pk_name=None):
       dict of the foreign key field name in each child 
    
     """
-    possible_fk_names = ('%s_id' % parent_name, '_%s_id' % parent_name, 'parent_id', )
+    possible_fk_names = ['%s_id' % parent_name, '_%s_id' % parent_name, 'parent_id', ]
+    if pk_name:
+        possible_fk_names.insert(0, '%s_%s' % (parent_name, pk_name.strip('_')))
     children = defaultdict(list)
     field_names_used_by_children = defaultdict(set)
     child_fk_names = {}
-    parent = ParentTable(data, parent_name, pk_name=pk_name)
+    parent = ParentTable(data, parent_name, pk_name=pk_name, force_pk=force_pk)
     for row in parent:
         for (key, val) in row.items():
             if hasattr(val, 'items'): 
