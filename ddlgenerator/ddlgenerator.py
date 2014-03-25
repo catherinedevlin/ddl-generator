@@ -52,6 +52,7 @@ import sqlalchemy as sa
 from sqlalchemy.schema import CreateTable
 import dateutil.parser
 import yaml
+import pymongo
 try:
     import ddlgenerator.typehelpers as th
     from ddlgenerator import reshape
@@ -135,11 +136,11 @@ class Table(object):
         string of JSON or YAML, a filename containing the same, 
         or simply Python data. 
         """
-        if inspect.isgenerator(data):
-            data = list(data)       # TODO: actually handling from generator would be
-                                    # much more memory-efficient for large data sets
+        if isinstance(data, pymongo.collection.Collection):
+            self.table_name = data.name
+            data = data.find()
         elif hasattr(data, 'read'): # duck-type open file object test
-            data = data.read()      # and then go on and handle the data as a string
+            data = data.read()    # and then go on and handle the data as a string
         file_extension = '*'
         if hasattr(data, 'lower'):  # duck-type string test
             if os.path.isfile(data):
@@ -184,7 +185,8 @@ class Table(object):
     
     def __init__(self, data, table_name=None, default_dialect=None, 
                  save_metadata_to=None, metadata_source=None,
-                 varying_length_text = False, uniques=False, pk_name=None, 
+                 varying_length_text = False, uniques=False, 
+                 pk_name=None, force_pk=False,
                  _parent_table=None, _fk_field_name=None, reorder=False,
                  loglevel=logging.WARN):
         """
@@ -208,12 +210,12 @@ class Table(object):
         Table.table_index += 1
         self.table_name = reshape.clean_key_name(self.table_name)
         
-        if not hasattr(self.data, 'append'): # not a list
+        if not hasattr(self.data, 'append') and not hasattr(self.data, '__next__'):
             self.data = [self.data,]
         self.data = reshape.walk_and_clean(self.data)
         
         (self.data, self.pk_name, children, child_fk_names) = reshape.unnest_children(
-            data=self.data, parent_name=self.table_name, pk_name=pk_name)
+            data=self.data, parent_name=self.table_name, pk_name=pk_name, force_pk=force_pk)
       
         self.default_dialect = default_dialect
         self.comments = {}
@@ -263,7 +265,7 @@ class Table(object):
         self.children = {child_name: Table(child_data, table_name=child_name, 
                                            default_dialect=self.default_dialect, 
                                            varying_length_text = varying_length_text, 
-                                           uniques=uniques, pk_name=pk_name, 
+                                           uniques=uniques, pk_name=pk_name, force_pk=force_pk,
                                            _parent_table=self, reorder=reorder,
                                            _fk_field_name = child_fk_names[child_name],
                                            metadata_source = child_metadata_sources.get(child_name),

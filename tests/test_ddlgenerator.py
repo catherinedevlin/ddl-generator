@@ -7,12 +7,42 @@ Tests for `ddlgenerator` module.
 
 import glob
 import unittest
+import pymongo
 from collections import namedtuple, OrderedDict
 try:
     from ddlgenerator.ddlgenerator import Table
 except ImportError:
     from ddlgenerator import Table
 
+class TestMongo(unittest.TestCase):
+    
+    def setUp(self):
+        data = [{'year': 2013,
+                 'physics': ['François Englert', 'Peter W. Higgs'],
+                 'chemistry': ['Martin Karplus', 'Michael Levitt', 'Arieh Warshel'],
+                 'peace': ['Organisation for the Prohibition of Chemical Weapons (OPCW)',],
+                 },
+                {'year': 2011,
+                 'physics': ['Saul Perlmutter', 'Brian P. Schmidt', 'Adam G. Riess'],
+                 'chemistry': ['Dan Shechtman',],
+                 'peace': ['Ellen Johnson Sirleaf', 'Leymah Gbowee', 'Tawakkol Karman'],
+                 },
+                ]
+        self.data = data
+        self.conn = pymongo.Connection()
+        self.db = self.conn.ddlgenerator_test_db
+        self.tbl = self.db.prize_winners
+        self.tbl.insert(self.data)
+        
+    def tearDown(self):
+        self.conn.drop_database(self.db)
+        
+    def testData(self):
+        winners = Table(self.tbl, pk_name='year')
+        generated = winners.sql('postgresql', inserts=True)
+        self.assertIn('REFERENCES prize_winners (year)', generated)
+        
+        
 class TestFiles(unittest.TestCase):
     
     def test_use_open_file(self):
