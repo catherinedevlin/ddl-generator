@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf8
 """
 test_ddlgenerator
 ----------------------------------

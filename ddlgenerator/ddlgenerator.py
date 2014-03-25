@@ -210,7 +210,8 @@ class Table(object):
         Table.table_index += 1
         self.table_name = reshape.clean_key_name(self.table_name)
         
-        if not hasattr(self.data, 'append') and not hasattr(self.data, '__next__'):
+        if not hasattr(self.data, 'append') and not hasattr(self.data, '__next__') \
+            and not hasattr(self.data, 'next'):
             self.data = [self.data,]
         self.data = reshape.walk_and_clean(self.data)
         
