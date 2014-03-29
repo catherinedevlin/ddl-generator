@@ -49,7 +49,8 @@ def walk_and_clean(data):
     if hasattr(data, 'items'):
         for (key, val) in data.items():
             data[key] = walk_and_clean(val)
-    elif isinstance(data, list) or isinstance(data, tuple) or hasattr(data, '__next__'):
+    elif isinstance(data, list) or isinstance(data, tuple) \
+         or hasattr(data, '__next__') or hasattr(data, 'next'):
         data = [walk_and_clean(d) for d in data]
     
     # Clean up any keys in this dict itself
