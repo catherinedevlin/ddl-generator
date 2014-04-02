@@ -149,10 +149,10 @@ class Table(object):
                 if data.endswith('.pickle'):
                     file_mode = 'rb'
                 else:
-                    file_mode = 'r'
+                    file_mode = 'rU'
                 with open(data, file_mode) as infile:
                     data = infile.read()
-                    if file_mode == 'r' and hasattr(data, 'decode'):
+                    if file_mode == 'rU' and hasattr(data, 'decode'):
                         data = data.decode('utf8')  # TODO: fix messy Py 2/3 unicode problem
                 logging.info('Reading data from %s' % data)
             else:
