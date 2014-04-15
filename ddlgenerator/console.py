@@ -9,7 +9,7 @@ except ImportError:
 def read_args():
     parser = argparse.ArgumentParser(description='Generate DDL based on data')
     parser.add_argument('dialect', help='SQL dialect to output', type=str.lower)
-    parser.add_argument('datafile', help='Path to file storing data (accepts .yaml, .json)')
+    parser.add_argument('datafile', help='Path to file storing data (accepts .yaml, .json)', nargs='+')
     parser.add_argument('-k', '--key', help='If primary key needed, name it this', type=str.lower)
     parser.add_argument('--force-key', help='Force every table to have a primary key',
                         action='store_true')    
@@ -51,11 +51,12 @@ def generate():
         args.dialect = 'postgresql'
     if args.dialect not in dialect_names:
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
-    table = Table(args.datafile, varying_length_text=args.text, uniques=args.uniques, 
-                  pk_name = args.key, force_pk=args.force_key, reorder=args.reorder,
-                  save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from, 
-                  loglevel=args.log)
-    print(table.sql(dialect=args.dialect, inserts=args.inserts, 
-                    creates=(not args.no_creates), drops=args.drops,
-                    metadata_source=args.use_metadata_from))
+    for datafile in args.datafile:
+        table = Table(datafile, varying_length_text=args.text, uniques=args.uniques, 
+                      pk_name = args.key, force_pk=args.force_key, reorder=args.reorder,
+                      save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from, 
+                      loglevel=args.log)
+        print(table.sql(dialect=args.dialect, inserts=args.inserts, 
+                        creates=(not args.no_creates), drops=args.drops,
+                        metadata_source=args.use_metadata_from))
    

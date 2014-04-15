@@ -23,14 +23,8 @@ primary key.  If the field does not exist, it will be added.  If ``-k`` is not g
 no primary key will be created, *unless* it is required to set up child tables
 (split out from sub-tables nested inside the original data).
 
-You will need to hand-edit the resulting SQL to add:
+You will need to hand-edit the resulting SQL to add indexes.
 
- - Primary keys
- - Foreign keys
- - Indexes
- - Delete unwanted UNIQUE indexes 
-   (ddlgenerator adds them wherever a column's data is unique)
- 
 """
 from collections import OrderedDict, defaultdict
 from io import StringIO 
@@ -419,4 +413,5 @@ class Table(object):
         
     
 if __name__ == '__main__':
+    tbl = Table('../../rad/data_sources/ga.csv')
     doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)    
