@@ -99,6 +99,40 @@ def worst_decimal(d1, d2):
     (d2b4, d2after) = _places_b4_and_after_decimal(d2)
     return Decimal('9' * max(d1b4, d2b4) + '.' + '9' * max(d1after, d2after))
 
+def best_representative(d1, d2):
+    """
+    Given two objects each coerced to the most specific type possible, return the one
+    of the least restrictive type.
+    
+    >>> best_representative(6, 'foo')
+    'foo'
+    >>> best_representative(Decimal('4.95'), Decimal('6.1'))
+    Decimal('9.99')
+    """
+    preference = (datetime.datetime, bool, int, Decimal, float, str)
+    worst_pref = 0
+    worst = ''
+    for coerced in (d1, d2):
+        pref = preference.index(type(coerced))
+        if pref > worst_pref:
+            worst_pref = pref
+            worst = coerced
+        elif pref == worst_pref:
+            if isinstance(coerced, Decimal):
+                worst = worst_decimal(coerced, worst)
+            elif isinstance(coerced, float):
+                worst = max(coerced, worst)
+            else:  # int, str
+                if len(str(coerced)) > len(str(worst)):
+                    worst = coerced
+    return worst
+    
+    
+ 
+ 
+ 
+    
+    already_coerced, 
 def best_coercable(data):
     """
     Given an iterable of scalar data, returns the datum representing the most specific

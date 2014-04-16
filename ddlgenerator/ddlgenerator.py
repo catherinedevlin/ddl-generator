@@ -39,6 +39,7 @@ import logging
 import os.path
 import re
 import pickle
+import shelve
 import pprint
 import textwrap
 import sqlalchemy as sa
@@ -97,7 +98,7 @@ class Table(object):
     >>> data = '''
     ... - 
     ...   name: Lancelot
-    ...   kg: 83
+    ...   kg: 69.4 
     ...   dob: 9 jan 461
     ... -
     ...   name: Gawain
@@ -107,7 +108,9 @@ class Table(object):
     CREATE TABLE knights (
     	name VARCHAR(8) NOT NULL, 
     	kg DECIMAL(3, 1) NOT NULL, 
-    	dob TIMESTAMP WITHOUT TIME ZONE 
+    	dob TIMESTAMP WITHOUT TIME ZONE, 
+    	UNIQUE (name), 
+    	UNIQUE (dob)
     );
     """
     
@@ -390,6 +393,9 @@ class Table(object):
         for row in self.data:
             rowcount += 1
             keys = row.keys()
+            for col_name in self.columns:
+                if col_name not in keys:
+                    self.columns[col_name]['is_nullable'] = True
             if not isinstance(row, OrderedDict):
                 keys = sorted(keys)
             for k in keys:
@@ -398,19 +404,26 @@ class Table(object):
                     v = str(v)
                     self.comments[k] = 'nested values! example:\n%s' % pprint.pformat(v)
                     logging.warning('in %s: %s' % (k, self.comments[k]))
-                if k not in column_data:
-                    column_data[k] = []
-                column_data[k].append(v)
-        for col_name in column_data:
-            sample_datum = th.best_coercable(column_data[col_name])
-            col = {'sample_datum': sample_datum}
+                v = th.coerce_to_specific(v)
+                if k not in self.columns:
+                    self.columns[k] = {'sample_datum': v, 'is_unique': True, 
+                                       'is_nullable': not (rowcount == 1 and v is not None), 
+                                       'is_unique': set([v,])}
+                else:
+                    col = self.columns[k]
+                    col['sample_datum'] = th.best_representative(col['sample_datum'], v)
+                    if (v is None):
+                        col['is_nullable'] = True
+                    if (col['is_unique'] != False):
+                        if v in col['is_unique']:
+                            col['is_unique'] = False
+                        else:
+                            col['is_unique'].add(v)
+        for col_name in self.columns:
+            col = self.columns[col_name]
             self._fill_metadata_from_sample(col)
-            col['is_unique'] = uniques and (len(set(column_data[col_name])) 
-                                            == len(column_data[col_name]))
-            col['is_nullable'] = (len(column_data[col_name]) < rowcount 
-                                  or None in column_data[col_name])
-            self.columns[col_name] = col
-        
+            col['is_unique'] = bool(col['is_unique'])
+       
     
 if __name__ == '__main__':
     tbl = Table('../../rad/data_sources/ga.csv')
