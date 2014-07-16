@@ -3,3 +3,4 @@ sqlalchemy
 pyyaml
 dateutils
 pymongo
+data_dispenser>=0.2.0

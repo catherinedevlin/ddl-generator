@@ -25,6 +25,13 @@ no primary key will be created, *unless* it is required to set up child tables
 
 You will need to hand-edit the resulting SQL to add indexes.
 
+You can use wildcards to generate from multiple files at once::
+
+    $ ddlgenerator postgresql "*.csv"
+
+Remember to enclose the file path in quotes to prevent the shell
+from expanding the argument (if it does, ddlgenerator will run
+against each file *separately*, setting up one table for each).
 """
 from collections import OrderedDict, defaultdict
 from io import StringIO 
@@ -46,7 +53,11 @@ import sqlalchemy as sa
 from sqlalchemy.schema import CreateTable
 import dateutil.parser
 import yaml
-import pymongo
+try:
+    import pymongo
+except ImportError:
+    pymongo = None
+from data_dispenser.sources import Source
 try:
     import ddlgenerator.typehelpers as th
     from ddlgenerator import reshape
@@ -132,7 +143,7 @@ class Table(object):
         string of JSON or YAML, a filename containing the same, 
         or simply Python data. 
         """
-        if isinstance(data, pymongo.collection.Collection):
+        if pymongo and isinstance(data, pymongo.collection.Collection):
             self.table_name = data.name
             data = data.find()
         if hasattr(data, 'read'): # duck-type open file object test
@@ -426,5 +437,4 @@ class Table(object):
        
     
 if __name__ == '__main__':
-    tbl = Table('../../rad/data_sources/ga.csv')
     doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)    

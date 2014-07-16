@@ -7,3 +7,9 @@ History
 ++++++++++++++++++
 
 * First release on PyPI.
+
+0.1.2 (2014-07-15)
+++++++++++++++++++
+
+* ``data_dispenser`` moved to separate module
+

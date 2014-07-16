@@ -3,6 +3,7 @@
 import logging
 from collections import OrderedDict, namedtuple, defaultdict
 import doctest
+import functools
 from hashlib import md5
 import hashlib
 import copy
@@ -224,7 +225,7 @@ class ParentTable(list):
         pk_values = all_values_for(self, key_name)
         if not pk_values:
             return ('absent', int)  # could still use it
-        key_type = type(th.best_coercable(pk_values))
+        key_type = type(functools.reduce(th.best_representative, pk_values))
         num_unique_values = len(set(pk_values))
         if num_unique_values < len(pk_values):
             return (False, None)     # non-unique

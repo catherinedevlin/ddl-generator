@@ -10,11 +10,15 @@ Tests for `ddlgenerator` module.
 import glob
 import unittest
 import pymongo
+import os.path
 from collections import namedtuple, OrderedDict
 try:
     from ddlgenerator.ddlgenerator import Table
 except ImportError:
     from ddlgenerator import Table
+
+def here(filename):
+    return os.path.join(os.path.dirname(__file__), filename)
 
 class TestMongo(unittest.TestCase):
     
@@ -48,7 +52,7 @@ class TestMongo(unittest.TestCase):
 class TestFiles(unittest.TestCase):
     
     def test_use_open_file(self):
-        with open('knights.yaml') as infile:
+        with open(here('knights.yaml')) as infile:
             knights = Table(infile)
             generated = knights.sql('postgresql', inserts=True)
             self.assertIn('Lancelot', generated)
@@ -75,13 +79,14 @@ class TestFiles(unittest.TestCase):
         self.assertIn('(name, capital, pop) VALUES (\'Quebec\', \'Quebec City\', 7903001)', generated)
         
     def test_files(self):
-        for sql_fname in glob.glob('*.sql'):
-            (fname, ext) = sql_fname.split('.')
+        # import ipdb; ipdb.set_trace()
+        for sql_fname in glob.glob(here('*.sql')):
             with open(sql_fname) as infile:
                 expected = infile.read().strip()
+            (fname, ext) = os.path.splitext(sql_fname)
             for source_fname in glob.glob('%s.*' % fname):
-                (fname, ext) = source_fname.split('.')
-                if ext != 'sql':
+                (fname, ext) = os.path.splitext(source_fname)
+                if ext != '.sql':
                     tbl = Table(source_fname, uniques=True)
                     generated = tbl.sql('postgresql', inserts=True, drops=True).strip()
                     self.assertEqual(generated, expected)
