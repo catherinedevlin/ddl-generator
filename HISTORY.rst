@@ -13,3 +13,8 @@ History
 
 * ``data_dispenser`` moved to separate module
 
+0.1.3 (2014-07-16)
+++++++++++++++++++
+
+* Bugfix for long integers found after short strings
+
