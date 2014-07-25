@@ -35,7 +35,7 @@ setup(
       "sqlalchemy",
       "dateutils",
       "pyyaml",
-      "data_dispenser>=0.2.0",
+      "data_dispenser>=0.2.1",
     ],
     license="MIT",
     zip_safe=False,
