@@ -99,6 +99,11 @@ Installing
     cd ddl-generator
     python setup.py install
 
+Alternatives
+------------
+
+* `csvkit.csvsql <https://csvkit.readthedocs.org/en/0.7.3/scripts/csvsql.html>`_
+
 Credits
 -------
 

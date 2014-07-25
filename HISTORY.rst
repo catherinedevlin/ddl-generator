@@ -18,3 +18,8 @@ History
 
 * Bugfix for long integers found after short strings
 
+0.1.4 (2014-07-25)
+++++++++++++++++++
+
+* Fixed bug: external ``data_dispenser`` unused by 0.1.3!
+

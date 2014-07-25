@@ -103,28 +103,20 @@ def best_representative(d1, d2):
     """
     Given two objects each coerced to the most specific type possible, return the one
     of the least restrictive type.
-    
-    >>> best_representative('1234',5589789)
-    '5589789'
+
     >>> best_representative(6, 'foo')
     'foo'
     >>> best_representative(Decimal('4.95'), Decimal('6.1'))
     Decimal('9.99')
-    >>> best_representative(1234, '5b')
-    '1234'
     """
     preference = (datetime.datetime, bool, int, Decimal, float, str)
     worst_pref = 0
     worst = ''
-    # import ipdb; ipdb.set_trace()
     for coerced in (d1, d2):
         pref = preference.index(type(coerced))
         if pref > worst_pref:
             worst_pref = pref
-            if len(str(worst)) <= len(str(coerced)):
-                worst = coerced
-            else:
-                worst = type(coerced)(worst)
+            worst = coerced
         elif pref == worst_pref:
             if isinstance(coerced, Decimal):
                 worst = worst_decimal(coerced, worst)
@@ -133,9 +125,40 @@ def best_representative(d1, d2):
             else:  # int, str
                 if len(str(coerced)) > len(str(worst)):
                     worst = coerced
-        else:
-            if len(str(coerced)) > len(str(worst)):
-                worst = type(worst)(coerced)
+    return worst
+
+def best_coercable(data):
+    """
+    Given an iterable of scalar data, returns the datum representing the most specific
+    data type the list overall can be coerced into, preferring datetimes, then bools,
+    then integers, then decimals, then floats, then strings.
+
+    >>> best_coercable((6, '2', 9))
+    6
+    >>> best_coercable((Decimal('6.1'), 2, 9))
+    Decimal('6.1')
+    >>> best_coercable(('2014 jun 7', '2011 may 2'))
+    datetime.datetime(2014, 6, 7, 0, 0)
+    >>> best_coercable((7, 21.4, 'ruining everything'))
+    'ruining everything'
+    """
+    preference = (datetime.datetime, bool, int, Decimal, float, str)
+    worst_pref = 0
+    worst = ''
+    for datum in data:
+        coerced = coerce_to_specific(datum)
+        pref = preference.index(type(coerced))
+        if pref > worst_pref:
+            worst_pref = pref
+            worst = coerced
+        elif pref == worst_pref:
+            if isinstance(coerced, Decimal):
+                worst = worst_decimal(coerced, worst)
+            elif isinstance(coerced, float):
+                worst = max(coerced, worst)
+            else:  # int, str
+                if len(str(coerced)) > len(str(worst)):
+                    worst = coerced
     return worst
 
 def sqla_datatype_for(datum):
