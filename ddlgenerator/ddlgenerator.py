@@ -91,6 +91,7 @@ class Table(object):
     ...   kg: 69.4  '''
     >>> print(Table(data, "knights").ddl('postgresql').strip())
     DROP TABLE IF EXISTS knights;
+    <BLANKLINE>
     CREATE TABLE knights (
     	name VARCHAR(8) NOT NULL,
     	kg DECIMAL(3, 1) NOT NULL,

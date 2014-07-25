@@ -79,12 +79,11 @@ class TestFiles(unittest.TestCase):
         self.assertIn('(name, capital, pop) VALUES (\'Quebec\', \'Quebec City\', 7903001)', generated)
         
     def test_files(self):
-        # import ipdb; ipdb.set_trace()
         for sql_fname in glob.glob(here('*.sql')):
             with open(sql_fname) as infile:
                 expected = infile.read().strip()
             (fname, ext) = os.path.splitext(sql_fname)
-            for source_fname in glob.glob('%s.*' % fname):
+            for source_fname in glob.glob(here('%s.*' % fname)):
                 (fname, ext) = os.path.splitext(source_fname)
                 if ext != '.sql':
                     tbl = Table(source_fname, uniques=True)
