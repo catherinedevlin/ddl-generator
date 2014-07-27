@@ -24,7 +24,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author='Catherine Devlin',
     author_email='catherine.devlin@gmail.com',
-    url='https://github.com/catherinedevlin/ddlgenerator',
+    url='https://github.com/catherinedevlin/ddl-generator',
     packages=[
         'ddlgenerator',
     ],
