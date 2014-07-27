@@ -197,7 +197,7 @@ class Table(object):
                                           fk if fk and (_fk_field_name == cname)
                                              else None,
                                           primary_key=(cname == self.pk_name),
-                                          unique=col['is_unique'],
+                                          unique=(uniques and col['is_unique']),
                                           nullable=col['is_nullable'],
                                           doc=self.comments.get(cname))
                                 for (cname, col) in self.columns.items()
