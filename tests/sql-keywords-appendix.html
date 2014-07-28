@@ -1,0 +1,9270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" dir="ltr">
+<head>
+    <title>PostgreSQL: Documentation: 9.4: SQL Key Words</title>
+    <style type="text/css" media="screen" title="Normal Text">@import url("/dyncss/docs.css?35336e31");</style>
+    <script type="text/javascript" src="/media/js/monospacefix.js?35336e31"></script>
+    <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-1345454-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body>
+<div id="docHeader">
+	<div id="docHeaderLogo">
+		<a href="/" title="PostgreSQL"><img src="/media/img/docs/hdr_logo.png" width="206" height="80" alt="PostgreSQL" /></a>
+	</div>
+</div>
+
+<div id="docContainerWrap">
+<div id="docContainer">
+<div id="docNavSearchContainer">
+<div id="docSearch">
+	<form action="/search/" method="get">
+	<div>
+	<input type="hidden" name="u" value="/docs/9.4/" />
+	<label for="q">Search Documentation:&nbsp;</label><input type="text" id="q" name="q" size="20" onfocus="if( this.value==this.defaultValue ) this.value='';" value="Search" /><input id="submit" type="submit" value="Search" />
+	</div>
+	</form>
+</div>
+<div id="docNav">
+<a href="/" title="Home">Home</a> &rarr; <a href="/docs" title="Documentation">Documentation</a> &rarr; <a href="/docs/manuals" title="Manuals">Manuals</a> &rarr; <a href="/docs/9.4/static/index.html">PostgreSQL 9.4</a>
+</div>
+<div id="docVersions">
+This page in other versions:
+
+
+	
+	
+	<a href="/docs/9.0/static/sql-keywords-appendix.html" title="This page in version 9.0">9.0</a>
+	
+
+	/
+	
+	<a href="/docs/9.1/static/sql-keywords-appendix.html" title="This page in version 9.1">9.1</a>
+	
+
+	/
+	
+	<a href="/docs/9.2/static/sql-keywords-appendix.html" title="This page in version 9.2">9.2</a>
+	
+
+	/
+	
+	<a href="/docs/9.3/static/sql-keywords-appendix.html" title="This page in version 9.3">9.3</a>
+	
+
+
+
+
+&nbsp;|&nbsp; Development versions:
+
+	
+	
+	<a href="/docs/devel/static/sql-keywords-appendix.html" title="This page in version devel" rel="nofollow">devel</a>
+	
+
+	/
+	
+	<b>9.4</b>
+	
+
+
+
+
+&nbsp;|&nbsp; Unsupported versions:
+
+	
+	
+	<a href="/docs/7.1/static/sql-keywords-appendix.html" title="This page in version 7.1" rel="nofollow">7.1</a>
+	
+
+	/
+	
+	<a href="/docs/7.2/static/sql-keywords-appendix.html" title="This page in version 7.2" rel="nofollow">7.2</a>
+	
+
+	/
+	
+	<a href="/docs/7.3/static/sql-keywords-appendix.html" title="This page in version 7.3" rel="nofollow">7.3</a>
+	
+
+	/
+	
+	<a href="/docs/7.4/static/sql-keywords-appendix.html" title="This page in version 7.4" rel="nofollow">7.4</a>
+	
+
+	/
+	
+	<a href="/docs/8.0/static/sql-keywords-appendix.html" title="This page in version 8.0" rel="nofollow">8.0</a>
+	
+
+	/
+	
+	<a href="/docs/8.1/static/sql-keywords-appendix.html" title="This page in version 8.1" rel="nofollow">8.1</a>
+	
+
+	/
+	
+	<a href="/docs/8.2/static/sql-keywords-appendix.html" title="This page in version 8.2" rel="nofollow">8.2</a>
+	
+
+	/
+	
+	<a href="/docs/8.3/static/sql-keywords-appendix.html" title="This page in version 8.3" rel="nofollow">8.3</a>
+	
+
+	/
+	
+	<a href="/docs/8.4/static/sql-keywords-appendix.html" title="This page in version 8.4" rel="nofollow">8.4</a>
+	
+
+
+</div>
+</div>
+
+<div id="docContent">
+<div class="NAVHEADER">
+  <table summary="Header navigation table" width="100%" border="0"
+  cellpadding="0" cellspacing="0">
+    <tr>
+      <th colspan="4" align="center" valign="bottom"><a href=
+      "index.html">PostgreSQL 9.4beta2 Documentation</a></th>
+    </tr>
+
+    <tr>
+      <td width="10%" align="left" valign="top"><a title=
+      "History of Units" href="datetime-units-history.html"
+      accesskey="P">Prev</a></td>
+
+      <td width="10%" align="left" valign="top"><a href=
+      "appendixes.html" accesskey="U">Up</a></td>
+
+      <td width="60%" align="center" valign="bottom"></td>
+
+      <td width="20%" align="right" valign="top"><a title=
+      "SQL Conformance" href="features.html" accesskey=
+      "N">Next</a></td>
+    </tr>
+  </table>
+  <hr class="c1" width="100%" />
+</div>
+
+<div class="APPENDIX">
+  <h1><a name="SQL-KEYWORDS-APPENDIX" id=
+  "SQL-KEYWORDS-APPENDIX"></a>Appendix C. <acronym class=
+  "ACRONYM">SQL</acronym> Key Words</h1>
+
+  <p><a href="sql-keywords-appendix.html#KEYWORDS-TABLE">Table
+  C-1</a> lists all tokens that are key words in the SQL standard
+  and in <span class="PRODUCTNAME">PostgreSQL</span> 9.4beta2.
+  Background information can be found in <a href=
+  "sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS">Section
+  4.1.1</a>. (For space reasons, only the latest two versions of
+  the SQL standard, and SQL-92 for historical comparison, are
+  included. The differences between those and the other
+  intermediate standard versions are small.)</p>
+
+  <p>SQL distinguishes between <i class="FIRSTTERM">reserved</i>
+  and <i class="FIRSTTERM">non-reserved</i> key words. According to
+  the standard, reserved key words are the only real key words;
+  they are never allowed as identifiers. Non-reserved key words
+  only have a special meaning in particular contexts and can be
+  used as identifiers in other contexts. Most non-reserved key
+  words are actually the names of built-in tables and functions
+  specified by SQL. The concept of non-reserved key words
+  essentially only exists to declare that some predefined meaning
+  is attached to a word in some contexts.</p>
+
+  <p>In the <span class="PRODUCTNAME">PostgreSQL</span> parser life
+  is a bit more complicated. There are several different classes of
+  tokens ranging from those that can never be used as an identifier
+  to those that have absolutely no special status in the parser as
+  compared to an ordinary identifier. (The latter is usually the
+  case for functions specified by SQL.) Even reserved key words are
+  not completely reserved in <span class=
+  "PRODUCTNAME">PostgreSQL</span>, but can be used as column labels
+  (for example, <tt class="LITERAL">SELECT 55 AS CHECK</tt>, even
+  though <tt class="TOKEN">CHECK</tt> is a reserved key word).</p>
+
+  <p>In <a href="sql-keywords-appendix.html#KEYWORDS-TABLE">Table
+  C-1</a> in the column for <span class=
+  "PRODUCTNAME">PostgreSQL</span> we classify as <span class=
+  "QUOTE">"non-reserved"</span> those key words that are explicitly
+  known to the parser but are allowed as column or table names.
+  Some key words that are otherwise non-reserved cannot be used as
+  function or data type names and are marked accordingly. (Most of
+  these words represent built-in functions or data types with
+  special syntax. The function or type is still available but it
+  cannot be redefined by the user.) Labeled <span class=
+  "QUOTE">"reserved"</span> are those tokens that are not allowed
+  as column or table names. Some reserved key words are allowable
+  as names for functions or data types; this is also shown in the
+  table. If not so marked, a reserved key word is only allowed as
+  an <span class="QUOTE">"AS"</span> column label name.</p>
+
+  <p>As a general rule, if you get spurious parser errors for
+  commands that contain any of the listed key words as an
+  identifier you should try to quote the identifier to see if the
+  problem goes away.</p>
+
+  <p>It is important to understand before studying <a href=
+  "sql-keywords-appendix.html#KEYWORDS-TABLE">Table C-1</a> that
+  the fact that a key word is not reserved in <span class=
+  "PRODUCTNAME">PostgreSQL</span> does not mean that the feature
+  related to the word is not implemented. Conversely, the presence
+  of a key word does not indicate the existence of a feature.</p>
+
+  <div class="TABLE">
+    <a name="KEYWORDS-TABLE" id="KEYWORDS-TABLE"></a>
+
+    <p class="c2">Table C-1. <acronym class="ACRONYM">SQL</acronym>
+    Key Words</p>
+
+    <table border="1" class="CALSTABLE">
+      <col />
+      <col />
+      <col />
+      <col />
+      <col />
+
+      <thead>
+        <tr>
+          <th>Key Word</th>
+
+          <th><span class="PRODUCTNAME">PostgreSQL</span></th>
+
+          <th>SQL:2011</th>
+
+          <th>SQL:2008</th>
+
+          <th>SQL-92</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td><tt class="TOKEN">A</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ABORT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ABS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ABSENT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ABSOLUTE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ACCESS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ACCORDING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ACTION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ADA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ADD</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ADMIN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">AFTER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">AGGREGATE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ALL</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ALLOCATE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ALSO</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ALTER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ALWAYS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ANALYSE</tt></td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ANALYZE</tt></td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">AND</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ANY</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ARE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ARRAY</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ARRAY_AGG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ARRAY_MAX_CARDINALITY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">AS</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ASC</tt></td>
+
+          <td>reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ASENSITIVE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ASSERTION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ASSIGNMENT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ASYMMETRIC</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">AT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ATOMIC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ATTRIBUTE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ATTRIBUTES</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">AUTHORIZATION</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">AVG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BACKWARD</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BASE64</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BEFORE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BEGIN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BEGIN_FRAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BEGIN_PARTITION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BERNOULLI</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BETWEEN</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BIGINT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BINARY</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BIT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BIT_LENGTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BLOB</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BLOCKED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BOM</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BOOLEAN</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BOTH</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BREADTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">BY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">C</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CACHE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CALL</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CALLED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CARDINALITY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CASCADE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CASCADED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CASE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CAST</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CATALOG</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CATALOG_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CEIL</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CEILING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHAIN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHAR</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHARACTER</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHARACTERISTICS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHARACTERS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHARACTER_LENGTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHARACTER_SET_CATALOG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHARACTER_SET_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHARACTER_SET_SCHEMA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHAR_LENGTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHECK</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CHECKPOINT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CLASS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CLASS_ORIGIN</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CLOB</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CLOSE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CLUSTER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COALESCE</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COBOL</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COLLATE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COLLATION</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COLLATION_CATALOG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COLLATION_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COLLATION_SCHEMA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COLLECT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COLUMN</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COLUMNS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COLUMN_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COMMAND_FUNCTION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COMMAND_FUNCTION_CODE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COMMENT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COMMENTS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COMMIT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COMMITTED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONCURRENTLY</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONDITION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONDITION_NUMBER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONFIGURATION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONNECT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONNECTION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONNECTION_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONSTRAINT</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONSTRAINTS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONSTRAINT_CATALOG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONSTRAINT_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONSTRAINT_SCHEMA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONSTRUCTOR</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONTAINS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONTENT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONTINUE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONTROL</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONVERSION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CONVERT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COPY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CORR</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CORRESPONDING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COST</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COUNT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COVAR_POP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">COVAR_SAMP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CREATE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CROSS</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CSV</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CUBE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CUME_DIST</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT_CATALOG</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT_DATE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class=
+          "TOKEN">CURRENT_DEFAULT_TRANSFORM_GROUP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT_PATH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT_ROLE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT_ROW</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT_SCHEMA</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT_TIME</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT_TIMESTAMP</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class=
+          "TOKEN">CURRENT_TRANSFORM_GROUP_FOR_TYPE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURRENT_USER</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURSOR</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CURSOR_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">CYCLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DATA</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DATABASE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DATALINK</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DATE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DATETIME_INTERVAL_CODE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class=
+          "TOKEN">DATETIME_INTERVAL_PRECISION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DAY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DB</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEALLOCATE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEC</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DECIMAL</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DECLARE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEFAULT</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEFAULTS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEFERRABLE</tt></td>
+
+          <td>reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEFERRED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEFINED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEFINER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEGREE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DELETE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DELIMITER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DELIMITERS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DENSE_RANK</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEPTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DEREF</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DERIVED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DESC</tt></td>
+
+          <td>reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DESCRIBE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DESCRIPTOR</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DETERMINISTIC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DIAGNOSTICS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DICTIONARY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DISABLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DISCARD</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DISCONNECT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DISPATCH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DISTINCT</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLNEWCOPY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLPREVIOUSCOPY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLURLCOMPLETE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLURLCOMPLETEONLY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLURLCOMPLETEWRITE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLURLPATH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLURLPATHONLY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLURLPATHWRITE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLURLSCHEME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLURLSERVER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DLVALUE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DO</tt></td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DOCUMENT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DOMAIN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DOUBLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DROP</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DYNAMIC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DYNAMIC_FUNCTION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">DYNAMIC_FUNCTION_CODE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EACH</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ELEMENT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ELSE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EMPTY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ENABLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ENCODING</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ENCRYPTED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">END</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">END-EXEC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">END_FRAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">END_PARTITION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ENFORCED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ENUM</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EQUALS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ESCAPE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EVENT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EVERY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXCEPT</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXCEPTION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXCLUDE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXCLUDING</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXCLUSIVE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXEC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXECUTE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXISTS</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXPLAIN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXPRESSION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXTENSION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXTERNAL</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">EXTRACT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FALSE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FAMILY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FETCH</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FILE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FILTER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FINAL</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FIRST</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FIRST_VALUE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FLAG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FLOAT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FLOOR</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FOLLOWING</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FOR</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FORCE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FOREIGN</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FORTRAN</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FORWARD</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FOUND</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FRAME_ROW</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FREE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FREEZE</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FROM</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FULL</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FUNCTION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FUNCTIONS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">FUSION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">G</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GENERAL</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GENERATED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GET</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GLOBAL</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GO</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GOTO</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GRANT</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GRANTED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GREATEST</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GROUP</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GROUPING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">GROUPS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">HANDLER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">HAVING</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">HEADER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">HEX</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">HIERARCHY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">HOLD</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">HOUR</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ID</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IDENTITY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IF</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IGNORE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ILIKE</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IMMEDIATE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IMMEDIATELY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IMMUTABLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IMPLEMENTATION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IMPLICIT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IMPORT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IN</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INCLUDING</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INCREMENT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INDENT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INDEX</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INDEXES</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INDICATOR</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INHERIT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INHERITS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INITIALLY</tt></td>
+
+          <td>reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INLINE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INNER</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INOUT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INPUT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INSENSITIVE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INSERT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INSTANCE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INSTANTIABLE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INSTEAD</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INTEGER</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INTEGRITY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INTERSECT</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INTERSECTION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INTERVAL</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INTO</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">INVOKER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">IS</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ISNULL</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ISOLATION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">JOIN</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">K</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">KEY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">KEY_MEMBER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">KEY_TYPE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LABEL</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LAG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LANGUAGE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LARGE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LAST</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LAST_VALUE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LATERAL</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LC_COLLATE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LC_CTYPE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LEAD</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LEADING</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LEAKPROOF</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LEAST</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LEFT</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LENGTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LEVEL</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LIBRARY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LIKE</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LIKE_REGEX</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LIMIT</tt></td>
+
+          <td>reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LINK</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LISTEN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LN</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LOAD</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LOCAL</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LOCALTIME</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LOCALTIMESTAMP</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LOCATION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LOCATOR</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LOCK</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">LOWER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">M</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MAP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MAPPING</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MATCH</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MATCHED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MATERIALIZED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MAX</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MAXVALUE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MAX_CARDINALITY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MEMBER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MERGE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MESSAGE_LENGTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MESSAGE_OCTET_LENGTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MESSAGE_TEXT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">METHOD</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MIN</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MINUTE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MINVALUE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MOD</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MODE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MODIFIES</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MODULE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MONTH</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MORE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MOVE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MULTISET</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">MUMPS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NAME</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NAMES</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NAMESPACE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NATIONAL</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NATURAL</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NCHAR</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NCLOB</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NESTING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NEW</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NEXT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NFC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NFD</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NFKC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NFKD</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NIL</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NO</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NONE</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NORMALIZE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NORMALIZED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NOT</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NOTHING</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NOTIFY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NOTNULL</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NOWAIT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NTH_VALUE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NTILE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NULL</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NULLABLE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NULLIF</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NULLS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NUMBER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">NUMERIC</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OBJECT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OCCURRENCES_REGEX</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OCTETS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OCTET_LENGTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OF</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OFF</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OFFSET</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OIDS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OLD</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ON</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ONLY</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OPEN</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OPERATOR</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OPTION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OPTIONS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OR</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ORDER</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ORDERING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ORDINALITY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OTHERS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OUT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OUTER</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OUTPUT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OVER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OVERLAPS</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OVERLAY</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OVERRIDING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OWNED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">OWNER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">P</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PAD</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PARAMETER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PARAMETER_MODE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PARAMETER_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class=
+          "TOKEN">PARAMETER_ORDINAL_POSITION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class=
+          "TOKEN">PARAMETER_SPECIFIC_CATALOG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PARAMETER_SPECIFIC_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PARAMETER_SPECIFIC_SCHEMA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PARSER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PARTIAL</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PARTITION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PASCAL</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PASSING</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PASSTHROUGH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PASSWORD</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PATH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PERCENT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PERCENTILE_CONT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PERCENTILE_DISC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PERCENT_RANK</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PERIOD</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PERMISSION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PLACING</tt></td>
+
+          <td>reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PLANS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PLI</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PORTION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">POSITION</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">POSITION_REGEX</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">POWER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PRECEDES</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PRECEDING</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PRECISION</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PREPARE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PREPARED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PRESERVE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PRIMARY</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PRIOR</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PRIVILEGES</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PROCEDURAL</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PROCEDURE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PROGRAM</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">PUBLIC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">QUOTE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RANGE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RANK</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">READ</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">READS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REAL</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REASSIGN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RECHECK</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RECOVERY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RECURSIVE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REF</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REFERENCES</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REFERENCING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REFRESH</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REGR_AVGX</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REGR_AVGY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REGR_COUNT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REGR_INTERCEPT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REGR_R2</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REGR_SLOPE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REGR_SXX</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REGR_SXY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REGR_SYY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REINDEX</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RELATIVE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RELEASE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RENAME</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REPEATABLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REPLACE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REPLICA</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REQUIRING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RESET</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RESPECT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RESTART</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RESTORE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RESTRICT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RESULT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RETURN</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RETURNED_CARDINALITY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RETURNED_LENGTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RETURNED_OCTET_LENGTH</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RETURNED_SQLSTATE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RETURNING</tt></td>
+
+          <td>reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RETURNS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">REVOKE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RIGHT</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROLLBACK</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROLLUP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROUTINE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROUTINE_CATALOG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROUTINE_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROUTINE_SCHEMA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROW</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROWS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROW_COUNT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ROW_NUMBER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">RULE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SAVEPOINT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SCALE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SCHEMA</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SCHEMA_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SCOPE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SCOPE_CATALOG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SCOPE_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SCOPE_SCHEMA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SCROLL</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SEARCH</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SECOND</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SECTION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SECURITY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SELECT</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SELECTIVE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SELF</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SENSITIVE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SEQUENCE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SEQUENCES</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SERIALIZABLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SERVER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SERVER_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SESSION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SESSION_USER</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SET</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SETOF</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SETS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SHARE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SHOW</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SIMILAR</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SIMPLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SIZE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SMALLINT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SNAPSHOT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SOME</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SOURCE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SPACE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SPECIFIC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SPECIFICTYPE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SPECIFIC_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SQL</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SQLCODE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SQLERROR</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SQLEXCEPTION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SQLSTATE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SQLWARNING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SQRT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STABLE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STANDALONE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">START</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STATE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STATEMENT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STATIC</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STATISTICS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STDDEV_POP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STDDEV_SAMP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STDIN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STDOUT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STORAGE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STRICT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STRIP</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STRUCTURE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">STYLE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SUBCLASS_ORIGIN</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SUBMULTISET</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SUBSTRING</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SUBSTRING_REGEX</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SUCCEEDS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SUM</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SYMMETRIC</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SYSID</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SYSTEM</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SYSTEM_TIME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">SYSTEM_USER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">T</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TABLE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TABLES</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TABLESAMPLE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TABLESPACE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TABLE_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TEMP</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TEMPLATE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TEMPORARY</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TEXT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">THEN</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TIES</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TIME</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TIMESTAMP</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TIMEZONE_HOUR</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TIMEZONE_MINUTE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TO</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TOKEN</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TOP_LEVEL_COUNT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRAILING</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRANSACTION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRANSACTIONS_COMMITTED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRANSACTIONS_ROLLED_BACK</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRANSACTION_ACTIVE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRANSFORM</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRANSFORMS</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRANSLATE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRANSLATE_REGEX</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRANSLATION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TREAT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRIGGER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRIGGER_CATALOG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRIGGER_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRIGGER_SCHEMA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRIM</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRIM_ARRAY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRUE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRUNCATE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TRUSTED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TYPE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">TYPES</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UESCAPE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNBOUNDED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNCOMMITTED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNDER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNENCRYPTED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNION</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNIQUE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNKNOWN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNLINK</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNLISTEN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNLOGGED</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNNAMED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNNEST</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNTIL</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UNTYPED</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UPDATE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">UPPER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">URI</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">USAGE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">USER</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">USER_DEFINED_TYPE_CATALOG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">USER_DEFINED_TYPE_CODE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">USER_DEFINED_TYPE_NAME</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">USER_DEFINED_TYPE_SCHEMA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">USING</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VACUUM</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VALID</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VALIDATE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VALIDATOR</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VALUE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VALUES</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VALUE_OF</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VARBINARY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VARCHAR</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VARIADIC</tt></td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VARYING</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VAR_POP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VAR_SAMP</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VERBOSE</tt></td>
+
+          <td>reserved (can be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VERSION</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VERSIONING</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VIEW</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VIEWS</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">VOLATILE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WHEN</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WHENEVER</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WHERE</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WHITESPACE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WIDTH_BUCKET</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WINDOW</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WITH</tt></td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WITHIN</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WITHOUT</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WORK</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WRAPPER</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">WRITE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XML</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLAGG</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLATTRIBUTES</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLBINARY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLCAST</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLCOMMENT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLCONCAT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLDECLARATION</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLDOCUMENT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLELEMENT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLEXISTS</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLFOREST</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLITERATE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLNAMESPACES</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLPARSE</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLPI</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLQUERY</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLROOT</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLSCHEMA</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLSERIALIZE</tt></td>
+
+          <td>non-reserved (cannot be function or type)</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLTABLE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLTEXT</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">XMLVALIDATE</tt></td>
+
+          <td>&nbsp;</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">YEAR</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+
+          <td>reserved</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">YES</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td><tt class="TOKEN">ZONE</tt></td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>non-reserved</td>
+
+          <td>reserved</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="NAVFOOTER">
+  <hr class="c1" width="100%" />
+
+  <table summary="Footer navigation table" width="100%" border="0"
+  cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="33%" align="left" valign="top"><a href=
+      "datetime-units-history.html" accesskey="P">Prev</a></td>
+
+      <td width="34%" align="center" valign="top"><a href=
+      "index.html" accesskey="H">Home</a></td>
+
+      <td width="33%" align="right" valign="top"><a href=
+      "features.html" accesskey="N">Next</a></td>
+    </tr>
+
+    <tr>
+      <td width="33%" align="left" valign="top">History of
+      Units</td>
+
+      <td width="34%" align="center" valign="top"><a href=
+      "appendixes.html" accesskey="U">Up</a></td>
+
+      <td width="33%" align="right" valign="top">SQL
+      Conformance</td>
+    </tr>
+  </table>
+</div>
+
+</div>
+
+<div id="docComments">
+
+
+
+</div>
+
+<div id="docFooter">
+    <a href="/about/privacypolicy">Privacy Policy</a> |
+    <a href="/about/">About PostgreSQL</a><br/>
+Copyright &copy; 1996-2014 The PostgreSQL Global Development Group
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -23,3 +23,8 @@ History
 
 * Fixed bug: external ``data_dispenser`` unused by 0.1.3!
 
+0.1.5 (2014-07-25)
+++++++++++++++++++
+
+* ``sqlalchemy`` pseudo-dialect added
+

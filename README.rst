@@ -31,12 +31,6 @@ To use in Python::
     >>> table = Table({"Name": "Alfred", "species": "wart hog", "kg": 22})
     >>> sql = table.sql('postgresql', inserts=True)
 
-Options
--------
-
-
-* Free software: MIT license
-
 Supported data formats
 ----------------------
 
@@ -77,6 +71,20 @@ Options
 			    Use metadata saved in FROM for table definition, do
 			    not re-analyze table structure
       -l LOG, --log LOG     log level (CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN)
+
+Generate SQLAlchemy models
+--------------------------
+
+Use ``sqlalchemy`` as the model to generate Python for defining SQLAlchemy
+models::
+
+    $ ddlgenerator sqlalchemy '[{"Name": "Alfred", "species": "wart hog", "kg": 22}]'
+
+    Table0 = Table('Table0', metadata, 
+      Column('species', Unicode(length=8), nullable=False), 
+      Column('kg', Integer(), nullable=False), 
+      Column('name', Unicode(length=6), nullable=False), 
+      schema=None)
 
 Large tables
 ------------

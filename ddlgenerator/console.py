@@ -56,7 +56,13 @@ def generate():
                       pk_name = args.key, force_pk=args.force_key, reorder=args.reorder,
                       save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from,
                       loglevel=args.log, limit=args.limit)
-        print(table.sql(dialect=args.dialect, inserts=args.inserts,
-                        creates=(not args.no_creates), drops=args.drops,
-                        metadata_source=args.use_metadata_from))
+        if args.dialect.startswith('sqla'):
+            print(table.sqlalchemy())
+            if args.inserts:
+                print("\n".join(table.inserts(dialect=args.dialect)))
+                #inserter.compile().bindtemplate
+        else:
+            print(table.sql(dialect=args.dialect, inserts=args.inserts,
+                            creates=(not args.no_creates), drops=args.drops,
+                            metadata_source=args.use_metadata_from))
 
