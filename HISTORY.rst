@@ -28,3 +28,8 @@ History
 
 * ``sqlalchemy`` pseudo-dialect added
 
+0.1.6 (2014-07-25)
+++++++++++++++++++
+
+* Generate sqlalchemy inserts
+
