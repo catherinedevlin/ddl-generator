@@ -41,6 +41,7 @@ import doctest
 import logging
 import os.path
 import pprint
+import re
 import textwrap
 import sqlalchemy as sa
 from sqlalchemy.schema import CreateTable
@@ -67,7 +68,7 @@ class KeyAlreadyExists(KeyError):
 
 
 dialect_names = '''drizzle firebird mssql mysql oracle postgresql
-                   sqlite sybase'''.split()
+                   sqlite sybase sqlalchemy'''.split()
 
 
 def _dump(sql, *multiparams, **params):
@@ -77,7 +78,29 @@ mock_engines = {}
 for engine_name in ('postgresql', 'sqlite', 'mysql', 'oracle', 'mssql'):
     mock_engines[engine_name] = sa.create_engine('%s://' % engine_name,
                                                  strategy='mock',
-                                                 executor=_dump)
+                                                 executor=_dump)                                                              
+
+
+from sqlalchemy.sql import compiler
+
+from psycopg2.extensions import adapt as sqlescape
+# or use the appropiate escape function from your db driver
+
+def compile_query(query):
+    dialect = query.session.bind.dialect
+    statement = query.statement
+    comp = compiler.SQLCompiler(dialect, statement)
+    comp.compile()
+    enc = dialect.encoding
+    params = {}
+    for k,v in comp.params.iteritems():
+        if isinstance(v, unicode):
+            v = v.encode(enc)
+        params[k] = sqlescape(v)
+    return (comp.string.encode(enc) % params).decode(enc)
+    
+
+
 
 class Table(object):
     """
@@ -148,6 +171,10 @@ class Table(object):
                 self.data = iter(data)
             except TypeError:
                 self.data = Source(data)
+            
+        if (    self.table_name.startswith('generated_table')
+            and hasattr(self.data, 'table_name')):
+            self.table_name = self.data.table_name
 
         self.data = reshape.walk_and_clean(self.data)
 
@@ -203,7 +230,7 @@ class Table(object):
                                 for (cname, col) in self.columns.items()
                                 if True
                                 ])
-
+        
         self.children = {child_name: Table(child_data, table_name=child_name,
                                            default_dialect=self.default_dialect,
                                            varying_length_text=varying_length_text,
@@ -268,7 +295,34 @@ class Table(object):
                           drops=drops))
         return '\n\n'.join(result)
 
-
+    table_backref_remover = re.compile(r',\s+table\s*\=\<.*?\>')
+    capitalized_words = re.compile(r"\b[A-Z]\w+")
+    sqlalchemy_setup_template = textwrap.dedent("""
+        from sqlalchemy import create_engine, %s
+        engine = create_engine(r'sqlite:///:memory:')
+        metadata = MetaData(bind=engine)
+                        
+        %s = %s
+        
+        metadata.create_all()""" )
+    def sqlalchemy(self, is_top=True):
+        """Dumps Python code to set up the table's SQLAlchemy model"""
+        table_def = self.table_backref_remover.sub('', self.table.__repr__())
+        table_def = table_def.replace("MetaData(bind=None)", "metadata")
+        table_def = table_def.replace("Column(", "\n  Column(")
+        table_def = table_def.replace("schema=", "\n  schema=")
+        result = [table_def, ]
+        result.extend(c.sqlalchemy(is_top=False) for c in self.children)
+        result = "\n".join(result)
+        if is_top:
+            sqla_imports = set(self.capitalized_words.findall(table_def))
+            sqla_imports &= set(dir(sa))
+            sqla_imports = sorted(sqla_imports)
+            result = self.sqlalchemy_setup_template % (
+                ", ".join(sqla_imports), self.table_name, result)
+            result = textwrap.dedent(result)
+        return result
+        
     _datetime_format = {}  # TODO: test the various RDBMS for power to read the standard
     def _prep_datum(self, datum, dialect, col):
         pytype = self.columns[col]['pytype']
@@ -284,24 +338,31 @@ class Table(object):
             else:
                 return "'%s'" % datum
         elif hasattr(datum, 'lower'):
+            # simple SQL injection protection, sort of... ?
             return "'%s'" % datum.replace("'", "''")
         else:
             return datum
 
     _insert_template = "INSERT INTO {table_name} ({cols}) VALUES ({vals});"
-    # TODO: cleanse against SQL injection
 
-    def inserts(self, dialect=None):
-        dialect = self._dialect(dialect)
-        for row in self.data:
-            cols = ", ".join(c for c in row)
-            vals = ", ".join(str(self._prep_datum(val, dialect, key))
-                             for (key, val) in row.items())
-            yield self._insert_template.format(table_name=self.table_name,
-                                               cols=cols, vals=vals)
-        for child in self.children.values():
-            for row in child.inserts(dialect):
-                yield row
+    def inserts(self, dialect=None):        
+        if dialect and dialect.startswith("sqla"):
+            yield "conn = engine.connect()"
+            yield "inserter = %s.insert()" % self.table_name
+            for row in self.data:
+                yield "conn.execute(inserter, **{row})".format(row=str(dict(row)))
+            yield "conn.connection.commit()"
+        else:        
+            dialect = self._dialect(dialect)
+            for row in self.data:
+                cols = ", ".join(c for c in row)
+                vals = ", ".join(str(self._prep_datum(val, dialect, key))
+                                 for (key, val) in row.items())
+                yield self._insert_template.format(table_name=self.table_name,
+                                                   cols=cols, vals=vals)
+            for child in self.children.values():
+                for row in child.inserts(dialect):
+                    yield row
 
     def sql(self, dialect=None, inserts=False, creates=True,
             drops=True, metadata_source=None):

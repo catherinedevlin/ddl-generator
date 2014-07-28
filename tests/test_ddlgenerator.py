@@ -48,6 +48,43 @@ class TestMongo(unittest.TestCase):
         generated = winners.sql('postgresql', inserts=True)
         self.assertIn('REFERENCES prize_winners (year)', generated)
         
+
+                        
+class TestFromRawPythonData(unittest.TestCase):
+    
+    prov_type = namedtuple('province', ['name', 'capital', 'pop'])
+    canada = [prov_type('Quebec', 'Quebec City', '7903001'),
+              prov_type('Ontario', 'Toronto', '12851821'), ]
+                  
+    merovingians = [
+                    OrderedDict([('name', {'name_id': 1, 'name_txt': 'Clovis I'}), 
+                                 ('reign', {'from': 486, 'to': 511}),
+                                 ]),
+                    OrderedDict([('name', {'name_id': 1, 'name_txt': 'Childebert I'}), 
+                                 ('reign', {'from': 511, 'to': 558}),
+                                 ]),
+                    ]
+                
+    def test_pydata_named_tuples(self):
+        tbl = Table(self.canada)
+        generated = tbl.sql('postgresql', inserts=True).strip()
+        self.assertIn('capital VARCHAR(11) NOT NULL,', generated)
+        self.assertIn('(name, capital, pop) VALUES (\'Quebec\', \'Quebec City\', 7903001)', generated)
+        
+    def test_nested(self):
+        tbl = Table(self.merovingians)
+        generated = tbl.sql('postgresql', inserts=True).strip()
+        self.assertIn("reign_to", generated)
+        
+    def test_sqlalchemy(self):
+        tbl = Table(self.merovingians)
+        generated = tbl.sqlalchemy()
+        self.assertIn("Column('reign_from'", generated)
+        self.assertIn("Integer()", generated)
+        tbl = Table(self.canada)
+        generated = tbl.sqlalchemy()
+        self.assertIn("Column('capital', Unicode", generated)
+
         
 class TestFiles(unittest.TestCase):
     
@@ -57,27 +94,9 @@ class TestFiles(unittest.TestCase):
             generated = knights.sql('postgresql', inserts=True)
             self.assertIn('Lancelot', generated)
             
-    def test_nested(self):
-        merovingians = [
-                        OrderedDict([('name', {'name_id': 1, 'name_txt': 'Clovis I'}), 
-                                     ('reign', {'from': 486, 'to': 511}),
-                                     ]),
-                        OrderedDict([('name', {'name_id': 1, 'name_txt': 'Childebert I'}), 
-                                     ('reign', {'from': 511, 'to': 558}),
-                                     ]),
-                        ]
-        tbl = Table(merovingians)
-        generated = tbl.sql('postgresql', inserts=True).strip()
+
         
-    def test_pydata_named_tuples(self):
-        prov_type = namedtuple('province', ['name', 'capital', 'pop'])
-        canada = [prov_type('Quebec', 'Quebec City', '7903001'),
-                  prov_type('Ontario', 'Toronto', '12851821'), ]
-        tbl = Table(canada)
-        generated = tbl.sql('postgresql', inserts=True).strip()
-        self.assertIn('capital VARCHAR(11) NOT NULL,', generated)
-        self.assertIn('(name, capital, pop) VALUES (\'Quebec\', \'Quebec City\', 7903001)', generated)
-        
+
     def test_files(self):
         for sql_fname in glob.glob(here('*.sql')):
             with open(sql_fname) as infile:
