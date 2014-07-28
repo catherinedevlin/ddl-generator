@@ -7,6 +7,7 @@ from hashlib import md5
 import hashlib
 import copy
 from pprint import pprint
+from ddlgenerator.reserved import sql_reserved_words
 import re
 try:
     import ddlgenerator.typehelpers as th
@@ -28,6 +29,8 @@ def clean_key_name(key):
     result = _illegal_in_column_name.sub("_", key)
     if result[0].isdigit():
         result = '_%s' % result
+    if result.upper() in sql_reserved_words:
+        result = '_%s' % key
     return result.lower()
 
 def walk_and_clean(data):
@@ -150,14 +153,14 @@ def unnest_child_dict(parent, key, parent_name=''):
         return
     else:
         logging.debug('Pushing all fields from %s up to %s' % (name, parent_name))
-        new_field_names = ['%s_%s' % (key, child_key) for child_key in val]
+        new_field_names = ['%s_%s' % (key, child_key.strip('_')) for child_key in val]
         overlap = (set(new_field_names) & set(parent)) - set(id or [])
         if overlap:
             logging.error("Could not unnest child %s; %s present in %s"
                           % (name, key, ','.join(overlap), parent_name))
             return
         for (child_key, child_val) in val.items():
-            new_field_name = '%s_%s' % (key, child_key)
+            new_field_name = '%s_%s' % (key, child_key.strip('_'))
             parent[new_field_name] = child_val
         parent.pop(key)
 
