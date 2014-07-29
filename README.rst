@@ -6,7 +6,7 @@ Infers SQL DDL (Data Definition Language) from table data.
 
 Use at command line::
 
-    $ ddlgenerator -i postgresql '{"Name": "Alfred", "species": "wart hog", "kg": 22}'
+    $ ddlgenerator -i postgresql '[{"Name": "Alfred", "species": "wart hog", "kg": 22}]'
 
     DROP TABLE generated_table;
     CREATE TABLE generated_table (
@@ -28,7 +28,7 @@ Enables one-line creation of tables with their data
 To use in Python::
 
     >>> from ddlgenerator.ddlgenerator import Table
-    >>> table = Table({"Name": "Alfred", "species": "wart hog", "kg": 22})
+    >>> table = Table([{"Name": "Alfred", "species": "wart hog", "kg": 22}])
     >>> sql = table.sql('postgresql', inserts=True)
 
 Supported data formats
