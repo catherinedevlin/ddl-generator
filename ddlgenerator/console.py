@@ -65,10 +65,7 @@ def generate():
                 print("\n".join(table.inserts(dialect=args.dialect)))
                 #inserter.compile().bindtemplate
         elif args.dialect.startswith('dj'):
-            sql = table.sql(dialect='postgresql', inserts=args.inserts,
-                            creates=(not args.no_creates), drops=args.drops,
-                            metadata_source=args.use_metadata_from)
-            table.django_models(sql)
+            table.django_models()
         else:
             print(table.sql(dialect=args.dialect, inserts=args.inserts,
                             creates=(not args.no_creates), drops=args.drops,

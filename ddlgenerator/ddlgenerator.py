@@ -323,7 +323,9 @@ class Table(object):
             result = textwrap.dedent(result)
         return result
 
-    def django_models(self, sql):
+    def django_models(self, metadata_source=None):
+        sql = self.sql(dialect='postgresql', inserts=False, creates=True,
+            drops=True, metadata_source=metadata_source)
         u = sql.split(';\n')
 
         try:
