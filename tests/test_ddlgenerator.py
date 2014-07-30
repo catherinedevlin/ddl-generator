@@ -85,7 +85,19 @@ class TestFromRawPythonData(unittest.TestCase):
         generated = tbl.sqlalchemy()
         self.assertIn("Column('capital', Unicode", generated)
 
-        
+    def test_django(self):
+        tbl = Table(self.merovingians)
+        generated = tbl.django_models()
+        #print("generated")
+        #print(generated)
+        #self.assertIn("(models.Model):", generated)
+        #self.assertIn("name_name_id =", generated)
+        tbl = Table(self.canada)
+        generated = tbl.django_models()
+        #self.assertIn("name =", generated)
+
+
+
 class TestFiles(unittest.TestCase):
     
     def test_use_open_file(self):
