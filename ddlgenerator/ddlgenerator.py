@@ -324,7 +324,7 @@ class Table(object):
         return result
 
     def django_models(self, sql):
-        u = sql.split(';')
+        u = sql.split(';\n')
 
         try:
             import django
