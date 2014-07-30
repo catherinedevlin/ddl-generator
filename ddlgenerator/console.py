@@ -49,6 +49,9 @@ def generate():
     logging.info(str(args))
     if args.dialect in ('pg', 'pgsql', 'postgres'):
         args.dialect = 'postgresql'
+    if args.dialect in ('dj', 'djan'):
+        args.dialect = 'django'
+
     if args.dialect not in dialect_names:
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
     for datafile in args.datafile:
@@ -61,6 +64,11 @@ def generate():
             if args.inserts:
                 print("\n".join(table.inserts(dialect=args.dialect)))
                 #inserter.compile().bindtemplate
+        elif args.dialect.startswith('dj'):
+            sql = table.sql(dialect='postgresql', inserts=args.inserts,
+                            creates=(not args.no_creates), drops=args.drops,
+                            metadata_source=args.use_metadata_from)
+            table.django_models(sql)
         else:
             print(table.sql(dialect=args.dialect, inserts=args.inserts,
                             creates=(not args.no_creates), drops=args.drops,
