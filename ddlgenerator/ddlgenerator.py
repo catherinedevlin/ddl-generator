@@ -426,6 +426,7 @@ class Table(object):
                                        'is_unique': set([v, ])}
                 else:
                     col = self.columns[k]
+                    old_sample_datum = col.get('sample_datum')
                     col['sample_datum'] = th.best_representative(
                         col['sample_datum'], v)
                     if (v is None):

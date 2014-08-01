@@ -60,7 +60,6 @@ def generate():
             print(table.sqlalchemy())
             if args.inserts:
                 print("\n".join(table.inserts(dialect=args.dialect)))
-                #inserter.compile().bindtemplate
         else:
             print(table.sql(dialect=args.dialect, inserts=args.inserts,
                             creates=(not args.no_creates), drops=args.drops,

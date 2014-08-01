@@ -99,11 +99,29 @@ def worst_decimal(d1, d2):
     (d2b4, d2after) = _places_b4_and_after_decimal(d2)
     return Decimal('9' * max(d1b4, d2b4) + '.' + '9' * max(d1after, d2after))
 
+def set_worst(old_worst, new_worst):
+    """
+    Pad new_worst with zeroes to prevent it being shorter than old_worst.
+    
+    >>> set_worst(311920, '48-49')
+    '48-490'
+    """
+    
+    new_len = len(str(new_worst))
+    old_len = len(str(old_worst))
+    if new_len < old_len:
+        new_type = type(new_worst)
+        new_worst = str(new_worst).ljust(old_len, '0')
+        return new_type(new_worst)
+    return new_worst
+    
 def best_representative(d1, d2):
     """
     Given two objects each coerced to the most specific type possible, return the one
     of the least restrictive type.
 
+    >>> best_representative(311920, '48-49')
+    '48-490'
     >>> best_representative(6, 'foo')
     'foo'
     >>> best_representative(Decimal('4.95'), Decimal('6.1'))
@@ -116,15 +134,15 @@ def best_representative(d1, d2):
         pref = preference.index(type(coerced))
         if pref > worst_pref:
             worst_pref = pref
-            worst = coerced
+            worst = set_worst(worst, coerced)
         elif pref == worst_pref:
             if isinstance(coerced, Decimal):
-                worst = worst_decimal(coerced, worst)
+                worst = set_worst(worst, worst_decimal(coerced, worst))
             elif isinstance(coerced, float):
-                worst = max(coerced, worst)
+                worst = set_worst(worst, max(coerced, worst))
             else:  # int, str
                 if len(str(coerced)) > len(str(worst)):
-                    worst = coerced
+                    worst = set_worst(worst, coerced)
     return worst
 
 def best_coercable(data):
