@@ -56,6 +56,8 @@ def coerce_to_specific(datum):
     >>> coerce_to_specific("something else")
     'something else'
     """
+    if datum is None:
+        return None 
     try:
         if len(_complex_enough_to_be_date.findall(datum)) > 1:
             return dateutil.parser.parse(datum)
@@ -120,6 +122,8 @@ def best_representative(d1, d2):
     Given two objects each coerced to the most specific type possible, return the one
     of the least restrictive type.
 
+    >>> best_representative(None, Decimal('6.1'))
+    Decimal('6.1')
     >>> best_representative(311920, '48-49')
     '48-490'
     >>> best_representative(6, 'foo')
@@ -127,6 +131,11 @@ def best_representative(d1, d2):
     >>> best_representative(Decimal('4.95'), Decimal('6.1'))
     Decimal('9.99')
     """
+  
+    if d1 is None:
+        return d2
+    elif d2 is None:
+        return d1
     preference = (datetime.datetime, bool, int, Decimal, float, str)
     worst_pref = 0
     worst = ''
