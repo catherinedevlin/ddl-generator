@@ -68,7 +68,7 @@ class KeyAlreadyExists(KeyError):
 
 
 dialect_names = '''drizzle firebird mssql mysql oracle postgresql
-                   sqlite sybase sqlalchemy'''.split()
+                   sqlite sybase sqlalchemy django'''.split()
 
 
 def _dump(sql, *multiparams, **params):
@@ -322,6 +322,41 @@ class Table(object):
                 ", ".join(sqla_imports), self.table_name, result)
             result = textwrap.dedent(result)
         return result
+
+    def django_models(self, metadata_source=None):
+        sql = self.sql(dialect='postgresql', inserts=False, creates=True,
+            drops=True, metadata_source=metadata_source)
+        u = sql.split(';\n')
+
+        try:
+            import django
+        except ImportError:
+            print('Cannot find Django on the current path. Is it installed?')
+            django = None
+
+        if django:
+            from django.conf import settings
+            from django.core import management
+
+            import sqlite3
+            import os
+
+            db_filename = 'generated_db.db'
+
+            conn = sqlite3.connect(db_filename)
+            c = conn.cursor()
+            for i in u:
+                c.execute(i)
+
+            if not settings.configured:
+                settings.configure(
+                    DEBUG='on',
+                    SECRET_KEY='1234',
+                    ALLOWED_HOSTS='localhost',
+                    DATABASES = {'default' : {'NAME':db_filename,'ENGINE':'django.db.backends.sqlite3'}},
+                    )
+            management.call_command('inspectdb', interactive=False)
+            os.remove(db_filename)
         
     _datetime_format = {}  # TODO: test the various RDBMS for power to read the standard
     def _prep_datum(self, datum, dialect, col):
