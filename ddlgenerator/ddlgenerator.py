@@ -80,28 +80,6 @@ for engine_name in ('postgresql', 'sqlite', 'mysql', 'oracle', 'mssql'):
                                                  strategy='mock',
                                                  executor=_dump)                                                              
 
-
-from sqlalchemy.sql import compiler
-
-from psycopg2.extensions import adapt as sqlescape
-# or use the appropiate escape function from your db driver
-
-def compile_query(query):
-    dialect = query.session.bind.dialect
-    statement = query.statement
-    comp = compiler.SQLCompiler(dialect, statement)
-    comp.compile()
-    enc = dialect.encoding
-    params = {}
-    for k,v in comp.params.iteritems():
-        if isinstance(v, unicode):
-            v = v.encode(enc)
-        params[k] = sqlescape(v)
-    return (comp.string.encode(enc) % params).decode(enc)
-    
-
-
-
 class Table(object):
     """
     >>> data = '''
@@ -133,7 +111,7 @@ class Table(object):
             elif hasattr(data, 'lower'):  # duck-type string test
                 if os.path.isfile(data):
                     (file_path, file_extension) = os.path.splitext(data)
-                    self.table_name = os.path.split(file_path)[1]
+                    self.table_name = os.path.split(file_path)[1].lower()
         self.table_name = self.table_name or \
                           'generated_table%s' % Table.table_index
         self.table_name = reshape.clean_key_name(self.table_name)
