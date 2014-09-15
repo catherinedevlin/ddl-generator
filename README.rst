@@ -143,6 +143,7 @@ Alternatives
 ------------
 
 * `csvkit.csvsql <https://csvkit.readthedocs.org/en/0.7.3/scripts/csvsql.html>`_
+* `pandas.read_*` methods
 
 Credits
 -------
@@ -150,5 +151,7 @@ Credits
 - Mike Bayer for sqlalchemy
 - coldfix and Mark Ransom for their StackOverflow answers
 - Audrey Roy for cookiecutter
+- Brandon Lorenz for Django model generation
+
 
 
