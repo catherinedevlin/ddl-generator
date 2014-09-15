@@ -315,6 +315,7 @@ class Table(object):
         if django:
             from django.conf import settings
             from django.core import management
+            from django import setup
 
             import sqlite3
             import os
@@ -333,6 +334,7 @@ class Table(object):
                     ALLOWED_HOSTS='localhost',
                     DATABASES = {'default' : {'NAME':db_filename,'ENGINE':'django.db.backends.sqlite3'}},
                     )
+                django.setup()
             management.call_command('inspectdb', interactive=False)
             os.remove(db_filename)
         
