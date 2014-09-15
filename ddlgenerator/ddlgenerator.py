@@ -153,6 +153,7 @@ class Table(object):
         if (    self.table_name.startswith('generated_table')
             and hasattr(self.data, 'table_name')):
             self.table_name = self.data.table_name
+        self.table_name = self.table_name.lower()
 
         self.data = reshape.walk_and_clean(self.data)
 
