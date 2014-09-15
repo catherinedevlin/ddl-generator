@@ -10,4 +10,6 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Brandon Lorenz: Django model generation
+* Mikhail Podgurskiy: Doc fix for Github link
+

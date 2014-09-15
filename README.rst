@@ -39,6 +39,7 @@ Supported data formats
 - JSON
 - CSV
 - Pickle
+- HTML
 
 Features
 --------
@@ -50,6 +51,7 @@ Features
 - with ``-i``/``--inserts`` flag, adds INSERT statements
 - with ``-u``/``--uniques`` flag, surmises UNIQUE constraints from data
 - Handles nested data, creating child tables as needed
+- Reads HTML tables, including those embedded in noisy websites
 
 Options
 -------

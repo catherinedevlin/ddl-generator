@@ -33,3 +33,10 @@ History
 
 * Generate sqlalchemy inserts
 
+0.1.7 (2014-09-14)
+++++++++++++++++++
+
+* Read via HTTP
+* Support HTML format
+* Generate Django models
+
