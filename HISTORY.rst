@@ -40,3 +40,8 @@ History
 * Support HTML format
 * Generate Django models
 
+0.1.7.1 (2014-09-14)
+++++++++++++++++++
+ 
+* Require data-dispenser 0.2.3
+

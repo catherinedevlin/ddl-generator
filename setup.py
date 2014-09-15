@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='ddlgenerator',
-    version='0.1.7',
+    version='0.1.7.1',
     description='Generates SQL DDL that will accept Python data',
     long_description=readme + '\n\n' + history,
     author='Catherine Devlin',
@@ -35,7 +35,7 @@ setup(
       "sqlalchemy",
       "dateutils",
       "pyyaml",
-      "data_dispenser>=0.2.2",
+      "data_dispenser>=0.2.3",
     ],
     license="MIT",
     zip_safe=False,
