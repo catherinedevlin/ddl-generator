@@ -411,10 +411,14 @@ class Table(object):
                 col['satype'] = sa.Unicode(len(col['sample_datum']))
         else:
             col['satype'] = self.types2sa[type(col['sample_datum'])]
+            if col['satype'] == sa.Integer and (
+                col['sample_datum'] > 2147483647 or col['sample_datum'] < -2147483647):
+                col['satype'] = sa.BigInteger
         return col
 
     types2sa = {datetime.datetime: sa.DateTime, int: sa.Integer,
-                float: sa.Numeric, bool: sa.Boolean}
+                float: sa.Numeric, bool: sa.Boolean,
+                type(None): sa.Text}
 
     def _determine_types(self):
         column_data = OrderedDict()
