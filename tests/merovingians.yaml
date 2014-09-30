@@ -3,8 +3,10 @@
   reign:
     from: 486
     to: 511
+  twitter: !!null
 -
   name: Childebert I
   reign:
     from: 511
     to: 558
+  twitter: !!null
