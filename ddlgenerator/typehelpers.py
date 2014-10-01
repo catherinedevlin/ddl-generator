@@ -107,14 +107,34 @@ def set_worst(old_worst, new_worst):
     
     >>> set_worst(311920, '48-49')
     '48-490'
+    >>> set_worst(98, -2)
+    -20
     """
-    
+ 
+    # Negative numbers confuse the length calculation. 
+    negative = ( (hasattr(old_worst, '__neg__') and old_worst < 0) or
+                 (hasattr(new_worst, '__neg__') and new_worst < 0) )
+    try:
+        old_worst = abs(old_worst)
+        new_worst = abs(new_worst)
+    except TypeError:
+        pass
+   
+    # now go by length 
     new_len = len(str(new_worst))
     old_len = len(str(old_worst))
     if new_len < old_len:
         new_type = type(new_worst)
         new_worst = str(new_worst).ljust(old_len, '0')
-        return new_type(new_worst)
+        new_worst = new_type(new_worst)
+        
+    # now put the removed negative back
+    if negative:
+        try:
+            new_worst = -1 * abs(new_worst)
+        except:
+            pass
+        
     return new_worst
     
 def best_representative(d1, d2):
@@ -130,6 +150,8 @@ def best_representative(d1, d2):
     'foo'
     >>> best_representative(Decimal('4.95'), Decimal('6.1'))
     Decimal('9.99')
+    >>> best_representative(Decimal('-1.9'), Decimal('6.1'))
+    Decimal('-9.9')
     """
   
     if d1 is None:
