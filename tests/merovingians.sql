@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS merovingians;
+
 CREATE TABLE merovingians (
 	name VARCHAR(12) NOT NULL, 
 	twitter TEXT, 

@@ -26,7 +26,7 @@ def clean_key_name(key):
     3. Lowercases name.  If you want case-sensitive table
     or column names, you are a bad person and you should feel bad.
     """
-    result = _illegal_in_column_name.sub("_", key)
+    result = _illegal_in_column_name.sub("_", key.strip())
     if result[0].isdigit():
         result = '_%s' % result
     if result.upper() in sql_reserved_words:

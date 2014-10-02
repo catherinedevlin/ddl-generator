@@ -13,4 +13,4 @@ CREATE TABLE animals (
 
 INSERT INTO animals (name, species, kg, notes) VALUES ('Alfred', 'wart hog', 22, 'loves turnips');
 INSERT INTO animals (name, species, kg, notes) VALUES ('Gertrude', 'polar bear', 312.7, 'deep thinker');
-INSERT INTO animals (name, species, kg, notes) VALUES ('Emily', 'salamander', 0.3, '');
+INSERT INTO animals (name, species, kg, notes) VALUES ('Emily', 'salamander', 0.3, NULL);
