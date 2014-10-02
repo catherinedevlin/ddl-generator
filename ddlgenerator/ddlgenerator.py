@@ -341,7 +341,7 @@ class Table(object):
         
     _datetime_format = {}  # TODO: test the various RDBMS for power to read the standard
     def _prep_datum(self, datum, dialect, col):
-        if datum is None:
+        if datum is None or not str(datum).strip():
             return 'NULL'
         pytype = self.columns[col]['pytype']
         if pytype == datetime.datetime:
