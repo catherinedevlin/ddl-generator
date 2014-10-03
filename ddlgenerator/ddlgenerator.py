@@ -425,6 +425,7 @@ class Table(object):
         self.columns = OrderedDict()
         self.comments = {}
         rowcount = 0
+        hlf1rlbk = []
         for row in self.data:
             rowcount += 1
             keys = row.keys()

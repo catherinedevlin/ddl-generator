@@ -49,6 +49,8 @@ def coerce_to_specific(datum):
     Coerces datum to the most specific data type possible
     Order of preference: datetime, boolean, integer, decimal, float, string
 
+    >>> coerce_to_specific('-000000001854.60')
+    Decimal('-1854.60')
     >>> coerce_to_specific(7.2)
     Decimal('7.2')
     >>> coerce_to_specific("Jan 17 2012")
@@ -59,7 +61,8 @@ def coerce_to_specific(datum):
     if datum is None:
         return None 
     try:
-        if len(_complex_enough_to_be_date.findall(datum)) > 1:
+        if (len(_complex_enough_to_be_date.findall(datum)) > 1 and 
+            not datum.strip().startswith('-')):
             return dateutil.parser.parse(datum)
     except Exception as e:
         pass
@@ -142,6 +145,8 @@ def best_representative(d1, d2):
     Given two objects each coerced to the most specific type possible, return the one
     of the least restrictive type.
 
+    >>> best_representative(Decimal('-37.5'), Decimal('0.9999'))
+    Decimal('-99.9999')
     >>> best_representative(None, Decimal('6.1'))
     Decimal('6.1')
     >>> best_representative(311920, '48-49')
