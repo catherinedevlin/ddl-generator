@@ -49,7 +49,7 @@ def walk_and_clean(data):
     if hasattr(data, '_fields'):
         data = OrderedDict((k,v) for (k,v) in zip(data._fields, data))
     # Recursively clean up child dicts and lists
-    if hasattr(data, 'items'):
+    if hasattr(data, 'items') and hasattr(data, '__setitem__'):
         for (key, val) in data.items():
             data[key] = walk_and_clean(val)
     elif isinstance(data, list) or isinstance(data, tuple) \
