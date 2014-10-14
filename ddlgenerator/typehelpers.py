@@ -60,16 +60,32 @@ def coerce_to_specific(datum):
     datetime.datetime(2012, 1, 17, 0, 0)
     >>> coerce_to_specific("something else")
     'something else'
+    >>> coerce_to_specific("20141010")
+    datetime.datetime(2014, 10, 10, 0, 0)
+    >>> coerce_to_specific("00121010")
+    121010
+    >>> coerce_to_specific("010")
+    10
     """
     if datum is None:
         return None 
     try:
-        clean_datum = datum.strip().lstrip('0').rstrip('.')
-        if (len(_complex_enough_to_be_date.findall(clean_datum)) > 1 and 
-            not clean_datum.startswith('-')):
-            result = dateutil.parser.parse(clean_datum)
-            str(result)   # just making sure this is not a nonsense unprintable date
-            return result
+        result = dateutil.parser.parse(datum)
+        # but even if this does not raise an exception, may
+        # not be a date -- dateutil's parser is very aggressive
+        # check for nonsense unprintable date
+        str(result) 
+        # most false date hits will be interpreted as times today
+        # or as unlikely far-future or far-past years
+        clean_datum = datum.strip().lstrip('-').lstrip('0').rstrip('.')
+        if len(_complex_enough_to_be_date.findall(clean_datum)) < 2:
+            if result.date() == datetime.datetime.now().date():
+                raise Exception("false date hit (%s) for %s" % (
+                    str(result), datum))
+            if not (1700 < result.year < 2150):
+                raise Exception("false date hit (%s) for %s" % (
+                    str(result), datum)) 
+        return result
     except Exception as e:
         pass
     if str(datum).strip().lower() in ('0', 'false', 'f', 'n', 'no'):
