@@ -47,6 +47,7 @@ def precision_and_scale(x):
     return (magnitude + scale, scale)
 
 _complex_enough_to_be_date = re.compile(r"[\-\. /]")
+_digits_only = re.compile(r"^\d+$")
 def coerce_to_specific(datum):
     """
     Coerces datum to the most specific data type possible
@@ -62,8 +63,8 @@ def coerce_to_specific(datum):
     'something else'
     >>> coerce_to_specific("20141010")
     datetime.datetime(2014, 10, 10, 0, 0)
-    >>> coerce_to_specific("00121010")
-    121010
+    >>> coerce_to_specific("001210107")
+    1210107
     >>> coerce_to_specific("010")
     10
     """
@@ -79,6 +80,11 @@ def coerce_to_specific(datum):
         # or as unlikely far-future or far-past years
         clean_datum = datum.strip().lstrip('-').lstrip('0').rstrip('.')
         if len(_complex_enough_to_be_date.findall(clean_datum)) < 2:
+            #import ipdb; ipdb.set_trace()
+            digits = _digits_only.search(clean_datum)
+            if (not digits) or (len(digits.group(0)) not in 
+                                (4, 6, 8, 12, 14, 17)):
+                raise Exception("false date hit for %s" % datum)
             if result.date() == datetime.datetime.now().date():
                 raise Exception("false date hit (%s) for %s" % (
                     str(result), datum))
