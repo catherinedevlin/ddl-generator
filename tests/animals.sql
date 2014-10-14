@@ -4,7 +4,7 @@ CREATE TABLE animals (
 	name VARCHAR(8) NOT NULL, 
 	species VARCHAR(10) NOT NULL, 
 	kg DECIMAL(4, 1) NOT NULL, 
-	notes VARCHAR(13) NOT NULL, 
+	notes VARCHAR(13), 
 	UNIQUE (name), 
 	UNIQUE (species), 
 	UNIQUE (kg), 

@@ -2,10 +2,10 @@ DROP TABLE IF EXISTS sql_keywords_appendix;
 
 CREATE TABLE sql_keywords_appendix (
 	key_word VARCHAR(32) NOT NULL, 
-	postgresql VARCHAR(41) NOT NULL, 
-	sql_2011 VARCHAR(12) NOT NULL, 
-	sql_2008 VARCHAR(12) NOT NULL, 
-	sql_92 VARCHAR(12) NOT NULL
+	postgresql VARCHAR(41), 
+	sql_2011 VARCHAR(12), 
+	sql_2008 VARCHAR(12), 
+	sql_92 VARCHAR(12)
 );
 
 INSERT INTO sql_keywords_appendix (key_word, postgresql, sql_2011, sql_2008, sql_92) VALUES ('ABORT', 'non-reserved', NULL, NULL, NULL);

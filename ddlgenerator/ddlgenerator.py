@@ -408,6 +408,7 @@ class Table(object):
             if self.varying_length_text:
                 col['satype'] = sa.Text()
             else:
+                str_len = max(len(col['sample_datum']), col['str_length'])
                 col['satype'] = sa.Unicode(len(col['sample_datum']))
         else:
             col['satype'] = self.types2sa[type(col['sample_datum'])]
@@ -425,7 +426,6 @@ class Table(object):
         self.columns = OrderedDict()
         self.comments = {}
         rowcount = 0
-        hlf1rlbk = []
         for row in self.data:
             rowcount += 1
             keys = row.keys()
@@ -435,24 +435,28 @@ class Table(object):
             if not isinstance(row, OrderedDict):
                 keys = sorted(keys)
             for k in keys:
-                v = row[k]
-                if not th.is_scalar(v):
-                    v = str(v)
+                v_raw = row[k]
+                if not th.is_scalar(v_raw):
+                    v = str(v_raw)
                     self.comments[k] = 'nested values! example:\n%s' % \
                                        pprint.pformat(v)
                     logging.warning('in %s: %s' % (k, self.comments[k]))
-                v = th.coerce_to_specific(v)
+                v = th.coerce_to_specific(v_raw)
                 if k not in self.columns:
                     self.columns[k] = {'sample_datum': v,
+                                       'str_length': len(str(v_raw)),
                                        'is_nullable': not (rowcount == 1 and
-                                                           v is not None),
+                                                           v is not None and
+                                                           str(v).strip()
+                                                           ),
                                        'is_unique': set([v, ])}
                 else:
                     col = self.columns[k]
+                    col['str_length'] = max(col['str_length'], len(str(v_raw)))
                     old_sample_datum = col.get('sample_datum')
                     col['sample_datum'] = th.best_representative(
                         col['sample_datum'], v)
-                    if (v is None):
+                    if (v is None) or (not str(v).strip()):
                         col['is_nullable'] = True
                     if (col['is_unique'] != False):
                         if v in col['is_unique']:

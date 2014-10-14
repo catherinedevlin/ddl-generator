@@ -29,6 +29,9 @@ def precision_and_scale(x):
     if isinstance(x, Decimal):
         precision = len(x.as_tuple().digits)
         scale = -1 * x.as_tuple().exponent
+        if scale < 0:
+            precision -= scale
+            scale = 0
         return (precision, scale)
     max_digits = 14
     int_part = int(abs(x))
@@ -61,9 +64,12 @@ def coerce_to_specific(datum):
     if datum is None:
         return None 
     try:
-        if (len(_complex_enough_to_be_date.findall(datum)) > 1 and 
-            not datum.strip().startswith('-')):
-            return dateutil.parser.parse(datum)
+        clean_datum = datum.strip().lstrip('0').rstrip('.')
+        if (len(_complex_enough_to_be_date.findall(clean_datum)) > 1 and 
+            not clean_datum.startswith('-')):
+            result = dateutil.parser.parse(clean_datum)
+            str(result)   # just making sure this is not a nonsense unprintable date
+            return result
     except Exception as e:
         pass
     if str(datum).strip().lower() in ('0', 'false', 'f', 'n', 'no'):
@@ -113,7 +119,9 @@ def set_worst(old_worst, new_worst):
     >>> set_worst(98, -2)
     -20
     """
- 
+    
+    if isinstance(new_worst, bool):
+        return new_worst
     # Negative numbers confuse the length calculation. 
     negative = ( (hasattr(old_worst, '__neg__') and old_worst < 0) or
                  (hasattr(new_worst, '__neg__') and new_worst < 0) )

@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS solarsystem;
 
 CREATE TABLE solarsystem (
-	kg DECIMAL(31, 0) NOT NULL, 
+	kg DECIMAL(34, 0) NOT NULL, 
 	name VARCHAR(7) NOT NULL, 
 	orbits VARCHAR(7), 
 	UNIQUE (kg), 
