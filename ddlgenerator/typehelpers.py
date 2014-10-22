@@ -189,6 +189,8 @@ def best_representative(d1, d2):
     Decimal('-9.9')
     """
   
+    if hasattr(d2, 'strip') and not d2.strip():
+        return d1
     if d1 is None:
         return d2
     elif d2 is None:
