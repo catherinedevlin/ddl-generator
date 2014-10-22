@@ -133,17 +133,24 @@ column types each time.
 Installing
 ----------
 
-::
+Requires Python3.
+
+From PyPI::
+
+    pip3 install ddlgenerator
+
+From source::
 
     git clone git clone https://github.com/catherinedevlin/ddl-generator.git
     cd ddl-generator
-    python setup.py install
+    pip3 install .
 
 Alternatives
 ------------
 
 * `csvkit.csvsql <https://csvkit.readthedocs.org/en/0.7.3/scripts/csvsql.html>`_
 * `pandas.read_*` methods
+* `prequel <https://github.com/timClicks/prequel.git>`_ for SQLite
 
 Credits
 -------

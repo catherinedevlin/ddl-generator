@@ -45,3 +45,9 @@ History
  
 * Require data-dispenser 0.2.3
 
+0.1.7.3 (2014-10-19)
+++++++++++++++++++++
+
+* Require all formerly recommended dependencies, for simplicity
+* Several bugfixes for complex number-like fields
+
