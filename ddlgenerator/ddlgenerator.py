@@ -70,7 +70,6 @@ class KeyAlreadyExists(KeyError):
 dialect_names = '''drizzle firebird mssql mysql oracle postgresql
                    sqlite sybase sqlalchemy django'''.split()
 
-
 def _dump(sql, *multiparams, **params):
     pass
 
@@ -142,7 +141,9 @@ class Table(object):
         self._find_table_name(data)
         # Send anything but Python data objects to
         # data_dispenser.sources.Source
-        if hasattr(data, 'lower') or hasattr(data, 'read'):
+        if isinstance(data, Source):
+            self.data = data
+        elif hasattr(data, 'lower') or hasattr(data, 'read'):
             self.data = Source(data, limit=limit)
         else:
             try:

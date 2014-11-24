@@ -1,10 +1,12 @@
 import argparse
 import logging
+import re
 try:
     from ddlgenerator.ddlgenerator import Table, dialect_names
 except ImportError:
     from ddlgenerator import Table, dialect_names  # TODO: can py2/3 split this
 # If anyone can explain these import differences to me, I will buy you a cookie.
+from data_dispenser import sqlalchemy_table_sources
 
 def read_args():
     parser = argparse.ArgumentParser(description='Generate DDL based on data')
@@ -43,6 +45,25 @@ def set_logging(args):
                                   args.log)
     logging.getLogger().setLevel(loglevel)
 
+is_sqlalchemy_url = re.compile("^%s" % "|".join(dialect_names))
+
+def generate_one(datafile, args, table_name=None):
+    table = Table(datafile, table_name=table_name, varying_length_text=args.text, uniques=args.uniques,
+                  pk_name = args.key, force_pk=args.force_key, reorder=args.reorder,
+                  save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from,
+                  loglevel=args.log, limit=args.limit)
+    if args.dialect.startswith('sqla'):
+        print(table.sqlalchemy())
+        if args.inserts:
+            print("\n".join(table.inserts(dialect=args.dialect)))
+            #inserter.compile().bindtemplate
+    elif args.dialect.startswith('dj'):
+        table.django_models()
+    else:
+        print(table.sql(dialect=args.dialect, inserts=args.inserts,
+                        creates=(not args.no_creates), drops=args.drops,
+                        metadata_source=args.use_metadata_from))
+    
 def generate():
     args = read_args()
     set_logging(args)
@@ -55,19 +76,9 @@ def generate():
     if args.dialect not in dialect_names:
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
     for datafile in args.datafile:
-        table = Table(datafile, varying_length_text=args.text, uniques=args.uniques,
-                      pk_name = args.key, force_pk=args.force_key, reorder=args.reorder,
-                      save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from,
-                      loglevel=args.log, limit=args.limit)
-        if args.dialect.startswith('sqla'):
-            print(table.sqlalchemy())
-            if args.inserts:
-                print("\n".join(table.inserts(dialect=args.dialect)))
-                #inserter.compile().bindtemplate
-        elif args.dialect.startswith('dj'):
-            table.django_models()
+        if is_sqlalchemy_url.search(datafile):
+            for tbl in sqlalchemy_table_sources(datafile):
+                generate_one(tbl, args, table_name=tbl.generator.name)
         else:
-            print(table.sql(dialect=args.dialect, inserts=args.inserts,
-                            creates=(not args.no_creates), drops=args.drops,
-                            metadata_source=args.use_metadata_from))
+            generate_one(datafile, args)    
 
