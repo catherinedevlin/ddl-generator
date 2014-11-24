@@ -341,6 +341,7 @@ class Table(object):
         
     _datetime_format = {}  # TODO: test the various RDBMS for power to read the standard
     def _prep_datum(self, datum, dialect, col):
+        """Puts a value in proper format for a SQL string"""
         if datum is None or not str(datum).strip():
             return 'NULL'
         pytype = self.columns[col]['pytype']
@@ -348,6 +349,8 @@ class Table(object):
             datum = dateutil.parser.parse(datum)
         elif pytype == bool:
             datum = th.coerce_to_specific(datum)
+            if dialect.startswith('sqlite'):
+                datum = 1 if datum else 0
         else:
             datum = pytype(str(datum))
         if isinstance(datum, datetime.datetime):
