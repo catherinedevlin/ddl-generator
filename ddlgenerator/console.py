@@ -26,6 +26,7 @@ def read_args():
     parser.add_argument('-i', '--inserts', action='store_true', help='Include INSERT statements')
     parser.add_argument('--no-creates', action='store_true', help='Do not include CREATE TABLE statements')
     parser.add_argument('--limit', type=int, default=None, help='Max number of rows to read from each source file')
+    parser.add_argument('-c', '--cushion', type=int, default=0, help='Extra length to pad column sizes with')    
     parser.add_argument('--save-metadata-to', type=str, metavar='FILENAME',
                         help='Save table definition in FILENAME for later --use-saved-metadata run')
     parser.add_argument('--use-metadata-from', type=str, metavar='FILENAME',
@@ -49,7 +50,7 @@ is_sqlalchemy_url = re.compile("^%s" % "|".join(dialect_names))
 
 def generate_one(datafile, args, table_name=None):
     table = Table(datafile, table_name=table_name, varying_length_text=args.text, uniques=args.uniques,
-                  pk_name = args.key, force_pk=args.force_key, reorder=args.reorder,
+                  pk_name = args.key, force_pk=args.force_key, reorder=args.reorder, data_size_cushion=args.cushion,
                   save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from,
                   loglevel=args.log, limit=args.limit)
     if args.dialect.startswith('sqla'):

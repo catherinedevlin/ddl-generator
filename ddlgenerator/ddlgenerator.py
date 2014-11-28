@@ -119,7 +119,7 @@ class Table(object):
     def __init__(self, data, table_name=None, default_dialect=None,
                  save_metadata_to=None, metadata_source=None,
                  varying_length_text=False, uniques=False,
-                 pk_name=None, force_pk=False,
+                 pk_name=None, force_pk=False, data_size_cushion=0,
                  _parent_table=None, _fk_field_name=None, reorder=False,
                  loglevel=logging.WARN, limit=None):
         """
@@ -138,6 +138,7 @@ class Table(object):
         logging.getLogger().setLevel(loglevel)
         self.varying_length_text = varying_length_text
         self.table_name = table_name
+        self.data_size_cushion = data_size_cushion
         self._find_table_name(data)
         # Send anything but Python data objects to
         # data_dispenser.sources.Source
@@ -215,7 +216,7 @@ class Table(object):
                                            default_dialect=self.default_dialect,
                                            varying_length_text=varying_length_text,
                                            uniques=uniques, pk_name=pk_name,
-                                           force_pk=force_pk,
+                                           force_pk=force_pk, data_size_cushion=data_size_cushion,
                                            _parent_table=self, reorder=reorder,
                                            _fk_field_name=child_fk_names[child_name],
                                            metadata_source=child_metadata_sources.get(child_name),
@@ -407,17 +408,20 @@ class Table(object):
     def _fill_metadata_from_sample(self, col):
         col['pytype'] = type(col['sample_datum'])
         if isinstance(col['sample_datum'], Decimal):
-            col['satype'] = sa.DECIMAL(*th.precision_and_scale(col['sample_datum']))
+            (precision, scale) = th.precision_and_scale(col['sample_datum'])
+            col['satype'] = sa.DECIMAL(precision + self.data_size_cushion*2, 
+                                       scale + self.data_size_cushion)
         elif isinstance(col['sample_datum'], str):
             if self.varying_length_text:
                 col['satype'] = sa.Text()
             else:
                 str_len = max(len(col['sample_datum']), col['str_length'])
-                col['satype'] = sa.Unicode(len(col['sample_datum']))
+                col['satype'] = sa.Unicode(str_len+self.data_size_cushion*2)
         else:
             col['satype'] = self.types2sa[type(col['sample_datum'])]
             if col['satype'] == sa.Integer and (
-                col['sample_datum'] > 2147483647 or col['sample_datum'] < -2147483647):
+                col['sample_datum'] > (2147483647-self.data_size_cushion*1000000000) or 
+                col['sample_datum'] < (-2147483647+self.data_size_cushion*1000000000)):
                 col['satype'] = sa.BigInteger
         return col
 

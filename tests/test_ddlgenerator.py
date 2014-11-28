@@ -95,7 +95,14 @@ class TestFromRawPythonData(unittest.TestCase):
         tbl = Table(self.canada)
         generated = tbl.django_models()
         #self.assertIn("name =", generated)
-
+        
+    def test_cushion(self):
+        tbl = Table(self.merovingians, data_size_cushion=0)
+        generated = tbl.sql('postgresql').strip()        
+        self.assertIn('VARCHAR(12)', generated)        
+        tbl = Table(self.merovingians, data_size_cushion=1)
+        generated = tbl.sql('postgresql').strip()        
+        self.assertIn('VARCHAR(14)', generated)
 
 
 class TestFiles(unittest.TestCase):
