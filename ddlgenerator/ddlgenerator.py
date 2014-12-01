@@ -347,7 +347,7 @@ class Table(object):
     _datetime_format = {}  # TODO: test the various RDBMS for power to read the standard
     def _prep_datum(self, datum, dialect, col, needs_conversion):
         """Puts a value in proper format for a SQL string"""
-        if datum is None or not str(datum).strip():
+        if datum is None or (needs_conversion and not str(datum).strip()):
             return 'NULL'
         pytype = self.columns[col]['pytype']
         
@@ -361,7 +361,7 @@ class Table(object):
             else:
                 datum = pytype(str(datum))
             
-        if isinstance(datum, datetime.datetime):
+        if isinstance(datum, datetime.datetime) or isinstance(datum, datetime.date):
             if dialect in self._datetime_format:
                 return datum.strftime(self._datetime_format[dialect])
             else:
