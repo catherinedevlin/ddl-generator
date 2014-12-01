@@ -157,13 +157,16 @@ class Table(object):
             self.table_name = self.data.table_name
         self.table_name = self.table_name.lower()
 
-        self.data = reshape.walk_and_clean(self.data)
-
-        (self.data, self.pk_name, children, child_fk_names
-            ) = reshape.unnest_children(data=self.data,
-                                        parent_name=self.table_name,
-                                        pk_name=pk_name,
-                                        force_pk=force_pk)
+        if hasattr(self.data.generator, 'sqla_columns'):
+            children = {}
+            self.pk_name = next(col.name for col in self.data.generator.sqla_columns if col.primary_key)
+        else:
+            self.data = reshape.walk_and_clean(self.data)
+            (self.data, self.pk_name, children, child_fk_names
+                ) = reshape.unnest_children(data=self.data,
+                                            parent_name=self.table_name,
+                                            pk_name=pk_name,
+                                            force_pk=force_pk)
 
         self.default_dialect = default_dialect
         self.comments = {}
@@ -342,19 +345,22 @@ class Table(object):
             os.remove(db_filename)
         
     _datetime_format = {}  # TODO: test the various RDBMS for power to read the standard
-    def _prep_datum(self, datum, dialect, col):
+    def _prep_datum(self, datum, dialect, col, needs_conversion):
         """Puts a value in proper format for a SQL string"""
         if datum is None or not str(datum).strip():
             return 'NULL'
         pytype = self.columns[col]['pytype']
-        if pytype == datetime.datetime:
-            datum = dateutil.parser.parse(datum)
-        elif pytype == bool:
-            datum = th.coerce_to_specific(datum)
-            if dialect.startswith('sqlite'):
-                datum = 1 if datum else 0
-        else:
-            datum = pytype(str(datum))
+        
+        if needs_conversion:
+            if pytype == datetime.datetime:
+                datum = dateutil.parser.parse(datum)
+            elif pytype == bool:
+                datum = th.coerce_to_specific(datum)
+                if dialect.startswith('sqlite'):
+                    datum = 1 if datum else 0
+            else:
+                datum = pytype(str(datum))
+            
         if isinstance(datum, datetime.datetime):
             if dialect in self._datetime_format:
                 return datum.strftime(self._datetime_format[dialect])
@@ -377,9 +383,10 @@ class Table(object):
             yield "conn.connection.commit()"
         else:        
             dialect = self._dialect(dialect)
-            for row in self.data:
-                cols = ", ".join(c for c in row)
-                vals = ", ".join(str(self._prep_datum(val, dialect, key))
+            needs_conversion = not hasattr(self.data.generator, 'sqla_columns')
+            for row in self.data:                    
+                cols = ", ".join(c for c in row.keys())
+                vals = ", ".join(str(self._prep_datum(val, dialect, key, needs_conversion))
                                  for (key, val) in row.items())
                 yield self._insert_template.format(table_name=self.table_name,
                                                    cols=cols, vals=vals)
@@ -432,6 +439,13 @@ class Table(object):
     def _determine_types(self):
         column_data = OrderedDict()
         self.columns = OrderedDict()
+        if hasattr(self.data.generator, 'sqla_columns'):
+            for col in self.data.generator.sqla_columns:
+                self.columns[col.name] = {'is_nullable': col.nullable,
+                                          'is_unique': col.unique,
+                                          'satype': col.type,
+                                          'pytype': col.pytype}
+            return
         self.comments = {}
         rowcount = 0
         for row in self.data:
@@ -467,7 +481,7 @@ class Table(object):
                     if (v is None) or (not str(v).strip()):
                         col['is_nullable'] = True
                     if (col['is_unique'] != False):
-                        if v in col['is_unique']:
+                        if v in col['is_unique']:   
                             col['is_unique'] = False
                         else:
                             col['is_unique'].add(v)
