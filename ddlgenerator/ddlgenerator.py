@@ -383,7 +383,7 @@ class Table(object):
             yield "conn.connection.commit()"
         else:
             dialect = self._dialect(dialect)
-            needs_conversion = not hasattr(self.data.generator, 'sqla_columns')
+            needs_conversion = not hasattr(self.data, 'generator') or not hasattr(self.data.generator, 'sqla_columns')
             for row in self.data:
                 cols = ", ".join(c for c in row.keys())
                 vals = ", ".join(str(self._prep_datum(val, dialect, key, needs_conversion))
