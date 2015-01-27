@@ -77,7 +77,7 @@ mock_engines = {}
 for engine_name in ('postgresql', 'sqlite', 'mysql', 'oracle', 'mssql'):
     mock_engines[engine_name] = sa.create_engine('%s://' % engine_name,
                                                  strategy='mock',
-                                                 executor=_dump)                                                              
+                                                 executor=_dump)
 
 class Table(object):
     """
@@ -151,13 +151,13 @@ class Table(object):
                 self.data = iter(data)
             except TypeError:
                 self.data = Source(data)
-            
+
         if (    self.table_name.startswith('generated_table')
             and hasattr(self.data, 'table_name')):
             self.table_name = self.data.table_name
         self.table_name = self.table_name.lower()
 
-        if hasattr(self.data.generator, 'sqla_columns'):
+        if hasattr(self.data, 'generator') and hasattr(self.data.generator, 'sqla_columns'):
             children = {}
             self.pk_name = next(col.name for col in self.data.generator.sqla_columns if col.primary_key)
         else:
@@ -214,7 +214,7 @@ class Table(object):
                                 for (cname, col) in self.columns.items()
                                 if True
                                 ])
-        
+
         self.children = {child_name: Table(child_data, table_name=child_name,
                                            default_dialect=self.default_dialect,
                                            varying_length_text=varying_length_text,
@@ -285,9 +285,9 @@ class Table(object):
         from sqlalchemy import create_engine, %s
         engine = create_engine(r'sqlite:///:memory:')
         metadata = MetaData(bind=engine)
-                        
-        %s = %s
-        
+
+        %s
+
         metadata.create_all()""" )
     def sqlalchemy(self, is_top=True):
         """Dumps Python code to set up the table's SQLAlchemy model"""
@@ -296,14 +296,14 @@ class Table(object):
         table_def = table_def.replace("Column(", "\n  Column(")
         table_def = table_def.replace("schema=", "\n  schema=")
         result = [table_def, ]
-        result.extend(c.sqlalchemy(is_top=False) for c in self.children)
-        result = "\n".join(result)
+        result.extend(c.sqlalchemy(is_top=False) for c in self.children.values())
+        result = "\n%s = %s" % (self.table_name, "\n".join(result))
         if is_top:
             sqla_imports = set(self.capitalized_words.findall(table_def))
             sqla_imports &= set(dir(sa))
             sqla_imports = sorted(sqla_imports)
             result = self.sqlalchemy_setup_template % (
-                ", ".join(sqla_imports), self.table_name, result)
+                ", ".join(sqla_imports), result)
             result = textwrap.dedent(result)
         return result
 
@@ -343,14 +343,14 @@ class Table(object):
                 django.setup()
             management.call_command('inspectdb', interactive=False)
             os.remove(db_filename)
-        
+
     _datetime_format = {}  # TODO: test the various RDBMS for power to read the standard
     def _prep_datum(self, datum, dialect, col, needs_conversion):
         """Puts a value in proper format for a SQL string"""
         if datum is None or (needs_conversion and not str(datum).strip()):
             return 'NULL'
         pytype = self.columns[col]['pytype']
-        
+
         if needs_conversion:
             if pytype == datetime.datetime:
                 datum = dateutil.parser.parse(datum)
@@ -360,7 +360,7 @@ class Table(object):
                     datum = 1 if datum else 0
             else:
                 datum = pytype(str(datum))
-            
+
         if isinstance(datum, datetime.datetime) or isinstance(datum, datetime.date):
             if dialect in self._datetime_format:
                 return datum.strftime(self._datetime_format[dialect])
@@ -374,17 +374,17 @@ class Table(object):
 
     _insert_template = "INSERT INTO {table_name} ({cols}) VALUES ({vals});"
 
-    def inserts(self, dialect=None):        
+    def inserts(self, dialect=None):
         if dialect and dialect.startswith("sqla"):
             yield "conn = engine.connect()"
             yield "inserter = %s.insert()" % self.table_name
             for row in self.data:
                 yield "conn.execute(inserter, **{row})".format(row=str(dict(row)))
             yield "conn.connection.commit()"
-        else:        
+        else:
             dialect = self._dialect(dialect)
             needs_conversion = not hasattr(self.data.generator, 'sqla_columns')
-            for row in self.data:                    
+            for row in self.data:
                 cols = ", ".join(c for c in row.keys())
                 vals = ", ".join(str(self._prep_datum(val, dialect, key, needs_conversion))
                                  for (key, val) in row.items())
@@ -416,7 +416,7 @@ class Table(object):
         col['pytype'] = type(col['sample_datum'])
         if isinstance(col['sample_datum'], Decimal):
             (precision, scale) = th.precision_and_scale(col['sample_datum'])
-            col['satype'] = sa.DECIMAL(precision + self.data_size_cushion*2, 
+            col['satype'] = sa.DECIMAL(precision + self.data_size_cushion*2,
                                        scale + self.data_size_cushion)
         elif isinstance(col['sample_datum'], str):
             if self.varying_length_text:
@@ -427,7 +427,7 @@ class Table(object):
         else:
             col['satype'] = self.types2sa[type(col['sample_datum'])]
             if col['satype'] == sa.Integer and (
-                col['sample_datum'] > (2147483647-self.data_size_cushion*1000000000) or 
+                col['sample_datum'] > (2147483647-self.data_size_cushion*1000000000) or
                 col['sample_datum'] < (-2147483647+self.data_size_cushion*1000000000)):
                 col['satype'] = sa.BigInteger
         return col
@@ -439,7 +439,7 @@ class Table(object):
     def _determine_types(self):
         column_data = OrderedDict()
         self.columns = OrderedDict()
-        if hasattr(self.data.generator, 'sqla_columns'):
+        if hasattr(self.data, 'generator') and hasattr(self.data.generator, 'sqla_columns'):
             for col in self.data.generator.sqla_columns:
                 self.columns[col.name] = {'is_nullable': col.nullable,
                                           'is_unique': col.unique,
@@ -481,7 +481,7 @@ class Table(object):
                     if (v is None) or (not str(v).strip()):
                         col['is_nullable'] = True
                     if (col['is_unique'] != False):
-                        if v in col['is_unique']:   
+                        if v in col['is_unique']:
                             col['is_unique'] = False
                         else:
                             col['is_unique'].add(v)
