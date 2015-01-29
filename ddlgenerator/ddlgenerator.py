@@ -297,7 +297,9 @@ class Table(object):
         constraint_defs = []
         for constraint in self.table.constraints:
             if isinstance(constraint, sa.sql.schema.UniqueConstraint):
-                constraint_defs.append(self.table_backref_remover.sub('', str(constraint)))
+                col_list = ', '.join("'%s'" % c.name
+                                     for c in constraint.columns)
+                constraint_defs.append('UniqueConstraint(%s)' % col_list)
         if constraint_defs:
             constraint_defs = ',\n  '.join(constraint_defs) + ','
             table_def = table_def.replace('schema=None', '\n  ' + constraint_defs + 'schema=None')
