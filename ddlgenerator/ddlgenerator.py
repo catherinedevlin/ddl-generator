@@ -282,7 +282,7 @@ class Table(object):
     table_backref_remover = re.compile(r',\s+table\s*\=\<.*?\>')
     capitalized_words = re.compile(r"\b[A-Z]\w+")
     sqlalchemy_setup_template = textwrap.dedent("""
-        from sqlalchemy import create_engine, %s
+        from sqlalchemy import create_engine, MetaData, ForeignKey, %s
         engine = create_engine(r'sqlite:///:memory:')
         metadata = MetaData(bind=engine)
 
@@ -290,8 +290,18 @@ class Table(object):
 
         metadata.create_all()""" )
     def sqlalchemy(self, is_top=True):
-        """Dumps Python code to set up the table's SQLAlchemy model"""
+        """Dumps Python code to set up the table's  SQLAlchemy model"""
         table_def = self.table_backref_remover.sub('', self.table.__repr__())
+
+        # inject UNIQUE constraints into table definition
+        constraint_defs = []
+        for constraint in self.table.constraints:
+            if isinstance(constraint, sa.sql.schema.UniqueConstraint):
+                constraint_defs.append(self.table_backref_remover.sub('', str(constraint)))
+        if constraint_defs:
+            constraint_defs = ',\n  '.join(constraint_defs) + ','
+            table_def = table_def.replace('schema=None', constraint_defs + 'schema=None')
+
         table_def = table_def.replace("MetaData(bind=None)", "metadata")
         table_def = table_def.replace("Column(", "\n  Column(")
         table_def = table_def.replace("schema=", "\n  schema=")
