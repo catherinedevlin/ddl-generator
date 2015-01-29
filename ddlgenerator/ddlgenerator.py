@@ -300,7 +300,7 @@ class Table(object):
                 constraint_defs.append(self.table_backref_remover.sub('', str(constraint)))
         if constraint_defs:
             constraint_defs = ',\n  '.join(constraint_defs) + ','
-            table_def = table_def.replace('schema=None', constraint_defs + 'schema=None')
+            table_def = table_def.replace('schema=None', '\n  ' + constraint_defs + 'schema=None')
 
         table_def = table_def.replace("MetaData(bind=None)", "metadata")
         table_def = table_def.replace("Column(", "\n  Column(")

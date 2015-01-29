@@ -80,7 +80,6 @@ def coerce_to_specific(datum):
         # or as unlikely far-future or far-past years
         clean_datum = datum.strip().lstrip('-').lstrip('0').rstrip('.')
         if len(_complex_enough_to_be_date.findall(clean_datum)) < 2:
-            #import ipdb; ipdb.set_trace()
             digits = _digits_only.search(clean_datum)
             if (not digits) or (len(digits.group(0)) not in 
                                 (4, 6, 8, 12, 14, 17)):
