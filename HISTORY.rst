@@ -51,3 +51,8 @@ History
 * Require all formerly recommended dependencies, for simplicity
 * Several bugfixes for complex number-like fields
 
+0.1.8 (2015-02-01)
+++++++++++++++++++
+
+* UNIQUE contstraints handled properly in sqlalchemy output
+
