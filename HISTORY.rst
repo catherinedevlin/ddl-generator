@@ -56,3 +56,8 @@ History
 
 * UNIQUE contstraints handled properly in sqlalchemy output
 
+0.1.8.2 (2015-02-05)
+++++++++++++++++++++
+
+* Cleaner SQLAlchemy generation for fixtures
+

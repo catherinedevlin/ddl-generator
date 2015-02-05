@@ -2,9 +2,9 @@ import argparse
 import logging
 import re
 try:
-    from ddlgenerator.ddlgenerator import Table, dialect_names
+    from ddlgenerator.ddlgenerator import Table, dialect_names, sqla_head
 except ImportError:
-    from ddlgenerator import Table, dialect_names  # TODO: can py2/3 split this
+    from ddlgenerator import Table, dialect_names, sqla_head  # TODO: can py2/3 split this
 # If anyone can explain these import differences to me, I will buy you a cookie.
 from data_dispenser import sqlalchemy_table_sources
 
@@ -26,7 +26,7 @@ def read_args():
     parser.add_argument('-i', '--inserts', action='store_true', help='Include INSERT statements')
     parser.add_argument('--no-creates', action='store_true', help='Do not include CREATE TABLE statements')
     parser.add_argument('--limit', type=int, default=None, help='Max number of rows to read from each source file')
-    parser.add_argument('-c', '--cushion', type=int, default=0, help='Extra length to pad column sizes with')    
+    parser.add_argument('-c', '--cushion', type=int, default=0, help='Extra length to pad column sizes with')
     parser.add_argument('--save-metadata-to', type=str, metavar='FILENAME',
                         help='Save table definition in FILENAME for later --use-saved-metadata run')
     parser.add_argument('--use-metadata-from', type=str, metavar='FILENAME',
@@ -54,7 +54,8 @@ def generate_one(datafile, args, table_name=None):
                   save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from,
                   loglevel=args.log, limit=args.limit)
     if args.dialect.startswith('sqla'):
-        print(table.sqlalchemy())
+        if not args.no_creates:
+            print(table.sqlalchemy())
         if args.inserts:
             print("\n".join(table.inserts(dialect=args.dialect)))
             #inserter.compile().bindtemplate
@@ -64,7 +65,7 @@ def generate_one(datafile, args, table_name=None):
         print(table.sql(dialect=args.dialect, inserts=args.inserts,
                         creates=(not args.no_creates), drops=args.drops,
                         metadata_source=args.use_metadata_from))
-    
+
 def generate():
     args = read_args()
     set_logging(args)
@@ -78,8 +79,9 @@ def generate():
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
     for datafile in args.datafile:
         if is_sqlalchemy_url.search(datafile):
+            print(sqla_head)
             for tbl in sqlalchemy_table_sources(datafile):
                 generate_one(tbl, args, table_name=tbl.generator.name)
         else:
-            generate_one(datafile, args)    
+            generate_one(datafile, args)
 

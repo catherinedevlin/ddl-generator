@@ -282,13 +282,12 @@ class Table(object):
     table_backref_remover = re.compile(r',\s+table\s*\=\<.*?\>')
     capitalized_words = re.compile(r"\b[A-Z]\w+")
     sqlalchemy_setup_template = textwrap.dedent("""
-        from sqlalchemy import create_engine, MetaData, ForeignKey, %s
-        engine = create_engine(r'sqlite:///:memory:')
-        metadata = MetaData(bind=engine)
+        from sqlalchemy import %s
 
         %s
 
-        metadata.create_all()""" )
+        %s.create()""" )
+
     def sqlalchemy(self, is_top=True):
         """Dumps Python code to set up the table's  SQLAlchemy model"""
         table_def = self.table_backref_remover.sub('', self.table.__repr__())
@@ -315,7 +314,7 @@ class Table(object):
             sqla_imports &= set(dir(sa))
             sqla_imports = sorted(sqla_imports)
             result = self.sqlalchemy_setup_template % (
-                ", ".join(sqla_imports), result)
+                ", ".join(sqla_imports), result, self.table.name)
             result = textwrap.dedent(result)
         return result
 
@@ -388,11 +387,17 @@ class Table(object):
 
     def inserts(self, dialect=None):
         if dialect and dialect.startswith("sqla"):
-            yield "conn = engine.connect()"
-            yield "inserter = %s.insert()" % self.table_name
-            for row in self.data:
-                yield "conn.execute(inserter, **{row})".format(row=str(dict(row)))
-            yield "conn.connection.commit()"
+            if self.data:
+                yield "\ndef insert_%s(tbl, conn):" % self.table_name
+                yield "    inserter = tbl.insert()"
+                for row in self.data:
+                    yield textwrap.indent("conn.execute(inserter, **{row})"
+                                          .format(row=str(dict(row))),
+                                          "    ")
+                yield "    conn.connection.commit()"
+                yield "\ninsert_%s(conn)" % self.table.name
+            else:
+                yield "# No data for %s" % self.table.name
         else:
             dialect = self._dialect(dialect)
             needs_conversion = not hasattr(self.data, 'generator') or not hasattr(self.data.generator, 'sqla_columns')
@@ -502,6 +507,12 @@ class Table(object):
             self._fill_metadata_from_sample(col)
             col['is_unique'] = bool(col['is_unique'])
 
+
+sqla_head = """
+from sqlalchemy import create_engine, MetaData, ForeignKey
+engine = create_engine(r'sqlite:///:memory:')
+metadata = MetaData(bind=engine)
+conn = engine.connect()"""
 
 if __name__ == '__main__':
     doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)

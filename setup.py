@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='ddlgenerator',
-    version='0.1.8.1',
+    version='0.1.8.2',
     description='Generates SQL DDL that will accept Python data',
     long_description=readme + '\n\n' + history,
     author='Catherine Devlin',
@@ -38,7 +38,7 @@ setup(
       "beautifulsoup4",
       "requests",
       "pymongo",
-      "data_dispenser>=0.2.5",
+      "data_dispenser>=0.2.5.1",
     ],
     license="MIT",
     zip_safe=False,

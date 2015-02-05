@@ -5,4 +5,4 @@ dateutils
 pymongo
 requests
 beautifulsoup4
-data_dispenser>=0.2.5
+data_dispenser>=0.2.5.1
