@@ -95,7 +95,7 @@ def generate():
                     table_names_for_insert.append(tbl.generator.name)
             if args.inserts and args.dialect == 'sqlalchemy':
                 print(sqla_inserter_call(table_names_for_insert))
-            if t:
+            if t and args.inserts:
                 for seq_update in emit_db_sequence_updates(t.source.db_engine):
                     if args.dialect == 'sqlalchemy':
                         print('    conn.execute("%s")' % seq_update)

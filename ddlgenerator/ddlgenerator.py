@@ -531,6 +531,8 @@ class Table(object):
 
 
 sqla_head = """
+import datetime
+# check for other imports you may need, like your db driver
 from sqlalchemy import create_engine, MetaData, ForeignKey
 engine = create_engine(r'sqlite:///:memory:')
 metadata = MetaData(bind=engine)
