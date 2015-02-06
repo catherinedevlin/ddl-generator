@@ -2,9 +2,13 @@ import argparse
 import logging
 import re
 try:
-    from ddlgenerator.ddlgenerator import Table, dialect_names, sqla_head
+    from ddlgenerator.ddlgenerator import Table, dialect_names
+    from ddlgenerator.ddlgenerator import sqla_head, sqla_inserter_call
+    from ddlgenerator.ddlgenerator import emit_db_sequence_updates
 except ImportError:
     from ddlgenerator import Table, dialect_names, sqla_head  # TODO: can py2/3 split this
+    from ddlgenerator import sqla_head, sqla_inserter_call
+    from ddlgenerator import emit_db_sequence_updates
 # If anyone can explain these import differences to me, I will buy you a cookie.
 from data_dispenser import sqlalchemy_table_sources
 
@@ -48,8 +52,11 @@ def set_logging(args):
 
 is_sqlalchemy_url = re.compile("^%s" % "|".join(dialect_names))
 
-def generate_one(datafile, args, table_name=None):
-    table = Table(datafile, table_name=table_name, varying_length_text=args.text, uniques=args.uniques,
+def generate_one(tbl, args, table_name=None):
+    """
+    Prints code (SQL, SQLAlchemy, etc.) to define a table.
+    """
+    table = Table(tbl, table_name=table_name, varying_length_text=args.text, uniques=args.uniques,
                   pk_name = args.key, force_pk=args.force_key, reorder=args.reorder, data_size_cushion=args.cushion,
                   save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from,
                   loglevel=args.log, limit=args.limit)
@@ -58,13 +65,13 @@ def generate_one(datafile, args, table_name=None):
             print(table.sqlalchemy())
         if args.inserts:
             print("\n".join(table.inserts(dialect=args.dialect)))
-            #inserter.compile().bindtemplate
     elif args.dialect.startswith('dj'):
         table.django_models()
     else:
         print(table.sql(dialect=args.dialect, inserts=args.inserts,
                         creates=(not args.no_creates), drops=args.drops,
                         metadata_source=args.use_metadata_from))
+    return table
 
 def generate():
     args = read_args()
@@ -77,11 +84,23 @@ def generate():
 
     if args.dialect not in dialect_names:
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
+    if args.dialect == 'sqlalchemy':
+        print(sqla_head)
     for datafile in args.datafile:
         if is_sqlalchemy_url.search(datafile):
-            print(sqla_head)
+            table_names_for_insert = []
             for tbl in sqlalchemy_table_sources(datafile):
-                generate_one(tbl, args, table_name=tbl.generator.name)
+                t = generate_one(tbl, args, table_name=tbl.generator.name)
+                if t.data:
+                    table_names_for_insert.append(tbl.generator.name)
+            if args.inserts and args.dialect == 'sqlalchemy':
+                print(sqla_inserter_call(table_names_for_insert))
+            if t:
+                for seq_update in emit_db_sequence_updates(t.source.db_engine):
+                    if args.dialect == 'sqlalchemy':
+                        print('    conn.execute("%s")' % seq_update)
+                    elif args.dialect == 'postgresql':
+                        print(seq_update)
         else:
             generate_one(datafile, args)
 

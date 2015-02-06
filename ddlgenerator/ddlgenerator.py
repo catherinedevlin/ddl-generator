@@ -135,6 +135,7 @@ class Table(object):
         and the table structure
         determined during the previous run will be assumed.
         """
+        self.source = data
         logging.getLogger().setLevel(loglevel)
         self.varying_length_text = varying_length_text
         self.table_name = table_name
@@ -385,6 +386,26 @@ class Table(object):
 
     _insert_template = "INSERT INTO {table_name} ({cols}) VALUES ({vals});"
 
+    def emit_db_sequence_updates(self):
+        """Set database sequence objects to match the source db
+
+           Relevant only when generated from SQLAlchemy connection.
+           Needed to avoid subsequent unique key violations after DB build."""
+
+        if self.source.db_engine and self.source.db_engine.name != 'postgresql':
+            # not implemented for other RDBMS; necessity unknown
+            conn = self.source.db_engine.connect()
+            qry = """SELECT 'SELECT last_value FROM ' || n.nspname || '.' || c.relname || ';'
+                     FROM   pg_namespace n
+                     JOIN   pg_class c ON (n.oid = c.relnamespace)
+                     WHERE  c.relkind = 'S'"""
+            result = []
+            for (sequence, ) in list(conn.execute(qry)):
+                qry = "SELECT last_value FROM %s" % sequence
+                (lastval, ) = conn.execute(qry).first()
+                nextval = int(lastval) + 1
+                yield "ALTER SEQUENCE %s RESTART WITH %s;" % nextval
+
     def inserts(self, dialect=None):
         if dialect and dialect.startswith("sqla"):
             if self.data:
@@ -394,10 +415,11 @@ class Table(object):
                     yield textwrap.indent("conn.execute(inserter, **{row})"
                                           .format(row=str(dict(row))),
                                           "    ")
-                yield "    conn.connection.commit()"
-                yield "\ninsert_%s(conn)" % self.table.name
+                for seq_updater in self.emit_db_sequence_updates():
+                    yield '    conn.execute("%s")' % seq_updater
+                # TODO: no - not here
             else:
-                yield "# No data for %s" % self.table.name
+                yield "\n# No data for %s" % self.table.name
         else:
             dialect = self._dialect(dialect)
             needs_conversion = not hasattr(self.data, 'generator') or not hasattr(self.data.generator, 'sqla_columns')
@@ -513,6 +535,42 @@ from sqlalchemy import create_engine, MetaData, ForeignKey
 engine = create_engine(r'sqlite:///:memory:')
 metadata = MetaData(bind=engine)
 conn = engine.connect()"""
+
+def sqla_inserter_call(table_names):
+    return '''
+
+def insert_test_rows(meta, conn):
+    """Calls insert_* functions to create test data.
+
+    Given a SQLAlchemy metadata object ``meta`` and
+    a SQLAlchemy connection ``conn``, populate the tables
+    in ``meta`` with test data.
+
+    Call ``meta.reflect()`` before passing calling this."""
+
+%s
+''' % '\n'.join("    insert_%s(meta.tables['%s'], conn)" % (t, t)
+                for t in table_names)
+
+def emit_db_sequence_updates(engine):
+    """Set database sequence objects to match the source db
+
+       Relevant only when generated from SQLAlchemy connection.
+       Needed to avoid subsequent unique key violations after DB build."""
+
+    if engine and engine.name == 'postgresql':
+        # not implemented for other RDBMS; necessity unknown
+        conn = engine.connect()
+        qry = """SELECT 'SELECT last_value FROM ' || n.nspname ||
+                         '.' || c.relname || ';' AS qry,
+                        n.nspname || '.' || c.relname AS qual_name
+                 FROM   pg_namespace n
+                 JOIN   pg_class c ON (n.oid = c.relnamespace)
+                 WHERE  c.relkind = 'S'"""
+        for (qry, qual_name) in list(conn.execute(qry)):
+            (lastval, ) = conn.execute(qry).first()
+            nextval = int(lastval) + 1
+            yield "ALTER SEQUENCE %s RESTART WITH %s;" % (qual_name, nextval)
 
 if __name__ == '__main__':
     doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
