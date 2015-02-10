@@ -141,7 +141,7 @@ From PyPI::
 
 From source::
 
-    git clone git clone https://github.com/catherinedevlin/ddl-generator.git
+    git clone https://github.com/catherinedevlin/ddl-generator.git
     cd ddl-generator
     pip3 install .
 
