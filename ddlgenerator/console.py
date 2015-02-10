@@ -48,7 +48,7 @@ def set_logging(args):
 
 is_sqlalchemy_url = re.compile("^%s" % "|".join(dialect_names))
 
-def generate_one(tbl, args, table_name=None):
+def generate_one(tbl, args, table_name=None, file=None):
     """
     Prints code (SQL, SQLAlchemy, etc.) to define a table.
     """
@@ -58,23 +58,24 @@ def generate_one(tbl, args, table_name=None):
                   loglevel=args.log, limit=args.limit)
     if args.dialect.startswith('sqla'):
         if not args.no_creates:
-            print(table.sqlalchemy())
+            print(table.sqlalchemy(), file=file)
         if args.inserts:
-            print("\n".join(table.inserts(dialect=args.dialect)))
+            print("\n".join(table.inserts(dialect=args.dialect)), file=file)
     elif args.dialect.startswith('dj'):
         table.django_models()
     else:
         print(table.sql(dialect=args.dialect, inserts=args.inserts,
                         creates=(not args.no_creates), drops=args.drops,
-                        metadata_source=args.use_metadata_from))
+                        metadata_source=args.use_metadata_from), file=file)
     return table
 
-def generate(args=None, namespace=None):
+def generate(args=None, namespace=None, file=None):
     """
     Genereate DDL from data sources named.
 
     :args:      String or list of strings to be parsed for arguments
     :namespace: Namespace to extract arguments from
+    :file:      Write to this open file object (default stdout)
     """
     if hasattr(args, 'split'):
         args = args.split()
@@ -91,22 +92,22 @@ def generate(args=None, namespace=None):
     if args.dialect not in dialect_names:
         raise NotImplementedError('First arg must be one of: %s' % ", ".join(dialect_names))
     if args.dialect == 'sqlalchemy':
-        print(sqla_head)
+        print(sqla_head, file=file)
     for datafile in args.datafile:
         if is_sqlalchemy_url.search(datafile):
             table_names_for_insert = []
             for tbl in sqlalchemy_table_sources(datafile):
-                t = generate_one(tbl, args, table_name=tbl.generator.name)
+                t = generate_one(tbl, args, table_name=tbl.generator.name, file=file)
                 if t.data:
                     table_names_for_insert.append(tbl.generator.name)
             if args.inserts and args.dialect == 'sqlalchemy':
-                print(sqla_inserter_call(table_names_for_insert))
+                print(sqla_inserter_call(table_names_for_insert), file=file)
             if t and args.inserts:
                 for seq_update in emit_db_sequence_updates(t.source.db_engine):
                     if args.dialect == 'sqlalchemy':
-                        print('    conn.execute("%s")' % seq_update)
+                        print('    conn.execute("%s")' % seq_update, file=file)
                     elif args.dialect == 'postgresql':
-                        print(seq_update)
+                        print(seq_update, file=file)
         else:
-            generate_one(datafile, args)
+            generate_one(datafile, args, file=file)
 
