@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='ddlgenerator',
-    version='0.1.8.2',
+    version='0.1.9',
     description='Generates SQL DDL that will accept Python data',
     long_description=readme + '\n\n' + history,
     author='Catherine Devlin',
@@ -56,5 +56,5 @@ setup(
         'console_scripts': [
             'ddlgenerator = ddlgenerator.console:generate',
         ]
-    }    
+    }
 )

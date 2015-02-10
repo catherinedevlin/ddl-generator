@@ -41,8 +41,8 @@ History
 * Generate Django models
 
 0.1.7.1 (2014-09-14)
-++++++++++++++++++
- 
+++++++++++++++++++++
+
 * Require data-dispenser 0.2.3
 
 0.1.7.3 (2014-10-19)
@@ -61,3 +61,9 @@ History
 
 * Cleaner SQLAlchemy generation for fixtures
 
+
+
+0.1.9 (2015-02-10)
+++++++++++++++++++
+
+* Parse args passed to ``generate(args, namespace`` for non-command-line use
