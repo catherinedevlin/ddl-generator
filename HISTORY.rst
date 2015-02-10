@@ -61,9 +61,8 @@ History
 
 * Cleaner SQLAlchemy generation for fixtures
 
-
-
 0.1.9 (2015-02-10)
 ++++++++++++++++++
 
-* Parse args passed to ``generate(args, namespace`` for non-command-line use
+* README fixes from Anatoly Technonik, Mikhail Podgurskiy
+* Parse args passed to ``generate(args, namespace)`` for non-command-line use
