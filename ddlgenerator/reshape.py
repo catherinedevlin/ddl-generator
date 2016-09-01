@@ -286,7 +286,7 @@ def unnest_children(data, parent_name='', pk_name=None, force_pk=False):
     parent = ParentTable(data, parent_name, pk_name=pk_name, force_pk=force_pk)
     for row in parent:
         try:
-            for (key, val) in row.items():
+            for (key, val) in list(row.items()):
                 if hasattr(val, 'items'):
                     unnest_child_dict(parent=row, key=key, parent_name=parent_name)
                 elif isinstance(val, list) or isinstance(val, tuple):
