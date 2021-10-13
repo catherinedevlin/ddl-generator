@@ -254,6 +254,7 @@ class Table(object):
     _supports_if_exists = {k: False for k in dialect_names}
     _supports_if_exists['postgresql'] = _supports_if_exists['sqlite'] = True
     _supports_if_exists['mysql'] = _supports_if_exists['sybase'] = True
+    _supports_if_exists['mssql'] = True
     def _dropper(self, dialect):
         template = "DROP TABLE %s %s"
         if_exists = "IF EXISTS" if self._supports_if_exists[dialect] else ""
