@@ -148,7 +148,7 @@ From source::
 Alternatives
 ------------
 
-* `csvkit.csvsql <https://csvkit.readthedocs.org/en/0.7.3/scripts/csvsql.html>`_
+* `csvkit.csvsql <https://csvkit.readthedocs.io/en/latest/scripts/csvsql.html>`_
 * `pandas.read_*` methods
 * `prequel <https://github.com/timClicks/prequel.git>`_ for SQLite
 
